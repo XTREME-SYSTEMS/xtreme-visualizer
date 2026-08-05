@@ -16,6 +16,8 @@ const BID_TIERS = [
   { key: "premier", label: "Premier", factor: 1.12, blurb: "Decorative finish, coving, moisture barrier." },
 ];
 
+const FINISHES = ["Matte", "Satin", "High Gloss"];
+
 export default function Visualizer() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -40,6 +42,7 @@ export default function Visualizer() {
   const [concept, setConcept] = useState("");
   const [saving, setSaving] = useState(false);
   const [pickedTier, setPickedTier] = useState("recommended");
+  const [finish, setFinish] = useState("High Gloss");
 
   const rates = systemRates[system];
   const colorRecords = useMemo(() => getSystemColorRecords(system), [system]);
@@ -96,6 +99,7 @@ export default function Visualizer() {
     "Project: Vizualizer Project\n" +
     "System: " + system + "\n" +
     "Color: " + (selectedColor?.name || "Standard") + "\n" +
+    "Finish: " + finish + "\n" +
     "Square feet: " + sqft + "\n" +
     "Condition: " + condition + "\n" +
     "Prep: " + prepSummary + "\n\n" +
@@ -123,7 +127,8 @@ export default function Visualizer() {
     toast({ title: "Photo loaded for concept preview." });
   };
 
-  const generate = async () => {
+  const generate = async (finishOverride) => {
+    const activeFinish = finishOverride || finish;
     if (!image && !fileUrl) {
       toast({ title: "Upload a photo first.", variant: "destructive" });
       return;
@@ -132,7 +137,8 @@ export default function Visualizer() {
     setConcept("");
     try {
       const colorName = selectedColor?.name || "";
-      const prompt = 'Photorealistic interior design rendering of the uploaded room with a newly installed ' + system + ' floor in the color "' + colorName + '". Seamless, glossy, professional concrete coating finish. Same room geometry, walls, and lighting as the original photo. High-end real-estate photography, wide angle, natural light.';
+      const sheenDesc = activeFinish === "Matte" ? "flat matte sheen with no reflections" : activeFinish === "Satin" ? "soft satin sheen with gentle subtle reflections" : "high-gloss wet-look sheen with sharp mirror-like reflections";
+      const prompt = 'Photorealistic interior design rendering of the uploaded room with a newly installed ' + system + ' floor in the color "' + colorName + '" with a ' + sheenDesc + '. Seamless, professional concrete coating finish. Same room geometry, walls, and lighting as the original photo. High-end real-estate photography, wide angle, natural light.';
       const res = await base44.integrations.Core.GenerateImage({
         prompt,
         existing_image_urls: fileUrl ? [fileUrl] : undefined,
@@ -157,6 +163,7 @@ export default function Visualizer() {
         floor_type: system,
         color_name: selectedColor?.name || "",
         color_hex: selectedColor?.hex || "",
+        finish,
         condition,
         needs_grinding: needsGrinding,
         needs_moisture_mitigation: needsMoisture,
@@ -190,6 +197,7 @@ export default function Visualizer() {
             source_photo_url: fileUrl || image || undefined,
             system_name: system,
             color_name: selectedColor?.name || "",
+            finish,
             label: "AI concept",
             disclosure: "AI concept visualization, not a completed customer project.",
           });
@@ -289,8 +297,8 @@ export default function Visualizer() {
             </div>
           </div>
           <div className="viz-toggle-row">
-            <button className={"vx-btn compact " + (needsGrinding ? "outline-accent" : "")} onClick={() => setNeedsGrinding((v) => !v)}>Grinding prep</button>
-            <button className={"vx-btn compact " + (needsMoisture ? "outline-accent" : "")} onClick={() => setNeedsMoisture((v) => !v)}>Moisture barrier</button>
+            <button className={"vx-btn compact " + (needsGrinding ? "primary" : "")} onClick={() => setNeedsGrinding((v) => !v)}>Grinding prep</button>
+            <button className={"vx-btn compact " + (needsMoisture ? "primary" : "")} onClick={() => setNeedsMoisture((v) => !v)}>Moisture barrier</button>
           </div>
           <label className="field">
             Linear feet of cracks
@@ -330,7 +338,7 @@ export default function Visualizer() {
                 Demolition sq ft
                 <input type="number" min="0" value={demoSqft} onChange={(e) => setDemoSqft(Math.max(0, Number(e.target.value || 0)))} />
               </label>
-              <button className={"vx-btn compact " + (extraPrep ? "outline-accent" : "")} onClick={() => setExtraPrep((v) => !v)}>
+              <button className={"vx-btn compact " + (extraPrep ? "primary" : "")} onClick={() => setExtraPrep((v) => !v)}>
                 Extra site prep (+$250)
               </button>
             </div>
@@ -363,6 +371,22 @@ export default function Visualizer() {
               ) : (
                 <div className="viz-ba-empty"><Sparkles size={28} /></div>
               )}
+            </div>
+          </div>
+        )}
+        {(image || concept) && (
+          <div className="viz-finish-row">
+            <span className="viz-finish-label">Finish</span>
+            <div className="viz-finish-btns">
+              {FINISHES.map((f) => (
+                <button
+                  key={f}
+                  className={"vx-btn compact " + (finish === f ? "primary" : "")}
+                  onClick={() => { setFinish(f); if (image || fileUrl) generate(f); }}
+                >
+                  {f}
+                </button>
+              ))}
             </div>
           </div>
         )}
@@ -423,6 +447,7 @@ export default function Visualizer() {
           <div className="viz-bid-lines">
             <div className="viz-bid-line"><span>Floor system</span><strong>{system}</strong></div>
             <div className="viz-bid-line"><span>Color</span><strong>{selectedColor?.name || "Standard"}</strong></div>
+            <div className="viz-bid-line"><span>Finish</span><strong>{finish}</strong></div>
             <div className="viz-bid-line"><span>Square feet</span><strong>{sqft.toLocaleString()} sq ft</strong></div>
             <div className="viz-bid-line"><span>Slab condition</span><strong style={{ textTransform: "capitalize" }}>{condition}</strong></div>
             <div className="viz-bid-line"><span>Prep included</span><strong>{prepSummary}</strong></div>

@@ -382,6 +382,11 @@
 .viz-bid-share { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .viz-bid-share a { justify-content: center; text-decoration: none; }
 
+/* Finish selector under before/after */
+.viz-finish-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.viz-finish-label { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--vx-faint); }
+.viz-finish-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
 /* ===== Home command center ===== */
 .home-cta-card {
   display: flex; align-items: center; gap: 16px; width: 100%;
