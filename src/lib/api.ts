@@ -108,11 +108,11 @@ function mapProposal(r: any): Proposal {
 
 export const api = {
   state: async (): Promise<AppState> => {
+    const timeout = new Promise<[]>((resolve) => setTimeout(() => resolve([] as any), 12000));
+    const list = (e: string) => Promise.race([base44.entities[e].list().catch(() => []), timeout]).then(r => Array.isArray(r) ? r : []);
     const [systems, products, colors, projects, leads, quotes, proposals, flags] = await Promise.all([
-      base44.entities.FloorSystem.list().catch(() => []), base44.entities.Product.list().catch(() => []),
-      base44.entities.ColorChart.list().catch(() => []), base44.entities.Project.list().catch(() => []),
-      base44.entities.Lead.list().catch(() => []), base44.entities.Quote.list().catch(() => []),
-      base44.entities.Proposal.list().catch(() => []), base44.entities.FeatureFlag.list().catch(() => []),
+      list('FloorSystem'), list('Product'), list('ColorChart'), list('Project'),
+      list('Lead'), list('Quote'), list('Proposal'), list('FeatureFlag'),
     ]);
     return { meta: { dataMode: 'normal', version: 'v1.0.0' }, systems: (systems || []).map(mapFloorSystem), products: (products || []).map(mapProduct), colors: (colors || []).map(mapColor), projects: (projects || []).map(mapProject), leads: (leads || []).map(mapLead), quotes: (quotes || []).map(mapQuote), proposals: (proposals || []).map(mapProposal), events: [], featureFlags: Object.fromEntries((flags || []).map((f: any) => [f.key, f.enabled])) };
   },

@@ -147,8 +147,8 @@ img{display:block;max-width:100%}
 
 /* desktop: scale device shell to fit viewport height */
 @media(min-width:901px){
-  .vx-stage{padding:16px;overflow:hidden}
-  .vx-device{transform:scale(min(1,(100vh - 32px) / 1664px));transform-origin:center}
+  .vx-stage{padding:16px;min-height:100vh;overflow:hidden}
+  .vx-device{zoom:min(1,calc((100vh - 32px) / 1664px))}
 }
 /* responsive runtime */
 @media(max-width:900px){
