@@ -9,7 +9,7 @@ export default function Visualizer() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [image, setImage] = useState("");
-  const [system, setSystem] = useState("Epoxy Flake System");
+  const [system, setSystem] = useState("Flake Epoxy");
   const [sqft, setSqft] = useState(850);
   const [saving, setSaving] = useState(false);
   const [fileUrl, setFileUrl] = useState("");

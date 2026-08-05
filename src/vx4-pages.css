@@ -254,12 +254,12 @@
   color: var(--vx-faint); margin: 0; padding: 0 4px;
 }
 .home-nav-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px;
 }
 .home-nav-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 14px; padding: 24px 14px; min-height: 150px;
-  border-radius: 18px; border: 1px solid var(--vx-border-soft);
+  gap: 10px; padding: 16px 8px; min-height: 118px;
+  border-radius: 16px; border: 1px solid var(--vx-border-soft);
   background: linear-gradient(160deg, var(--vx-panel-2), var(--vx-panel));
   color: var(--vx-text); text-align: center; cursor: pointer;
   transition: border-color .15s, background .15s, transform .15s, box-shadow .15s;
@@ -270,13 +270,13 @@
 }
 .home-nav-card:active { transform: translateY(2px) scale(.98); }
 .home-nav-icon {
-  width: 58px; height: 58px; border-radius: 16px; flex-shrink: 0;
+  width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
   display: grid; place-items: center; color: var(--vx-accent);
   border: 1px solid #4c7600; background: rgba(156,255,0,.06); box-shadow: var(--vx-glow);
 }
-.home-nav-label { display: grid; gap: 4px; min-width: 0; }
-.home-nav-label strong { font-size: 15px; font-weight: 700; line-height: 1.2; }
-.home-nav-label small { font-size: 11px; color: var(--vx-muted); line-height: 1.35; }
+.home-nav-label { display: grid; gap: 3px; min-width: 0; }
+.home-nav-label strong { font-size: 13px; font-weight: 700; line-height: 1.2; }
+.home-nav-label small { font-size: 10px; color: var(--vx-muted); line-height: 1.3; }
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
@@ -287,9 +287,9 @@
   .feature-card { grid-template-columns: 1fr 100px; }
   .feature-card img { width: 100px; height: 72px; }
   .form-grid.two { grid-template-columns: 1fr; }
-  .home-nav-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .home-nav-card { padding: 18px 10px; min-height: 124px; gap: 10px; }
-  .home-nav-icon { width: 48px; height: 48px; border-radius: 14px; }
-  .home-nav-label strong { font-size: 13px; }
-  .home-nav-label small { font-size: 10px; }
+  .home-nav-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .home-nav-card { padding: 12px 6px; min-height: 104px; gap: 8px; }
+  .home-nav-icon { width: 40px; height: 40px; border-radius: 11px; }
+  .home-nav-label strong { font-size: 12px; }
+  .home-nav-label small { display: none; }
 }
