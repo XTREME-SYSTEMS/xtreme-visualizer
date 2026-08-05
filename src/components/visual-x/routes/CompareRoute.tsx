@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
-import { VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
+import { VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState, swatchSrc } from '../VisualXPrimitives';
 import { Check, ScanLine } from 'lucide-react';
 
 export function CompareRoute() {
@@ -22,7 +22,7 @@ export function CompareRoute() {
             {compareOptions.map((c, i) => (
               <div key={c.code} className={`vx-card compare-option ${selected === i ? 'selected' : ''}`} onClick={() => setSelected(i)} style={{ cursor: 'pointer' }}>
                 {selected === i && <div className="compare-check"><Check className="vx-icon vx-icon-sm" /></div>}
-                <img src={c.image_url} alt={c.color_name} />
+                <img src={swatchSrc(c)} alt={c.color_name} />
                 <h3>{c.color_name}</h3>
                 <p>{c.code} · {c.system}</p>
               </div>

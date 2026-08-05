@@ -2,6 +2,13 @@ import { forwardRef, useEffect, useId, useRef, type ButtonHTMLAttributes, type H
 import { AlertTriangle, Ban, CheckCircle2, CircleDashed, Info, LoaderCircle, X } from 'lucide-react';
 import type { VerificationStatus } from '../../contracts/runtime';
 
+export function swatchSrc(color: { image_url?: string | null; hex?: string | null }): string {
+  if (color.image_url) return color.image_url;
+  const hex = color.hex || '#888888';
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><defs><radialGradient id='g' cx='35%' cy='30%'><stop offset='0' stop-color='${hex}' stop-opacity='0.95'/><stop offset='1' stop-color='${hex}' stop-opacity='0.6'/></radialGradient></defs><rect width='120' height='120' fill='url(#g)'/></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 export function VisualXPage({ children, className = '', ...props }: HTMLAttributes<HTMLElement>) {
   return <main className={`vx-page ${className}`.trim()} {...props}>{children}</main>;
 }

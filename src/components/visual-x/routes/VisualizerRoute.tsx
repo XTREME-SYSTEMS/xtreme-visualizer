@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
-import { VisualXTabs, VisualXSlider, VisualXButton, VisualXProvenanceBadge } from '../VisualXPrimitives';
+import { VisualXTabs, VisualXSlider, VisualXButton, VisualXProvenanceBadge, swatchSrc } from '../VisualXPrimitives';
 import { Camera, Save, ReceiptText, Eye, Layers3 } from 'lucide-react';
 
 const MODES = [{ key: 'before', label: 'Before' }, { key: 'after', label: 'After' }, { key: 'split', label: 'Split' }];
@@ -75,7 +75,7 @@ export function VisualizerRoute() {
             <div className="swatch-grid">
               {availableColors.map(c => (
                 <button key={c.code} className={`swatch ${(colorCode || selectedColor?.code) === c.code ? 'active' : ''}`} onClick={() => setColorCode(c.code)}>
-                  <img src={c.image_url} alt={c.color_name} loading="lazy" /><span>{c.color_name}</span>
+                  <img src={swatchSrc(c)} alt={c.color_name} loading="lazy" /><span>{c.color_name}</span>
                 </button>
               ))}
             </div>

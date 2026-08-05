@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
-import { VisualXTabs, VisualXField, VisualXEmptyState, VisualXProvenanceBadge } from '../VisualXPrimitives';
+import { VisualXTabs, VisualXField, VisualXEmptyState, VisualXProvenanceBadge, swatchSrc } from '../VisualXPrimitives';
 import { Search, PackageSearch, ScanLine } from 'lucide-react';
 
 const TABS = [
@@ -36,7 +36,7 @@ export function ProductsRoute() {
           <div className="swatch-grid">
             {filtered.map(c => (
               <button key={c.code} className={`swatch ${selectedColorIds.includes(c.code) ? 'active' : ''}`} onClick={() => toggleColor(c.code)}>
-                <img src={c.image_url} alt={c.color_name} loading="lazy" />
+                <img src={swatchSrc(c)} alt={c.color_name} loading="lazy" />
                 <span>{c.color_name}</span>
                 <small>{c.code}</small>
               </button>
@@ -62,7 +62,7 @@ export function ProductsRoute() {
         <div className="vx-card">
           <div className="vx-section-title"><h2>Selected ({selectedColorIds.length})</h2></div>
           <div className="selection-tray">
-            {selectedColorIds.map(code => { const c = colors.find(x => x.code === code); return c ? <img key={code} src={c.image_url} alt={c.color_name} /> : null; })}
+            {selectedColorIds.map(code => { const c = colors.find(x => x.code === code); return c ? <img key={code} src={swatchSrc(c)} alt={c.color_name} /> : null; })}
             <button className="vx-btn outline-accent" onClick={() => navigate('/app/visualizer')}><ScanLine className="vx-icon vx-icon-sm" /> Visualize</button>
           </div>
         </div>

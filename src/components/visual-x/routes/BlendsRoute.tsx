@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
-import { VisualXField, VisualXProvenanceBadge, VisualXEmptyState } from '../VisualXPrimitives';
+import { VisualXField, VisualXProvenanceBadge, VisualXEmptyState, swatchSrc } from '../VisualXPrimitives';
 import { Search, Save, ScanLine, ReceiptText, Star } from 'lucide-react';
 
 export function BlendsRoute() {
@@ -34,7 +34,7 @@ export function BlendsRoute() {
           <div className="vx-section-title"><h2>Selected blend</h2><VisualXProvenanceBadge status="VERIFIED" source="Operator selection" /></div>
           <div className="selected-finish">
             <div className="blend-preview vx-photo" style={{ display: 'grid', gridTemplateColumns: `repeat(${selected.length}, 1fr)`, gap: 2, height: 128, width: 220, borderRadius: 13, overflow: 'hidden' }}>
-              {selected.map(c => <img key={c.code} src={c.image_url} alt={c.color_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />)}
+              {selected.map(c => <img key={c.code} src={swatchSrc(c)} alt={c.color_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />)}
             </div>
             <div><h2>{selected.map(c => c.color_name).join(' + ')}</h2><p>{selected.map(c => c.code).join(', ')}</p><p className="vx-muted">{selected.length} color{selected.length > 1 ? 's' : ''} selected (max 4)</p></div>
             <Star className="vx-icon" />
@@ -47,7 +47,7 @@ export function BlendsRoute() {
         <div className="swatch-grid" style={{ marginTop: 12 }}>
           {filtered.slice(0, 48).map(c => (
             <button key={c.code} className={`swatch ${selectedColorIds.includes(c.code) ? 'active' : ''}`} onClick={() => toggleColor(c.code)}>
-              <img src={c.image_url} alt={c.color_name} loading="lazy" /><span>{c.color_name}</span><small>{c.code}</small>
+              <img src={swatchSrc(c)} alt={c.color_name} loading="lazy" /><span>{c.color_name}</span><small>{c.code}</small>
             </button>
           ))}
         </div>

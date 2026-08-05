@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
-import { VisualXField, VisualXSlider, VisualXButton, VisualXProvenanceBadge } from '../VisualXPrimitives';
+import { VisualXField, VisualXSlider, VisualXButton, VisualXProvenanceBadge, swatchSrc } from '../VisualXPrimitives';
 import { Search, Save, Share2, Eye } from 'lucide-react';
 
 export function MetallicRoute() {
@@ -36,7 +36,7 @@ export function MetallicRoute() {
         <div className="vx-card">
           <div className="vx-section-title"><h2>Preview</h2><VisualXProvenanceBadge status="VERIFIED" source={selected.color_name} /></div>
           <div className="metallic-preview vx-photo" style={{ position: 'relative' }}>
-            <img src={selected.image_url} alt={selected.color_name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: opacity / 100, filter: `brightness(${0.5 + gloss / 200}) contrast(${1 + gloss / 500})` }} />
+            <img src={swatchSrc(selected)} alt={selected.color_name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: opacity / 100, filter: `brightness(${0.5 + gloss / 200}) contrast(${1 + gloss / 500})` }} />
             <div className="vx-photo-label"><Eye className="vx-icon vx-icon-sm" /> {selected.color_name} · {selected.code}</div>
           </div>
         </div>
@@ -47,7 +47,7 @@ export function MetallicRoute() {
         <div className="swatch-grid metallic-swatches" style={{ marginTop: 12 }}>
           {filtered.slice(0, 48).map(c => (
             <button key={c.code} className={`swatch ${selectedCode === c.code ? 'active' : ''}`} onClick={() => setSelectedCode(c.code)}>
-              <img src={c.image_url} alt={c.color_name} loading="lazy" /><span>{c.color_name}</span><small>{c.code}</small>
+              <img src={swatchSrc(c)} alt={c.color_name} loading="lazy" /><span>{c.color_name}</span><small>{c.code}</small>
             </button>
           ))}
         </div>
