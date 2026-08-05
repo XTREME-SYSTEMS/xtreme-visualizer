@@ -113,7 +113,7 @@ export default function Home() {
               {items.map(({ label, icon: Icon, to, desc }) => (
                 <button key={label} className="home-nav-card" onClick={() => navigate(to)}>
                   <span className="home-nav-icon">
-                    <Icon size={26} />
+                    <Icon size={28} />
                   </span>
                   <span className="home-nav-label">
                     <strong>{label}</strong>
