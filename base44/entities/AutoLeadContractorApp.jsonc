@@ -1,65 +1,85 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadContractorApp",
   "type": "object",
   "properties": {
     "organization_id": {
       "type": "string"
     },
-    "title": {
+    "company_name": {
       "type": "string"
     },
-    "jurisdiction": {
+    "logo_url": {
       "type": "string"
     },
-    "stage": {
+    "tagline": {
+      "type": "string"
+    },
+    "about": {
+      "type": "string"
+    },
+    "primary_color": {
+      "type": "string"
+    },
+    "secondary_color": {
+      "type": "string"
+    },
+    "layout_style": {
       "type": "string",
       "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
+        "modern",
+        "classic",
+        "bold",
+        "minimal"
       ],
-      "default": "qualification"
+      "default": "modern"
     },
-    "value": {
-      "type": "number"
-    },
-    "bid_due_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "bidability_score": {
-      "type": "number"
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pursue",
-        "review",
-        "decline"
-      ]
-    },
-    "source_id": {
+    "hero_image_url": {
       "type": "string"
     },
-    "source_url": {
+    "share_slug": {
       "type": "string"
     },
-    "authority": {
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    },
+    "brochure_html": {
       "type": "string"
     },
-    "retrieval_date": {
-      "type": "string",
-      "format": "date-time"
+    "business_card_html": {
+      "type": "string"
     },
-    "confidence": {
-      "type": "number"
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
-    "last_verified_date": {
-      "type": "string",
-      "format": "date-time"
+    "benefits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "icon": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
     },
     "data_class": {
       "type": "string",
@@ -71,7 +91,7 @@
     }
   },
   "required": [
-    "title"
+    "company_name"
   ],
   "rls": {
     "create": {

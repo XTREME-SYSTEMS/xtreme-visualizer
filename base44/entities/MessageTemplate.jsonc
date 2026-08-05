@@ -1,49 +1,44 @@
 {
-  "name": "Visualization",
+  "name": "MessageTemplate",
   "type": "object",
   "properties": {
-    "org_id": {
-      "type": "string"
-    },
     "lead_id": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
-      "type": "string"
-    },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "template_type": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "clarification",
+        "proposal_delivery",
+        "viewed_no_response",
+        "reminder",
+        "objection",
+        "revised_proposal",
+        "acceptance_confirmation",
+        "signature_reminder",
+        "deposit_reminder",
+        "lost_feedback"
+      ]
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "sent",
+        "archived"
+      ],
+      "default": "draft"
     }
   },
   "required": [
-    "image_url"
+    "template_type"
   ],
   "rls": {
     "create": {

@@ -1,49 +1,82 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadAgentTask",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "title": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "description": {
       "type": "string"
     },
-    "image_url": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "opportunity_review",
+        "bid_inbox",
+        "takeoff_review",
+        "proposal_approval",
+        "source_health",
+        "follow_up",
+        "outreach"
+      ],
+      "default": "follow_up"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "done",
+        "snoozed",
+        "blocked"
+      ],
+      "default": "open"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "assigned_to": {
       "type": "string"
     },
-    "source_photo_url": {
+    "linked_record_id": {
       "type": "string"
     },
-    "system_name": {
+    "linked_route": {
       "type": "string"
     },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
+    "ai_prepared": {
       "type": "boolean",
       "default": false
     },
-    "disclosure": {
+    "requires_approval": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_class": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "title"
   ],
   "rls": {
     "create": {

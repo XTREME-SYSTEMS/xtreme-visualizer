@@ -1,65 +1,69 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadPaymentPreference",
   "type": "object",
   "properties": {
     "organization_id": {
       "type": "string"
     },
-    "title": {
-      "type": "string"
+    "deposit_required": {
+      "type": "boolean",
+      "default": true
     },
-    "jurisdiction": {
-      "type": "string"
+    "deposit_pct": {
+      "type": "number",
+      "description": "0 = no deposit, 10, 30, 50, or 100",
+      "default": 10
     },
-    "stage": {
+    "payment_schedule": {
       "type": "string",
       "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
+        "paid_when_complete",
+        "milestone",
+        "custom",
+        "net_15",
+        "net_30",
+        "net_60"
       ],
-      "default": "qualification"
+      "default": "milestone"
     },
-    "value": {
-      "type": "number"
-    },
-    "bid_due_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "bidability_score": {
-      "type": "number"
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pursue",
-        "review",
-        "decline"
+    "accepted_methods": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "credit",
+          "debit",
+          "ach",
+          "cash",
+          "check"
+        ]
+      },
+      "default": [
+        "credit",
+        "debit",
+        "ach"
       ]
     },
-    "source_id": {
-      "type": "string"
+    "terms_net_days": {
+      "type": "number",
+      "default": 30
     },
-    "source_url": {
-      "type": "string"
-    },
-    "authority": {
-      "type": "string"
-    },
-    "retrieval_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "confidence": {
-      "type": "number"
-    },
-    "last_verified_date": {
-      "type": "string",
-      "format": "date-time"
+    "milestone_schedule": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "pct": {
+            "type": "number"
+          },
+          "trigger": {
+            "type": "string"
+          }
+        }
+      }
     },
     "data_class": {
       "type": "string",
@@ -71,7 +75,7 @@
     }
   },
   "required": [
-    "title"
+    "deposit_pct"
   ],
   "rls": {
     "create": {

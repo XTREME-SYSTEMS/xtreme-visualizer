@@ -1,48 +1,70 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadProjectImage",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
-      "type": "string"
-    },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "title": {
       "type": "string"
     },
     "image_url": {
       "type": "string"
     },
-    "source_photo_url": {
+    "trade": {
       "type": "string"
     },
-    "system_name": {
+    "category": {
       "type": "string"
     },
-    "finish": {
+    "sector": {
       "type": "string"
     },
-    "color_name": {
+    "sector_label": {
       "type": "string"
     },
-    "prompt": {
+    "space_type": {
       "type": "string"
     },
-    "selected": {
+    "location": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "ai_generated",
+        "uploaded",
+        "scraped"
+      ],
+      "default": "uploaded"
+    },
+    "before_after": {
       "type": "boolean",
       "default": false
     },
-    "disclosure": {
+    "before_image_url": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "data_class": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
+    "title",
     "image_url"
   ],
   "rls": {

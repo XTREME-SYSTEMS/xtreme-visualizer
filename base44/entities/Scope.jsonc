@@ -5,9 +5,6 @@
     "project_id": {
       "type": "string"
     },
-    "lead_id": {
-      "type": "string"
-    },
     "square_feet": {
       "type": "number"
     },
@@ -20,8 +17,7 @@
       ]
     },
     "crack_repair": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
     },
     "moisture_mitigation": {
       "type": "string",
@@ -32,16 +28,13 @@
       ]
     },
     "grinding_prep": {
-      "type": "boolean",
-      "default": true
+      "type": "boolean"
     },
     "demolition": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
     },
     "coving": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
     },
     "notes": {
       "type": "string"
@@ -52,6 +45,6 @@
     }
   },
   "required": [
-    "square_feet"
+    "project_id"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadRecommendation",
   "type": "object",
   "properties": {
     "organization_id": {
@@ -8,58 +8,58 @@
     "title": {
       "type": "string"
     },
-    "jurisdiction": {
-      "type": "string"
-    },
-    "stage": {
+    "category": {
       "type": "string",
       "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
+        "data_engine",
+        "user_habit",
+        "ai_automation",
+        "operational_fix",
+        "virality",
+        "ui_fix",
+        "other"
       ],
-      "default": "qualification"
+      "default": "other"
     },
-    "value": {
-      "type": "number"
-    },
-    "bid_due_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "bidability_score": {
-      "type": "number"
-    },
-    "decision": {
+    "priority": {
       "type": "string",
       "enum": [
-        "pursue",
-        "review",
-        "decline"
-      ]
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
     },
-    "source_id": {
-      "type": "string"
-    },
-    "source_url": {
-      "type": "string"
-    },
-    "authority": {
-      "type": "string"
-    },
-    "retrieval_date": {
+    "status": {
       "type": "string",
-      "format": "date-time"
+      "enum": [
+        "proposed",
+        "in_progress",
+        "done",
+        "deferred"
+      ],
+      "default": "proposed"
     },
-    "confidence": {
-      "type": "number"
+    "description": {
+      "type": "string"
     },
-    "last_verified_date": {
+    "impact": {
       "type": "string",
-      "format": "date-time"
+      "description": "What value this delivers to the business or user"
+    },
+    "effort": {
+      "type": "string",
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "default": "medium"
+    },
+    "source": {
+      "type": "string",
+      "description": "Where the recommendation originated (e.g. 'vision audit', 'system audit')"
     },
     "data_class": {
       "type": "string",

@@ -24,20 +24,25 @@
       "type": "string"
     },
     "image_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Official manufacturer product/swatch photo"
     },
     "collection": {
-      "type": "string"
+      "type": "string",
+      "description": "e.g. Top 12, Standard, Ameripolish, In-Stock, Warm, Cool"
     },
     "sheen": {
       "type": "string",
+      "description": "Finish sheen level: Matte, Satin, Semi-Gloss, High Gloss, or multiple",
       "default": "High Gloss"
     },
     "product_sku": {
-      "type": "string"
+      "type": "string",
+      "description": "Linked Product entity SKU"
     },
     "rank": {
-      "type": "number"
+      "type": "number",
+      "description": "Popularity rank from the published chart, 1-based"
     },
     "in_stock": {
       "type": "boolean",
@@ -52,5 +57,23 @@
     "system",
     "color_name",
     "code"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

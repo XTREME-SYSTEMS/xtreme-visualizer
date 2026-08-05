@@ -1,0 +1,131 @@
+{
+  "name": "CostOfBusiness",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string"
+    },
+    "crew_wages_annual": {
+      "type": "number",
+      "description": "Total crew wages per year"
+    },
+    "employer_tax_pct": {
+      "type": "number",
+      "description": "FICA/FUTA/SUTA %",
+      "default": 9.15
+    },
+    "workers_comp_pct": {
+      "type": "number",
+      "description": "% of wages",
+      "default": 8
+    },
+    "benefits_pct": {
+      "type": "number",
+      "description": "% of wages",
+      "default": 10
+    },
+    "general_liability_annual": {
+      "type": "number"
+    },
+    "commercial_auto_annual": {
+      "type": "number"
+    },
+    "equipment_insurance_annual": {
+      "type": "number"
+    },
+    "health_insurance_annual": {
+      "type": "number"
+    },
+    "fuel_cost_annual": {
+      "type": "number"
+    },
+    "vehicle_depreciation_annual": {
+      "type": "number"
+    },
+    "vehicle_maintenance_annual": {
+      "type": "number"
+    },
+    "equipment_depreciation_annual": {
+      "type": "number"
+    },
+    "rent_facility_annual": {
+      "type": "number"
+    },
+    "utilities_annual": {
+      "type": "number"
+    },
+    "software_ai_annual": {
+      "type": "number",
+      "description": "Base44, design, CRM, AI tools"
+    },
+    "it_hardware_annual": {
+      "type": "number"
+    },
+    "phone_internet_annual": {
+      "type": "number"
+    },
+    "marketing_annual": {
+      "type": "number"
+    },
+    "admin_other_annual": {
+      "type": "number"
+    },
+    "billable_hours_per_year": {
+      "type": "number",
+      "default": 1500
+    }
+  },
+  "required": [
+    "company_name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

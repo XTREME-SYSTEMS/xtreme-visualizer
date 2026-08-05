@@ -1,49 +1,83 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadCompanyProfile",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "trade": {
       "type": "string"
     },
-    "image_url": {
+    "website": {
       "type": "string"
     },
-    "source_photo_url": {
+    "phone": {
       "type": "string"
     },
-    "system_name": {
+    "email": {
       "type": "string"
     },
-    "finish": {
+    "address": {
       "type": "string"
     },
-    "color_name": {
+    "city": {
       "type": "string"
     },
-    "prompt": {
+    "state": {
       "type": "string"
     },
-    "selected": {
-      "type": "boolean",
-      "default": false
+    "zip": {
+      "type": "string"
     },
-    "disclosure": {
+    "employees": {
+      "type": "number"
+    },
+    "trucks": {
+      "type": "number"
+    },
+    "equipment_setups": {
+      "type": "number"
+    },
+    "license_number": {
+      "type": "string"
+    },
+    "bonding_capacity": {
+      "type": "number"
+    },
+    "relationship_strength": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "none",
+        "weak",
+        "moderate",
+        "strong"
+      ],
+      "default": "none"
+    },
+    "prior_awards": {
+      "type": "number",
+      "default": 0
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "name"
   ],
   "rls": {
     "create": {

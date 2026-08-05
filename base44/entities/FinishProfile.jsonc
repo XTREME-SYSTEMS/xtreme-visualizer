@@ -1,0 +1,98 @@
+{
+  "name": "FinishProfile",
+  "type": "object",
+  "properties": {
+    "finish_id": {
+      "type": "string",
+      "description": "Unique slug identifier"
+    },
+    "name": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string",
+      "description": "epoxy, polished_concrete, coating, overlay, countertop, process"
+    },
+    "stage": {
+      "type": "string",
+      "description": "finished, preparation, process"
+    },
+    "surface_description": {
+      "type": "string"
+    },
+    "sheen": {
+      "type": "string"
+    },
+    "installation_details": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "realism_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "positive_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "avoid": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "environment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "finish_id",
+    "name",
+    "family",
+    "stage",
+    "surface_description"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

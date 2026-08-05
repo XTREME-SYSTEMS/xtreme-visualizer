@@ -18,13 +18,11 @@
       "type": "string",
       "enum": [
         "draft",
-        "local_ack",
         "requested",
         "viewed",
         "signed",
         "declined"
-      ],
-      "default": "draft"
+      ]
     },
     "signature_asset_url": {
       "type": "string"
@@ -32,12 +30,15 @@
     "signed_at": {
       "type": "string"
     },
-    "legally_binding": {
-      "type": "boolean",
-      "default": false
+    "ip_address": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
     }
   },
   "required": [
+    "project_id",
     "status"
   ]
 }

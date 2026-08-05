@@ -1,49 +1,82 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadMessage",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "direction": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ],
+      "default": "inbound"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "portal",
+        "whatsapp",
+        "other"
+      ],
+      "default": "email"
+    },
+    "subject": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "body": {
       "type": "string"
     },
-    "image_url": {
+    "sender": {
       "type": "string"
     },
-    "source_photo_url": {
+    "recipient": {
       "type": "string"
     },
-    "system_name": {
+    "contact_id": {
       "type": "string"
     },
-    "finish": {
+    "project_id": {
       "type": "string"
     },
-    "color_name": {
-      "type": "string"
+    "status": {
+      "type": "string",
+      "enum": [
+        "unread",
+        "read",
+        "draft",
+        "queued",
+        "sent",
+        "failed"
+      ],
+      "default": "unread"
     },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
+    "ai_generated": {
       "type": "boolean",
       "default": false
     },
-    "disclosure": {
+    "requires_approval": {
+      "type": "boolean",
+      "default": false
+    },
+    "sent_date": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "format": "date-time"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "subject"
   ],
   "rls": {
     "create": {

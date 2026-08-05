@@ -1,5 +1,5 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadProject",
   "type": "object",
   "properties": {
     "organization_id": {
@@ -7,6 +7,22 @@
     },
     "title": {
       "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "Verified project description extracted from the source"
+    },
+    "specs": {
+      "type": "string",
+      "description": "Project specifications (scope of work, materials, requirements) extracted from source documents"
+    },
+    "contract_info": {
+      "type": "string",
+      "description": "Contract / owner contact information (name, email, phone, address) extracted from source"
+    },
+    "project_type": {
+      "type": "string",
+      "description": "e.g. commercial, residential, municipal, industrial, renovation"
     },
     "jurisdiction": {
       "type": "string"
@@ -18,6 +34,7 @@
         "takeoff",
         "estimating",
         "proposal",
+        "submitted",
         "won",
         "lost"
       ],
@@ -30,16 +47,11 @@
       "type": "string",
       "format": "date"
     },
-    "bidability_score": {
-      "type": "number"
+    "client_name": {
+      "type": "string"
     },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pursue",
-        "review",
-        "decline"
-      ]
+    "authority": {
+      "type": "string"
     },
     "source_id": {
       "type": "string"
@@ -47,17 +59,28 @@
     "source_url": {
       "type": "string"
     },
-    "authority": {
+    "address": {
       "type": "string"
     },
-    "retrieval_date": {
-      "type": "string",
-      "format": "date-time"
+    "trade": {
+      "type": "string"
     },
     "confidence": {
       "type": "number"
     },
-    "last_verified_date": {
+    "bidability_score": {
+      "type": "number"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "verified",
+        "failed"
+      ],
+      "default": "unverified"
+    },
+    "verified_date": {
       "type": "string",
       "format": "date-time"
     },

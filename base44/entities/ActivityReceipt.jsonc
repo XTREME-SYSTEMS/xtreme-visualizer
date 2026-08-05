@@ -2,10 +2,10 @@
   "name": "ActivityReceipt",
   "type": "object",
   "properties": {
-    "lead_id": {
+    "org_id": {
       "type": "string"
     },
-    "project_id": {
+    "lead_id": {
       "type": "string"
     },
     "actor": {
@@ -15,12 +15,6 @@
       "type": "string"
     },
     "detail": {
-      "type": "string"
-    },
-    "idempotency_key": {
-      "type": "string"
-    },
-    "rollback_hint": {
       "type": "string"
     },
     "category": {
@@ -33,13 +27,62 @@
         "proposal",
         "appointment",
         "validation",
-        "audit",
-        "lead"
+        "audit"
       ],
       "default": "audit"
     }
   },
   "required": [
     "action"
-  ]
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

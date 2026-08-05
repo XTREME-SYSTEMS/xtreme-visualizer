@@ -1,65 +1,69 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadContractTemplate",
   "type": "object",
   "properties": {
     "organization_id": {
       "type": "string"
     },
+    "trade": {
+      "type": "string",
+      "description": "Construction trade/scope this contract covers"
+    },
+    "contract_type": {
+      "type": "string",
+      "enum": [
+        "commercial",
+        "government",
+        "residential",
+        "industrial",
+        "universal"
+      ],
+      "default": "universal"
+    },
     "title": {
       "type": "string"
     },
-    "jurisdiction": {
-      "type": "string"
+    "content": {
+      "type": "string",
+      "description": "Full contract text with terms and conditions"
     },
-    "stage": {
+    "terms": {
+      "type": "string",
+      "description": "Key terms summary"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": false
+    },
+    "validation_status": {
       "type": "string",
       "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
+        "pending",
+        "validated",
+        "rejected",
+        "needs_review"
       ],
-      "default": "qualification"
+      "default": "pending"
     },
-    "value": {
-      "type": "number"
+    "validated_by_ai": {
+      "type": "boolean",
+      "default": false
     },
-    "bid_due_date": {
-      "type": "string",
-      "format": "date"
+    "validated_by_user": {
+      "type": "boolean",
+      "default": false
     },
-    "bidability_score": {
-      "type": "number"
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pursue",
-        "review",
-        "decline"
-      ]
-    },
-    "source_id": {
-      "type": "string"
+    "is_standard": {
+      "type": "boolean",
+      "default": false,
+      "description": "Standard template for this trade"
     },
     "source_url": {
       "type": "string"
     },
-    "authority": {
-      "type": "string"
-    },
-    "retrieval_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "confidence": {
-      "type": "number"
-    },
-    "last_verified_date": {
-      "type": "string",
-      "format": "date-time"
+    "version": {
+      "type": "number",
+      "default": 1
     },
     "data_class": {
       "type": "string",
@@ -71,7 +75,8 @@
     }
   },
   "required": [
-    "title"
+    "title",
+    "trade"
   ],
   "rls": {
     "create": {

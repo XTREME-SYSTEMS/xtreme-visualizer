@@ -2,41 +2,20 @@
   "name": "Proposal",
   "type": "object",
   "properties": {
-    "quote_id": {
-      "type": "string"
-    },
     "lead_id": {
-      "type": "string"
-    },
-    "project_id": {
-      "type": "string"
-    },
-    "reference": {
       "type": "string"
     },
     "company_name": {
       "type": "string"
     },
-    "customer_name": {
-      "type": "string"
-    },
-    "address": {
-      "type": "string"
-    },
-    "system": {
-      "type": "string"
-    },
-    "timeline": {
-      "type": "string"
-    },
-    "warranty": {
-      "type": "string"
-    },
     "scope_summary": {
       "type": "string"
     },
-    "total": {
-      "type": "number"
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
     },
     "content_markdown": {
       "type": "string"
@@ -44,21 +23,6 @@
     "version": {
       "type": "string",
       "default": "v1"
-    },
-    "signature_status": {
-      "type": "string",
-      "enum": [
-        "not_requested",
-        "local_ack",
-        "disabled"
-      ],
-      "default": "not_requested"
-    },
-    "signature_name": {
-      "type": "string"
-    },
-    "signed_at": {
-      "type": "string"
     },
     "status": {
       "type": "string",
@@ -73,6 +37,56 @@
     }
   },
   "required": [
-    "customer_name"
-  ]
+    "lead_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

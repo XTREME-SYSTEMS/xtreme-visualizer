@@ -1,0 +1,60 @@
+{
+  "name": "SkinPreset",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tokens": {
+      "type": "object"
+    },
+    "typography": {
+      "type": "object"
+    },
+    "components": {
+      "type": "object"
+    },
+    "motion": {
+      "type": "object"
+    },
+    "layout": {
+      "type": "object"
+    },
+    "background": {
+      "type": "object"
+    },
+    "status": {
+      "type": "string"
+    },
+    "is_system": {
+      "type": "boolean"
+    },
+    "version": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "name",
+    "slug",
+    "tokens",
+    "status"
+  ]
+}

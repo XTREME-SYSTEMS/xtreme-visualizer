@@ -1,0 +1,24 @@
+{
+  "name": "MotionPreset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "number"
+    },
+    "easing": {
+      "type": "string"
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

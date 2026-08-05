@@ -1,49 +1,65 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadEmailTemplate",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "subject": {
       "type": "string"
     },
-    "image_url": {
+    "body": {
       "type": "string"
     },
-    "source_photo_url": {
-      "type": "string"
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "follow_up",
+        "outreach",
+        "bid_response",
+        "introduction",
+        "reminder",
+        "thank_you",
+        "custom"
+      ],
+      "default": "follow_up"
     },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
+    "ai_generated": {
       "type": "boolean",
       "default": false
     },
-    "disclosure": {
+    "approval_status": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "trigger_description": {
+      "type": "string"
+    },
+    "auto_send": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "name",
+    "subject",
+    "body"
   ],
   "rls": {
     "create": {

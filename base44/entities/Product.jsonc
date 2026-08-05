@@ -38,34 +38,15 @@
       "description": "USD sale price"
     },
     "price_unit": {
-      "type": "string"
+      "type": "string",
+      "description": "e.g. per gal, per oz, per kit"
     },
     "specs": {
-      "type": "string"
-    },
-    "subtitle": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "system_slug": {
-      "type": "string"
-    },
-    "image_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Coverage, cure time, solids, VOC notes"
     },
     "product_url": {
       "type": "string"
-    },
-    "price_verified": {
-      "type": "boolean",
-      "default": false,
-      "description": "Unverified prices stay disabled for customer-facing use"
-    },
-    "customer_facing_enabled": {
-      "type": "boolean",
-      "default": false
     },
     "vendor": {
       "type": "string",
@@ -78,6 +59,25 @@
   },
   "required": [
     "name",
-    "category"
-  ]
+    "category",
+    "price"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

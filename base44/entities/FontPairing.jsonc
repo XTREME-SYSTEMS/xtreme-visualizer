@@ -1,0 +1,32 @@
+{
+  "name": "FontPairing",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "heading_family": {
+      "type": "string"
+    },
+    "body_family": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "recommended_for": {
+      "type": "string"
+    },
+    "license_note": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "heading_family",
+    "body_family"
+  ]
+}

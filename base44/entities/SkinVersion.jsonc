@@ -1,0 +1,29 @@
+{
+  "name": "SkinVersion",
+  "type": "object",
+  "properties": {
+    "skin_preset_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number"
+    },
+    "snapshot": {
+      "type": "object"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "rollback_of": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "skin_preset_id",
+    "version",
+    "snapshot"
+  ]
+}

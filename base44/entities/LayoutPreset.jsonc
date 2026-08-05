@@ -1,0 +1,27 @@
+{
+  "name": "LayoutPreset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "page_padding": {
+      "type": "string"
+    },
+    "section_gap": {
+      "type": "string"
+    },
+    "card_padding": {
+      "type": "string"
+    },
+    "control_height": {
+      "type": "string"
+    },
+    "density": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

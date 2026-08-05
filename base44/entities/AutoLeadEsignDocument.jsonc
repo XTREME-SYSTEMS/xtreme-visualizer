@@ -1,65 +1,77 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadEsignDocument",
   "type": "object",
   "properties": {
     "organization_id": {
       "type": "string"
     },
+    "project_id": {
+      "type": "string"
+    },
+    "proposal_id": {
+      "type": "string"
+    },
+    "contract_id": {
+      "type": "string"
+    },
     "title": {
       "type": "string"
     },
-    "jurisdiction": {
-      "type": "string"
-    },
-    "stage": {
+    "document_type": {
       "type": "string",
       "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
+        "bid_package",
+        "contract",
+        "change_order",
+        "other"
       ],
-      "default": "qualification"
+      "default": "bid_package"
     },
-    "value": {
-      "type": "number"
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "viewed",
+        "signed",
+        "declined",
+        "expired"
+      ],
+      "default": "draft"
     },
-    "bid_due_date": {
+    "signers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "signed_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "signature_data": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "expires_date": {
       "type": "string",
       "format": "date"
-    },
-    "bidability_score": {
-      "type": "number"
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pursue",
-        "review",
-        "decline"
-      ]
-    },
-    "source_id": {
-      "type": "string"
-    },
-    "source_url": {
-      "type": "string"
-    },
-    "authority": {
-      "type": "string"
-    },
-    "retrieval_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "confidence": {
-      "type": "number"
-    },
-    "last_verified_date": {
-      "type": "string",
-      "format": "date-time"
     },
     "data_class": {
       "type": "string",

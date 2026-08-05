@@ -1,0 +1,25 @@
+{
+  "name": "BackgroundPreset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "css": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "css"
+  ]
+}

@@ -20,7 +20,8 @@
       "type": "string"
     },
     "converted_at": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     },
     "converted_by": {
       "type": "string"
@@ -28,6 +29,29 @@
   },
   "required": [
     "opportunity_id",
-    "status"
-  ]
+    "status",
+    "converted_at"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

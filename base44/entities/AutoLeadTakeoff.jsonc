@@ -1,49 +1,88 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadTakeoff",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "project_id": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "document_id": {
       "type": "string"
     },
-    "image_url": {
+    "sheet": {
       "type": "string"
     },
-    "source_photo_url": {
+    "page": {
+      "type": "number"
+    },
+    "scale": {
       "type": "string"
     },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
+    "calibrated": {
       "type": "boolean",
       "default": false
     },
-    "disclosure": {
+    "measurement_formula": {
+      "type": "string"
+    },
+    "raw_quantity": {
+      "type": "number"
+    },
+    "waste_factor": {
+      "type": "number"
+    },
+    "final_quantity": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "spec_evidence": {
+      "type": "string"
+    },
+    "addendum_evidence": {
+      "type": "string"
+    },
+    "model_version": {
+      "type": "string"
+    },
+    "prompt_version": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "reviewer_decision": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "approval_state": {
+      "type": "string",
+      "enum": [
+        "unreviewed",
+        "in_review",
+        "approved"
+      ],
+      "default": "unreviewed"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "project_id"
   ],
   "rls": {
     "create": {

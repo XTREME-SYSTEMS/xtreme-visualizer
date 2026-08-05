@@ -1,49 +1,72 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadContact",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "full_name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "title": {
       "type": "string"
     },
-    "image_url": {
+    "company_id": {
       "type": "string"
     },
-    "source_photo_url": {
+    "company_name": {
       "type": "string"
     },
-    "system_name": {
+    "email": {
       "type": "string"
     },
-    "finish": {
+    "phone": {
       "type": "string"
     },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "role": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "owner",
+        "architect",
+        "engineer",
+        "gc",
+        "subcontractor",
+        "supplier",
+        "other"
+      ],
+      "default": "other"
+    },
+    "relationship_strength": {
+      "type": "string",
+      "enum": [
+        "none",
+        "weak",
+        "moderate",
+        "strong"
+      ],
+      "default": "none"
+    },
+    "last_contact_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "full_name"
   ],
   "rls": {
     "create": {

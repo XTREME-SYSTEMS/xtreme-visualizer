@@ -1,0 +1,39 @@
+{
+  "name": "VisualizationConcept",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "source_photo_url": {
+      "type": "string"
+    },
+    "concept_photo_url": {
+      "type": "string"
+    },
+    "finish_name": {
+      "type": "string"
+    },
+    "floor_system": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "processing",
+        "concept",
+        "approved",
+        "rejected"
+      ]
+    },
+    "disclosure": {
+      "type": "string",
+      "default": "Preliminary AI concept only. Colors and textures may vary."
+    }
+  },
+  "required": [
+    "project_id",
+    "status"
+  ]
+}

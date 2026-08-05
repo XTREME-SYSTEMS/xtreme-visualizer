@@ -1,49 +1,72 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadPayment",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "project_id": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "invoice_id": {
       "type": "string"
     },
-    "image_url": {
-      "type": "string"
+    "amount": {
+      "type": "number"
     },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "method": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "credit",
+        "debit",
+        "ach",
+        "cash",
+        "check"
+      ],
+      "default": "credit"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "stripe_payment_id": {
+      "type": "string"
+    },
+    "deposit_pct": {
+      "type": "number",
+      "description": "0, 10, 30, 50, or 100"
+    },
+    "payment_type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "progress",
+        "final",
+        "full"
+      ],
+      "default": "deposit"
+    },
+    "transaction_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "amount"
   ],
   "rls": {
     "create": {

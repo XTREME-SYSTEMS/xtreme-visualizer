@@ -1,49 +1,40 @@
 {
-  "name": "Visualization",
+  "name": "BrandAsset",
   "type": "object",
   "properties": {
-    "org_id": {
+    "company_name": {
       "type": "string"
     },
-    "lead_id": {
-      "type": "string"
-    },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
-      "type": "string"
-    },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "logo_url": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "description": "Uploaded or AI-generated logo"
+    },
+    "brand_direction": {
+      "type": "string",
+      "enum": [
+        "revenue_gold",
+        "clarity_white",
+        "closing_room"
+      ],
+      "default": "revenue_gold"
+    },
+    "primary_color": {
+      "type": "string",
+      "default": "#0A0A0A"
+    },
+    "accent_color": {
+      "type": "string",
+      "default": "#F5C542"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "email_signature": {
+      "type": "string"
     }
   },
   "required": [
-    "image_url"
+    "company_name"
   ],
   "rls": {
     "create": {

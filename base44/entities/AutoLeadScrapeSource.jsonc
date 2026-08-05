@@ -1,49 +1,82 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadScrapeSource",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "url": {
       "type": "string"
     },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "source_type": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "government_portal",
+        "aggregator",
+        "email",
+        "api",
+        "manual"
+      ],
+      "default": "government_portal"
+    },
+    "jurisdiction": {
+      "type": "string"
+    },
+    "trades": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "error",
+        "unverified"
+      ],
+      "default": "unverified"
+    },
+    "last_run_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_success_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "records_retrieved": {
+      "type": "number",
+      "default": 0
+    },
+    "error_count": {
+      "type": "number",
+      "default": 0
+    },
+    "last_error": {
+      "type": "string"
+    },
+    "schedule_cron": {
+      "type": "string"
+    },
+    "parser_version": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "name"
   ],
   "rls": {
     "create": {

@@ -1,49 +1,58 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadBidInvitation",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "subject": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "sender": {
       "type": "string"
     },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "received_date": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "format": "date-time"
+    },
+    "matched_project_id": {
+      "type": "string"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "needs_match",
+        "needs_review",
+        "assigned",
+        "duplicate",
+        "declined"
+      ],
+      "default": "needs_match"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "subject"
   ],
   "rls": {
     "create": {

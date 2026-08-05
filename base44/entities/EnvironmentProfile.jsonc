@@ -1,0 +1,65 @@
+{
+  "name": "EnvironmentProfile",
+  "type": "object",
+  "properties": {
+    "environment_id": {
+      "type": "string",
+      "description": "Unique slug identifier"
+    },
+    "name": {
+      "type": "string"
+    },
+    "sector": {
+      "type": "string",
+      "description": "residential, commercial, industrial, outdoor"
+    },
+    "scene_details": {
+      "type": "string"
+    },
+    "installation_details": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lighting_options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "camera_options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "environment_id",
+    "name",
+    "sector"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

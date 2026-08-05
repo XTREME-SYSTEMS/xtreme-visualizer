@@ -1,0 +1,157 @@
+{
+  "name": "AutoLeadProposal",
+  "type": "object",
+  "properties": {
+    "organization_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Email address to send the bid to"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "internal_review",
+        "approved",
+        "delivered",
+        "responded",
+        "won",
+        "lost"
+      ],
+      "default": "draft"
+    },
+    "signature_status": {
+      "type": "string",
+      "enum": [
+        "not_sent",
+        "awaiting_signature",
+        "viewed",
+        "signed",
+        "declined",
+        "expired"
+      ],
+      "default": "not_sent",
+      "description": "Tracks e-signature lifecycle separately from proposal status"
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the bid package was delivered to the client"
+    },
+    "esign_document_id": {
+      "type": "string",
+      "description": "Linked EsignDocument record ID"
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "immutable": {
+      "type": "boolean",
+      "default": false
+    },
+    "total_value": {
+      "type": "number"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "approved_takeoff",
+              "approved_estimate",
+              "reviewed_library"
+            ]
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "unit_price": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

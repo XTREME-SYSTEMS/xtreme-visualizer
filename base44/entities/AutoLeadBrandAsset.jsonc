@@ -1,49 +1,55 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadBrandAsset",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
+    "type": {
+      "type": "string",
+      "enum": [
+        "logo",
+        "proposal_template"
+      ],
+      "default": "logo"
     },
-    "label": {
+    "file_url": {
       "type": "string"
     },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
+    "content": {
       "type": "string"
     },
     "prompt": {
       "type": "string"
     },
-    "selected": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "ai_generated",
+        "uploaded",
+        "authored"
+      ],
+      "default": "uploaded"
+    },
+    "is_default": {
       "type": "boolean",
       "default": false
     },
-    "disclosure": {
+    "data_class": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "name",
+    "type"
   ],
   "rls": {
     "create": {

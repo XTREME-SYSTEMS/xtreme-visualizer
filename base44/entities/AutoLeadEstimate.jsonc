@@ -1,49 +1,78 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadEstimate",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "project_id": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "title": {
       "type": "string"
     },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "status": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "draft",
+        "in_review",
+        "approved",
+        "rejected"
+      ],
+      "default": "draft"
+    },
+    "labor_total": {
+      "type": "number"
+    },
+    "material_total": {
+      "type": "number"
+    },
+    "equipment_total": {
+      "type": "number"
+    },
+    "overhead_total": {
+      "type": "number"
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "margin_pct": {
+      "type": "number"
+    },
+    "margin_total": {
+      "type": "number"
+    },
+    "grand_total": {
+      "type": "number"
+    },
+    "takeoff_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "title"
   ],
   "rls": {
     "create": {

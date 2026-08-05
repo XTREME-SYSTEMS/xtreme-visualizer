@@ -1,49 +1,63 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadBenchmark",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "competitor_name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
-      "type": "string"
-    },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "category": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "construction_os",
+        "ai_takeoff",
+        "ai_bidding"
+      ],
+      "default": "construction_os"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pricing_model": {
+      "type": "string"
+    },
+    "ai_capabilities": {
+      "type": "string"
+    },
+    "market_position": {
+      "type": "string"
+    },
+    "differentiators": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "last_researched_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "autoleads_gap": {
+      "type": "string",
+      "description": "What AUTOLEADS lacks vs this competitor"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "competitor_name",
+    "category"
   ],
   "rls": {
     "create": {

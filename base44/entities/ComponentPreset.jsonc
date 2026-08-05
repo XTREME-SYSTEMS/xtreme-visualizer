@@ -1,0 +1,33 @@
+{
+  "name": "ComponentPreset",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "button_variant": {
+      "type": "string"
+    },
+    "card_variant": {
+      "type": "string"
+    },
+    "navigation_variant": {
+      "type": "string"
+    },
+    "input_variant": {
+      "type": "string"
+    },
+    "icon_variant": {
+      "type": "string"
+    },
+    "radius_profile": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

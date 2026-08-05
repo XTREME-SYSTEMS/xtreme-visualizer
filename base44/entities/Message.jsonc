@@ -1,0 +1,52 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "sender_name": {
+      "type": "string"
+    },
+    "recipient": {
+      "type": "string"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "sms",
+        "in_app"
+      ]
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "sent",
+        "received",
+        "failed"
+      ]
+    },
+    "unread": {
+      "type": "boolean"
+    },
+    "sent_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "body",
+    "status"
+  ]
+}

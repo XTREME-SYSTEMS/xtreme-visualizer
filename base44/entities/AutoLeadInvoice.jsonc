@@ -1,54 +1,82 @@
 {
-  "name": "PricingProfile",
+  "name": "AutoLeadInvoice",
   "type": "object",
   "properties": {
-    "company_name": {
+    "organization_id": {
       "type": "string"
     },
-    "labor_rate_per_hr": {
-      "type": "number"
+    "project_id": {
+      "type": "string"
     },
-    "crew_size": {
-      "type": "number"
+    "contract_id": {
+      "type": "string"
     },
-    "fuel_rate_per_mile": {
-      "type": "number"
+    "invoice_number": {
+      "type": "string"
     },
-    "avg_travel_miles": {
-      "type": "number"
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "paid",
+        "partial",
+        "overdue",
+        "void"
+      ],
+      "default": "draft"
     },
-    "material_markup_pct": {
-      "type": "number"
-    },
-    "mobilization_fee": {
-      "type": "number"
-    },
-    "overhead_pct": {
-      "type": "number"
-    },
-    "profit_pct": {
-      "type": "number"
-    },
-    "base_rates": {
+    "line_items": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "category": {
+          "description": {
             "type": "string"
           },
-          "rate_low": {
+          "quantity": {
             "type": "number"
           },
-          "rate_high": {
+          "unit_price": {
+            "type": "number"
+          },
+          "amount": {
             "type": "number"
           }
         }
       }
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "tax": {
+      "type": "number"
+    },
+    "total": {
+      "type": "number"
+    },
+    "balance_due": {
+      "type": "number"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "paid_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "company_name"
+    "invoice_number"
   ],
   "rls": {
     "create": {

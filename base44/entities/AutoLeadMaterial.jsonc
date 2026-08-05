@@ -1,49 +1,66 @@
 {
-  "name": "Visualization",
+  "name": "AutoLeadMaterial",
   "type": "object",
   "properties": {
-    "org_id": {
+    "organization_id": {
       "type": "string"
     },
-    "lead_id": {
+    "name": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "category": {
       "type": "string"
     },
-    "image_url": {
+    "scope": {
       "type": "string"
     },
-    "source_photo_url": {
+    "unit": {
       "type": "string"
     },
-    "system_name": {
+    "unit_cost": {
+      "type": "number"
+    },
+    "manufacturer": {
       "type": "string"
     },
-    "finish": {
+    "sku": {
       "type": "string"
     },
-    "color_name": {
+    "source_url": {
       "type": "string"
     },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "source": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "enum": [
+        "xtremepolishingsystems",
+        "scraped",
+        "manual",
+        "supplier"
+      ],
+      "default": "manual"
+    },
+    "last_scraped_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "alternate_allowed": {
+      "type": "boolean",
+      "default": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "production"
     }
   },
   "required": [
-    "image_url"
+    "name"
   ],
   "rls": {
     "create": {

@@ -1,5 +1,5 @@
 {
-  "name": "Visualization",
+  "name": "Appointment",
   "type": "object",
   "properties": {
     "org_id": {
@@ -8,42 +8,48 @@
     "lead_id": {
       "type": "string"
     },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
+    "customer_name": {
       "type": "string"
     },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "requested_date": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "format": "date"
+    },
+    "requested_window": {
+      "type": "string",
+      "enum": [
+        "morning",
+        "midday",
+        "afternoon",
+        "evening"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "consultation",
+        "site_visit",
+        "virtual"
+      ],
+      "default": "consultation"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "default": "requested"
+    },
+    "message": {
+      "type": "string"
     }
   },
   "required": [
-    "image_url"
+    "customer_name"
   ],
   "rls": {
     "create": {

@@ -1,0 +1,28 @@
+{
+  "name": "SkinAssignment",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "contractor_app_id": {
+      "type": "string"
+    },
+    "skin_preset_id": {
+      "type": "string"
+    },
+    "custom_overrides": {
+      "type": "object"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "assigned_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "contractor_app_id",
+    "skin_preset_id"
+  ]
+}

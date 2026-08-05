@@ -1,65 +1,66 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadScopeSystem",
   "type": "object",
   "properties": {
     "organization_id": {
       "type": "string"
     },
-    "title": {
-      "type": "string"
-    },
-    "jurisdiction": {
-      "type": "string"
-    },
-    "stage": {
+    "code": {
       "type": "string",
-      "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
-      ],
-      "default": "qualification"
+      "description": "Unique system code (e.g. EF-FLAKE, CP-GLOSS)"
     },
-    "value": {
+    "name": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Trade scope category (e.g. Epoxy Flooring, Concrete Polishing)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Keywords used to identify this system from project text"
+    },
+    "specifications": {
+      "type": "string",
+      "description": "Technical specifications summary"
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "material": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "coverage": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unit": {
+      "type": "string"
+    },
+    "price_low": {
       "type": "number"
     },
-    "bid_due_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "bidability_score": {
+    "price_high": {
       "type": "number"
     },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "pursue",
-        "review",
-        "decline"
-      ]
-    },
-    "source_id": {
-      "type": "string"
-    },
-    "source_url": {
-      "type": "string"
-    },
-    "authority": {
-      "type": "string"
-    },
-    "retrieval_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "confidence": {
-      "type": "number"
-    },
-    "last_verified_date": {
-      "type": "string",
-      "format": "date-time"
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "data_class": {
       "type": "string",
@@ -71,7 +72,9 @@
     }
   },
   "required": [
-    "title"
+    "code",
+    "name",
+    "scope"
   ],
   "rls": {
     "create": {

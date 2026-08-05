@@ -1,49 +1,65 @@
 {
-  "name": "Visualization",
+  "name": "MarketPrice",
   "type": "object",
   "properties": {
-    "org_id": {
-      "type": "string"
-    },
-    "lead_id": {
-      "type": "string"
-    },
-    "option_index": {
-      "type": "number",
-      "description": "1, 2 or 3"
-    },
-    "label": {
-      "type": "string"
-    },
-    "image_url": {
-      "type": "string"
-    },
-    "source_photo_url": {
-      "type": "string"
-    },
-    "system_name": {
-      "type": "string"
-    },
-    "finish": {
-      "type": "string"
-    },
-    "color_name": {
-      "type": "string"
-    },
-    "prompt": {
-      "type": "string"
-    },
-    "selected": {
-      "type": "boolean",
-      "default": false
-    },
-    "disclosure": {
+    "trade": {
       "type": "string",
-      "default": "AI concept visualization, not a completed customer project."
+      "description": "Trade or service looked up"
+    },
+    "zip_code": {
+      "type": "string"
+    },
+    "low": {
+      "type": "number"
+    },
+    "mid": {
+      "type": "number"
+    },
+    "high": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string",
+      "description": "e.g. per sq ft, per project"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "string"
+    },
+    "chosen_range": {
+      "type": "string",
+      "enum": [
+        "low",
+        "mid",
+        "high"
+      ]
+    },
+    "adders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "final_price": {
+      "type": "number"
     }
   },
   "required": [
-    "image_url"
+    "trade",
+    "zip_code"
   ],
   "rls": {
     "create": {

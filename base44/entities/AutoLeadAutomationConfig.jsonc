@@ -1,65 +1,65 @@
 {
-  "name": "AutoLeadOpportunity",
+  "name": "AutoLeadAutomationConfig",
   "type": "object",
   "properties": {
     "organization_id": {
       "type": "string"
     },
-    "title": {
-      "type": "string"
-    },
-    "jurisdiction": {
-      "type": "string"
-    },
-    "stage": {
+    "scrape_cadence": {
       "type": "string",
       "enum": [
-        "qualification",
-        "takeoff",
-        "estimating",
-        "proposal",
-        "won",
-        "lost"
+        "1h",
+        "4h",
+        "6h",
+        "12h",
+        "24h"
       ],
-      "default": "qualification"
+      "default": "24h"
     },
-    "value": {
-      "type": "number"
-    },
-    "bid_due_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "bidability_score": {
-      "type": "number"
-    },
-    "decision": {
+    "auto_takeoff": {
       "type": "string",
       "enum": [
-        "pursue",
+        "auto",
         "review",
-        "decline"
-      ]
+        "manual"
+      ],
+      "default": "review"
     },
-    "source_id": {
-      "type": "string"
-    },
-    "source_url": {
-      "type": "string"
-    },
-    "authority": {
-      "type": "string"
-    },
-    "retrieval_date": {
+    "auto_proposal": {
       "type": "string",
-      "format": "date-time"
+      "enum": [
+        "auto",
+        "review",
+        "manual"
+      ],
+      "default": "review"
     },
-    "confidence": {
-      "type": "number"
-    },
-    "last_verified_date": {
+    "auto_outreach": {
       "type": "string",
-      "format": "date-time"
+      "enum": [
+        "auto",
+        "review",
+        "manual"
+      ],
+      "default": "review"
+    },
+    "notification_frequency": {
+      "type": "string",
+      "enum": [
+        "realtime",
+        "daily",
+        "weekly"
+      ],
+      "default": "daily"
+    },
+    "autonomy_level": {
+      "type": "string",
+      "enum": [
+        "full_auto",
+        "semi_auto",
+        "manual"
+      ],
+      "default": "semi_auto"
     },
     "data_class": {
       "type": "string",
@@ -71,7 +71,7 @@
     }
   },
   "required": [
-    "title"
+    "scrape_cadence"
   ],
   "rls": {
     "create": {
