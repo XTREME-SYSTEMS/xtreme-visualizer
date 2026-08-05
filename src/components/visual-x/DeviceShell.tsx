@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, Users, MessageSquare, Menu, Sun, Moon, ChevronLeft, Trash2, Settings, Search } from 'lucide-react';
+import { Home, Camera, Users, MessageSquare, Menu, Sun, Moon, ChevronLeft, Trash2, Settings, Search } from 'lucide-react';
 import { VisualXDrawer, VisualXDialog } from './VisualXPrimitives';
 import { useApp } from '@/components/AppProvider';
 import { useUI } from '@/lib/uiContext';
@@ -9,12 +9,12 @@ import { base44 } from '@/api/base44Client';
 
 const NAV = [
   { to: '/', label: 'Home', icon: Home },
-  { to: '/projects', label: 'Projects', icon: Briefcase },
+  { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
   { to: '/inbox', label: 'Inbox', icon: MessageSquare },
 ];
 const MORE = [
-  { to: '/visualizer', label: 'Vizualizer' },
+  { to: '/projects', label: 'Projects' },
   { to: '/systems', label: 'Floor Systems' },
   { to: '/pricing', label: 'Pricing Rules' },
   { to: '/close', label: 'Proposal Studio' },
@@ -31,7 +31,7 @@ const MORE = [
   { to: '/guardrails', label: 'Guardrails' },
   { to: '/settings', label: 'Settings' },
 ];
-const TAB_PATHS = ['/', '/projects', '/leads', '/inbox', '/more'];
+const TAB_PATHS = ['/', '/visualizer', '/leads', '/inbox', '/more'];
 
 export function DeviceShell() {
   const [more, setMore] = useState(false);

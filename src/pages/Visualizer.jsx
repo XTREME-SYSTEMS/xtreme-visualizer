@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, Sparkles, Loader2, FileText, Check, Wand2, Layers, Mail, MessageSquare } from "lucide-react";
+import { Upload, Sparkles, Loader2, FileText, Wand2, Layers, Mail, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { systemRates, money } from "@/lib/refData";
@@ -28,6 +28,14 @@ export default function Visualizer() {
   const [needsGrinding, setNeedsGrinding] = useState(true);
   const [needsMoisture, setNeedsMoisture] = useState(false);
   const [crackLf, setCrackLf] = useState(0);
+  const [patchCount, setPatchCount] = useState(0);
+  const [excessivePatch, setExcessivePatch] = useState(0);
+  const [largePatch, setLargePatch] = useState(0);
+  const [jointLf, setJointLf] = useState(0);
+  const [covingLf, setCovingLf] = useState(0);
+  const [demoSqft, setDemoSqft] = useState(0);
+  const [extraPrep, setExtraPrep] = useState(false);
+  const [showBlemishes, setShowBlemishes] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [concept, setConcept] = useState("");
   const [saving, setSaving] = useState(false);
@@ -47,8 +55,15 @@ export default function Visualizer() {
         needs_grinding: needsGrinding,
         needs_moisture_mitigation: needsMoisture,
         linear_feet_cracks: crackLf,
+        linear_feet_coving: covingLf,
+        linear_feet_joints: jointLf,
+        patch_count: patchCount,
+        excessive_patch_count: excessivePatch,
+        large_patch_count: largePatch,
+        demolition_sqft: demoSqft,
+        extra_prep: extraPrep,
       }),
-    [sqft, condition, rates, needsGrinding, needsMoisture, crackLf]
+    [sqft, condition, rates, needsGrinding, needsMoisture, crackLf, covingLf, jointLf, patchCount, excessivePatch, largePatch, demoSqft, extraPrep]
   );
 
   const bids = BID_TIERS.map((t) => ({
@@ -61,10 +76,19 @@ export default function Visualizer() {
   const midPrice = Math.round((activeBid.low + activeBid.high) / 2);
   const perSqft = sqft ? (midPrice / sqft).toFixed(2) : "—";
 
+  const hasBlemishes = crackLf || patchCount || excessivePatch || largePatch || jointLf || covingLf || demoSqft || extraPrep;
+
   const prepParts = [];
   if (needsGrinding) prepParts.push("Grinding");
   if (needsMoisture) prepParts.push("Moisture barrier");
   if (crackLf) prepParts.push(crackLf + " lf cracks");
+  if (patchCount) prepParts.push(patchCount + " patches");
+  if (excessivePatch) prepParts.push(excessivePatch + " excessive");
+  if (largePatch) prepParts.push(largePatch + " large");
+  if (jointLf) prepParts.push(jointLf + " lf joints");
+  if (covingLf) prepParts.push(covingLf + " lf coving");
+  if (demoSqft) prepParts.push(demoSqft + " sqft demo");
+  if (extraPrep) prepParts.push("Extra prep");
   const prepSummary = prepParts.length ? prepParts.join(", ") : "None";
 
   const bidText =
@@ -137,6 +161,13 @@ export default function Visualizer() {
         needs_grinding: needsGrinding,
         needs_moisture_mitigation: needsMoisture,
         linear_feet_cracks: Number(crackLf) || 0,
+        linear_feet_coving: Number(covingLf) || 0,
+        linear_feet_joints: Number(jointLf) || 0,
+        patch_count: Number(patchCount) || 0,
+        excessive_patch_count: Number(excessivePatch) || 0,
+        large_patch_count: Number(largePatch) || 0,
+        demolition_sqft: Number(demoSqft) || 0,
+        extra_prep: extraPrep,
         estimate_low: tier ? tier.low : range.low,
         estimate_high: tier ? tier.high : range.high,
         pricing_version: range.version,
@@ -263,6 +294,45 @@ export default function Visualizer() {
             Linear feet of cracks
             <input type="number" min="0" value={crackLf} onChange={(e) => setCrackLf(Math.max(0, Number(e.target.value || 0)))} />
           </label>
+
+          {/* Blemishes expandable */}
+          <button className="viz-blemish-toggle" onClick={() => setShowBlemishes((v) => !v)}>
+            <span>
+              {hasBlemishes ? "Blemishes & repairs (" + prepParts.length + " items)" : "Add patches, joints, coving, demo & other blemishes"}
+            </span>
+            {showBlemishes ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
+          {showBlemishes && (
+            <div className="viz-blemish-grid">
+              <label className="field">
+                Patch count
+                <input type="number" min="0" value={patchCount} onChange={(e) => setPatchCount(Math.max(0, Number(e.target.value || 0)))} />
+              </label>
+              <label className="field">
+                Excessive patches
+                <input type="number" min="0" value={excessivePatch} onChange={(e) => setExcessivePatch(Math.max(0, Number(e.target.value || 0)))} />
+              </label>
+              <label className="field">
+                Large patches / deep spalls
+                <input type="number" min="0" value={largePatch} onChange={(e) => setLargePatch(Math.max(0, Number(e.target.value || 0)))} />
+              </label>
+              <label className="field">
+                Linear feet of joints
+                <input type="number" min="0" value={jointLf} onChange={(e) => setJointLf(Math.max(0, Number(e.target.value || 0)))} />
+              </label>
+              <label className="field">
+                Linear feet of coving
+                <input type="number" min="0" value={covingLf} onChange={(e) => setCovingLf(Math.max(0, Number(e.target.value || 0)))} />
+              </label>
+              <label className="field">
+                Demolition sq ft
+                <input type="number" min="0" value={demoSqft} onChange={(e) => setDemoSqft(Math.max(0, Number(e.target.value || 0)))} />
+              </label>
+              <button className={"vx-btn compact " + (extraPrep ? "outline-accent" : "")} onClick={() => setExtraPrep((v) => !v)}>
+                Extra site prep (+$250)
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -270,7 +340,7 @@ export default function Visualizer() {
       <section className="viz-step">
         <div className="viz-step-head">
           <span className="viz-step-num">3</span>
-          <h2>Generate visualization</h2>
+          <h2>Show the customer</h2>
         </div>
         <button className="gold-button viz-generate-btn" onClick={generate} disabled={generating || (!image && !fileUrl)}>
           {generating ? <Loader2 size={19} style={{ animation: "spin .8s linear infinite" }} /> : <Wand2 size={19} />}
@@ -332,7 +402,7 @@ export default function Visualizer() {
       <section className="viz-step viz-bid-document">
         <div className="viz-step-head">
           <span className="viz-step-num">5</span>
-          <h2>Generated bid</h2>
+          <h2>Share the estimate</h2>
         </div>
         <div className="viz-bid-paper">
           <div className="viz-bid-paper-head">
