@@ -1,1 +1,1 @@
-export { FLOOR_TYPE_OPTIONS, FLOOR_SPECS, specsToText } from '../data/floorSpecs.js';
+export { FLOOR_TYPE_OPTIONS, FLOOR_SPECS, generateSpecs, specsToText } from '../data/floorSpecs.js';

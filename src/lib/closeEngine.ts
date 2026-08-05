@@ -32,6 +32,45 @@ export function buildPackages(lead: { adjusted_low?: number; estimate_low?: numb
   }));
 }
 
+export const EMAIL_TYPES = [
+  { id: "proposal_delivery", label: "Proposal Delivery" },
+  { id: "follow_up", label: "Follow-Up" },
+  { id: "estimate_followup", label: "Estimate Follow-Up" },
+  { id: "welcome", label: "Welcome / Introduction" },
+  { id: "appointment_confirmation", label: "Appointment Confirmation" },
+  { id: "thank_you", label: "Thank You (Post-Sign)" },
+];
+
+export const EMAIL_JSON_SCHEMA = {
+  type: "object",
+  properties: {
+    subject: { type: "string" },
+    body: { type: "string" },
+  },
+  required: ["subject", "body"],
+};
+
+export function emailPrompt(lead: any, emailType: string, brand?: { company_name?: string; tagline?: string } | null): string {
+  const company = brand?.company_name || "National Concrete Polishing";
+  const tagline = brand?.tagline || "";
+  const typeLabel = EMAIL_TYPES.find((t) => t.id === emailType)?.label || emailType;
+  return [
+    `Write a professional, concise email for a flooring contractor to send to a customer.`,
+    `Company: ${company}`,
+    tagline ? `Tagline: ${tagline}` : "",
+    `Email type: ${typeLabel}`,
+    `Customer name: ${lead.customer_name || "—"}`,
+    `Project address: ${lead.project_address || "—"}`,
+    `Floor system: ${lead.system_name || lead.floor_type || "—"}`,
+    `Square feet: ${lead.square_feet || "—"}`,
+    `Preliminary range: ${money(lead.estimate_low ?? lead.adjusted_low)} – ${money(lead.estimate_high ?? lead.adjusted_high)}`,
+    lead.proposal_total ? `Proposal total: ${money(lead.proposal_total)}` : "",
+    lead.desired_install_date ? `Desired install date: ${lead.desired_install_date}` : "",
+    "",
+    "Rules: Be professional and warm. Never promise a final price, fixed completion date, or warranty in the email body. Keep under 250 words. Return JSON with 'subject' and 'body' fields.",
+  ].filter(Boolean).join("\n");
+}
+
 export function proposalPrompt(lead: any, packages: PackageResult[], brand?: { company_name?: string; tagline?: string }): string {
   const pkgLines = packages
     .map((p) => `- ${p.name}: ${money(p.price)} (target gross margin ${Math.round(p.margin * 100)}%) — ${p.detail}`)

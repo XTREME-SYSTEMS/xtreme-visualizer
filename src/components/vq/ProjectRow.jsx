@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ProjectRow({ project, onClick }) {
+export function ProjectRow({ project, onClick }) {
   return (
     <div className="project-row" onClick={onClick} style={{ cursor: onClick ? "pointer" : "default" }}>
       {project.image ? (
@@ -19,3 +19,22 @@ export default function ProjectRow({ project, onClick }) {
     </div>
   );
 }
+
+export function FeatureCard({ project, onClick }) {
+  return (
+    <div className="feature-card" onClick={onClick} style={{ cursor: onClick ? "pointer" : "default" }}>
+      <div>
+        <span className="vx-kicker">FEATURED PROJECT</span>
+        <h3>{project.name}</h3>
+        <p>{project.location} · {project.system}</p>
+      </div>
+      {project.image ? (
+        <img src={project.image} alt={project.name} />
+      ) : (
+        <div style={{ width: 140, height: 96, borderRadius: 12, background: "var(--vx-panel-3)", display: "grid", placeItems: "center", color: "var(--vx-faint)" }}>—</div>
+      )}
+    </div>
+  );
+}
+
+export default ProjectRow;

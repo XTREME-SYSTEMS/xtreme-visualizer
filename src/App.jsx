@@ -11,9 +11,35 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 // Visual X — faithful ZIP architecture (TypeScript + custom CSS). No Tailwind, no mobile-shell.
 import { AppProvider } from '@/components/AppProvider';
-import { VisualXScreen } from '@/VisualXRoutes';
+import { UIProvider } from '@/lib/uiContext';
 import { DeviceShell } from '@/components/visual-x/DeviceShell';
 import '@/styles.css';
+import '@/vx4-pages.css';
+
+// VX4 pages
+import Home from '@/pages/Home';
+import Projects from '@/pages/Projects';
+import Leads from '@/pages/Leads';
+import LeadDetail from '@/pages/LeadDetail';
+import Inbox from '@/pages/Inbox';
+import More from '@/pages/More';
+import Visualizer from '@/pages/Visualizer';
+import Systems from '@/pages/Systems';
+import Pricing from '@/pages/Pricing';
+import ClosePage from '@/pages/Close';
+import CRM from '@/pages/CRM';
+import Products from '@/pages/Products';
+import ColorCharts from '@/pages/ColorCharts';
+import EmailTemplates from '@/pages/EmailTemplates';
+import LeadGenerator from '@/pages/LeadGenerator';
+import BidGenerator from '@/pages/BidGenerator';
+import CompetitivePricing from '@/pages/CompetitivePricing';
+import IndustryReference from '@/pages/IndustryReference';
+import Appointments from '@/pages/Appointments';
+import Receipts from '@/pages/Receipts';
+import Guardrails from '@/pages/Guardrails';
+import SettingsPage from '@/pages/Settings';
+import Generator from '@/pages/Generator';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 
@@ -48,12 +74,37 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={<Navigate to="/app/home" replace />} />
-      <Route path="/app" element={<DeviceShell />}>
-        <Route index element={<Navigate to="/app/home" replace />} />
-        <Route path=":screen" element={<VisualXScreen />} />
+      {/* Legacy /app/* redirects */}
+      <Route path="/app" element={<Navigate to="/" replace />} />
+      <Route path="/app/:screen" element={<Navigate to="/" replace />} />
+
+      {/* Main app inside DeviceShell */}
+      <Route element={<DeviceShell />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/leads" element={<Leads />} />
+        <Route path="/leads/:id" element={<LeadDetail />} />
+        <Route path="/inbox" element={<Inbox />} />
+        <Route path="/more" element={<More />} />
+        <Route path="/visualizer" element={<Visualizer />} />
+        <Route path="/systems" element={<Systems />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/close" element={<ClosePage />} />
+        <Route path="/crm" element={<CRM />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/colors" element={<ColorCharts />} />
+        <Route path="/email-templates" element={<EmailTemplates />} />
+        <Route path="/lead-generator" element={<LeadGenerator />} />
+        <Route path="/bid-generator" element={<BidGenerator />} />
+        <Route path="/competitive-pricing" element={<CompetitivePricing />} />
+        <Route path="/industry" element={<IndustryReference />} />
+        <Route path="/appointments" element={<Appointments />} />
+        <Route path="/receipts" element={<Receipts />} />
+        <Route path="/guardrails" element={<Guardrails />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/generator" element={<Generator />} />
       </Route>
-      <Route path="*" element={<Navigate to="/app/home" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
@@ -65,10 +116,12 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <AppProvider>
-          <Router>
-            <ScrollToTop />
-            <AuthenticatedApp />
-          </Router>
+          <UIProvider>
+            <Router>
+              <ScrollToTop />
+              <AuthenticatedApp />
+            </Router>
+          </UIProvider>
         </AppProvider>
         <Toaster />
       </QueryClientProvider>
