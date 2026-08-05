@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ScanLine, PackageSearch, ReceiptText, Menu, Sun, Moon, ChevronLeft, Trash2, Settings } from 'lucide-react';
 import { VisualXDrawer, VisualXDialog } from './VisualXPrimitives';
 import { useApp } from '@/components/AppProvider';
@@ -20,7 +20,7 @@ const MORE = [
   { to: '/app/lead', label: 'Lead Capture' },
 ];
 
-export function DeviceShell({ children }: { children: ReactNode }) {
+export function DeviceShell() {
   const [more, setMore] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window !== 'undefined' && window.matchMedia) {
@@ -79,7 +79,7 @@ export function DeviceShell({ children }: { children: ReactNode }) {
             </div>
           </div>
           <div className="vx-main">
-            <div className="vx-page vx-page-scroll">{children}</div>
+            <div className="vx-page vx-page-scroll"><Outlet /></div>
           </div>
           <nav className="vx-nav">
             {NAV.map(i => <NavLink key={i.to} to={i.to} className={({ isActive }) => isActive ? 'active' : ''}><i.icon className="vx-icon" /><span>{i.label}</span></NavLink>)}

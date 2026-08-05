@@ -12,6 +12,7 @@ import ResetPassword from '@/pages/ResetPassword';
 // Visual X — faithful ZIP architecture (TypeScript + custom CSS). No Tailwind, no mobile-shell.
 import { AppProvider } from '@/components/AppProvider';
 import { VisualXScreen } from '@/VisualXRoutes';
+import { DeviceShell } from '@/components/visual-x/DeviceShell';
 import '@/styles.css';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
@@ -48,7 +49,10 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Navigate to="/app/home" replace />} />
-      <Route path="/app/:screen" element={<VisualXScreen />} />
+      <Route path="/app" element={<DeviceShell />}>
+        <Route index element={<Navigate to="/app/home" replace />} />
+        <Route path=":screen" element={<VisualXScreen />} />
+      </Route>
       <Route path="*" element={<Navigate to="/app/home" replace />} />
     </Routes>
   );

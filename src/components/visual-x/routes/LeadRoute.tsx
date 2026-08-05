@@ -33,15 +33,16 @@ export function LeadRoute() {
 
   const save = async () => {
     if (!validate()) { notify('Please fix the required fields.'); return; }
-    const snapshot = { ...form, photoUrl: photo, status: 'new', source: 'visualizer' };
-    notify('Lead saved.');
-    setForm({ customerName: '', propertyType: 'garage', address: '', appointment: '', floorCondition: 'fair', desiredFinish: '', squareFeet: 0, notes: '' });
-    setPhoto('');
+    setSaving(true);
     try {
-      const result = await api.v2.create('leads', snapshot);
+      const result = await api.v2.create('leads', { ...form, photoUrl: photo, status: 'new', source: 'visualizer' });
       if (result.duplicate) { notify('Duplicate lead already exists — no new record created.'); return; }
+      notify('Lead saved.');
+      setForm({ customerName: '', propertyType: 'garage', address: '', appointment: '', floorCondition: 'fair', desiredFinish: '', squareFeet: 0, notes: '' });
+      setPhoto('');
       await refresh();
     } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'unknown error')); }
+    finally { setSaving(false); }
   };
 
   return (
