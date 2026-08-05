@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-import { COLOR_DATA, FLOOR_SYSTEM_DATA } from "../../shared/colorData.js";
+import { COLOR_DATA, FLOOR_SYSTEM_DATA } from "./colorData.js";
 
 export default async function(req) {
   try {
