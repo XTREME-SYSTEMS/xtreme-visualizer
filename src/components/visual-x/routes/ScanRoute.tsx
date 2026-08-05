@@ -9,7 +9,7 @@ const PRESETS = ['garage', 'showroom', 'warehouse', 'patio'];
 const DEFAULT_MASK = [{ x: 0.1, y: 0.3 }, { x: 0.9, y: 0.3 }, { x: 0.95, y: 0.95 }, { x: 0.05, y: 0.95 }];
 
 export function ScanRoute() {
-  const { notify, refresh } = useApp();
+  const { notify, refresh, optimisticAdd, optimisticRemove } = useApp();
   const navigate = useNavigate();
   const [photo, setPhoto] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -30,13 +30,15 @@ export function ScanRoute() {
   const save = async () => {
     if (!photo) { notify('Upload a photo first.'); return; }
     setSaving(true);
+    const tempId = 'pending-' + Date.now();
+    optimisticAdd('projects', { id: tempId, name: `${spaceType} scan`, address: 'Address pending', squareFeet: totalSqft, system: '', finish: '', status: 'New Lead', image: photo, areaCount: areas.length, updatedAt: new Date().toISOString() });
     notify('Saving project…');
     try {
       await api.v2.create('projects', { name: `${spaceType} scan`, address: 'Address pending', squareFeet: totalSqft, floorSystem: '', status: 'New Lead', projectImageUrl: photo });
       notify('Project saved.');
       await refresh();
       navigate('/app/visualizer');
-    } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'error')); }
+    } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'error')); optimisticRemove('projects', tempId); }
     finally { setSaving(false); }
   };
 

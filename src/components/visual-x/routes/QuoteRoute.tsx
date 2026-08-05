@@ -6,7 +6,7 @@ import { VisualXSelect, VisualXButton, VisualXSlider, VisualXEmptyState, VisualX
 import { Plus, Save, FileText, Copy } from 'lucide-react';
 
 export function QuoteRoute() {
-  const { state, notify, refresh } = useApp();
+  const { state, notify, refresh, optimisticAdd, optimisticRemove } = useApp();
   const navigate = useNavigate();
   const leads = state?.leads || [];
   const [leadId, setLeadId] = useState('');
@@ -31,12 +31,14 @@ export function QuoteRoute() {
   const save = async () => {
     if (!leadId) { notify('Select a lead first.'); return; }
     setSaving(true);
+    const tempId = 'pending-' + Date.now();
+    optimisticAdd('quotes', { id: tempId, projectId: leadId, customerName: selectedLead?.customerName || '', marginPercent: margin, rangeVariancePercent: 8, status: 'internal_draft', lineItems, updatedAt: new Date().toISOString() });
     notify('Saving quote…');
     try {
       const result = await api.v2.create('quotes', { projectId: leadId, customerName: selectedLead?.customerName || '', lineItems, marginPercent: margin, status: 'internal_draft' });
       notify('Quote saved.');
       await refresh();
-    } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'error')); }
+    } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'error')); optimisticRemove('quotes', tempId); }
     finally { setSaving(false); }
   };
 

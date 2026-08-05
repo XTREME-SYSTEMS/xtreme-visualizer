@@ -13,6 +13,8 @@ interface AppContextValue {
   notify: (message: string) => void;
   toggleColor: (id: string) => void;
   setSelectedSystemSlug: (slug: string) => void;
+  optimisticAdd: (key: 'projects' | 'leads' | 'quotes' | 'proposals', item: any) => void;
+  optimisticRemove: (key: 'projects' | 'leads' | 'quotes' | 'proposals', id: string) => void;
 }
 const AppContext = createContext<AppContextValue | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -30,7 +32,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { void refresh(); }, [refresh]);
   const notify = useCallback((message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 2600); }, []);
   const toggleColor = useCallback((id: string) => setSelectedColorIds(ids => ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id].slice(-4)), []);
-  const value = useMemo(() => ({ state, loading, error, notice, selectedColorIds, selectedSystemSlug, refresh, notify, toggleColor, setSelectedSystemSlug }), [state, loading, error, notice, selectedColorIds, selectedSystemSlug, refresh, notify, toggleColor]);
+  const optimisticAdd = useCallback((key: 'projects' | 'leads' | 'quotes' | 'proposals', item: any) => {
+    setState(prev => prev ? { ...prev, [key]: [item, ...(prev[key] || [])] } : prev);
+  }, []);
+  const optimisticRemove = useCallback((key: 'projects' | 'leads' | 'quotes' | 'proposals', id: string) => {
+    setState(prev => prev ? { ...prev, [key]: (prev[key] as any[] || []).filter((i: any) => i.id !== id) } : prev);
+  }, []);
+  const value = useMemo(() => ({ state, loading, error, notice, selectedColorIds, selectedSystemSlug, refresh, notify, toggleColor, setSelectedSystemSlug, optimisticAdd, optimisticRemove }), [state, loading, error, notice, selectedColorIds, selectedSystemSlug, refresh, notify, toggleColor, optimisticAdd, optimisticRemove]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 export function useApp() {

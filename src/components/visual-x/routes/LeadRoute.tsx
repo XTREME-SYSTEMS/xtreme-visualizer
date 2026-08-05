@@ -6,15 +6,13 @@ import { PullToRefresh } from '../PullToRefresh';
 import { Camera, Save, User, MapPin } from 'lucide-react';
 
 export function LeadRoute() {
-  const { state, notify, refresh } = useApp();
+  const { state, notify, refresh, optimisticAdd, optimisticRemove } = useApp();
   const [form, setForm] = useState({ customerName: '', propertyType: 'garage', address: '', appointment: '', floorCondition: 'fair', desiredFinish: '', squareFeet: 0, notes: '' });
   const [photo, setPhoto] = useState('');
   const [saving, setSaving] = useState(false);
-  const [pendingLeads, setPendingLeads] = useState<any[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
   const leads = state?.leads || [];
-  const displayLeads = [...pendingLeads, ...leads];
 
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
 
@@ -37,16 +35,15 @@ export function LeadRoute() {
     if (!validate()) { notify('Please fix the required fields.'); return; }
     setSaving(true);
     const tempId = 'pending-' + Date.now();
-    setPendingLeads(prev => [{ id: tempId, customerName: form.customerName, address: form.address, squareFeet: form.squareFeet, status: 'new' }, ...prev]);
+    optimisticAdd('leads', { id: tempId, customerName: form.customerName, address: form.address, squareFeet: form.squareFeet, status: 'new' });
     try {
       const result = await api.v2.create('leads', { ...form, photoUrl: photo, status: 'new', source: 'visualizer' });
-      if (result.duplicate) { notify('Duplicate lead already exists — no new record created.'); setPendingLeads(prev => prev.filter(l => l.id !== tempId)); return; }
+      if (result.duplicate) { notify('Duplicate lead already exists — no new record created.'); optimisticRemove('leads', tempId); return; }
       notify('Lead saved.');
       setForm({ customerName: '', propertyType: 'garage', address: '', appointment: '', floorCondition: 'fair', desiredFinish: '', squareFeet: 0, notes: '' });
       setPhoto('');
-      setPendingLeads([]);
       await refresh();
-    } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'unknown error')); setPendingLeads(prev => prev.filter(l => l.id !== tempId)); }
+    } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'unknown error')); optimisticRemove('leads', tempId); }
     finally { setSaving(false); }
   };
 
@@ -81,7 +78,7 @@ export function LeadRoute() {
         <div className="vx-section-title"><h2>Recent leads</h2><span className="vx-muted">{leads.length} total</span></div>
         {leads.length === 0 ? <VisualXEmptyState title="No leads yet">Capture your first lead above.</VisualXEmptyState> : (
           <div className="project-list">
-            {displayLeads.slice(0, 8).map(l => (
+            {leads.slice(0, 8).map(l => (
               <div key={l.id} className="project-row">
                 <div className="vx-icon-tile"><User className="vx-icon" /></div>
                 <div><h3>{l.customerName}</h3><p><MapPin className="vx-icon vx-icon-sm" /> {l.address}</p><span className="vx-chip ready">{l.status}</span></div>
