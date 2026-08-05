@@ -141,7 +141,7 @@ export function VisualizerRoute() {
             <div className="vx-chart-strip">
               {colorRecords.map(c => (
                 <div key={c.code} className="vx-chart-chip" title={`${c.name} (${c.code})`}>
-                  <span style={{ background: c.hex }} />
+                  {c.image_url ? <img src={c.image_url} alt={c.name} loading="lazy" /> : <span style={{ background: c.hex }} />}
                   <small>{c.name}</small>
                 </div>
               ))}

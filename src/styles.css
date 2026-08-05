@@ -154,6 +154,7 @@ img{display:block;max-width:100%}
 .vx-chart-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:8px}
 .vx-chart-chip{display:grid;gap:4px;text-align:center}
 .vx-chart-chip span{height:44px;border-radius:9px;border:1px solid var(--vx-border-soft);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.vx-chart-chip img{height:44px;width:100%;object-fit:cover;border-radius:9px;border:1px solid var(--vx-border-soft)}
 .vx-chart-chip small{font-size:10px;color:var(--vx-muted);line-height:1.2;word-break:break-word}
 .viz-swatch-color{display:flex!important;height:40px;border-radius:8px;overflow:hidden;border:1px solid var(--vx-border-soft)}
 .viz-swatch-color span{flex:1;height:100%}

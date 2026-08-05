@@ -1,6 +1,6 @@
-// Floor system color charts — maps visualizer system names to their exact
-// XPS manufacturer color chart colors, brightened for black-background visibility.
-import { FLOOR_SYSTEM_DATA } from '@/data/colorData';
+// Floor system color charts — maps visualizer system names to their EXACT
+// XPS manufacturer color chart from COLOR_DATA, brightened for black-background visibility.
+import { COLOR_DATA, FLOOR_SYSTEM_DATA } from '@/data/colorData';
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
@@ -30,20 +30,48 @@ export function brighten(hex: string, minLum = 0.24): string {
   return rgbToHex(r, g, b);
 }
 
-const systemByName = Object.fromEntries(FLOOR_SYSTEM_DATA.map(s => [s.name, s]));
+// Map floor system names (as shown in the visualizer) to COLOR_DATA system keys.
+const SYSTEM_KEY_MAP: Record<string, string> = {
+  'Flake Epoxy': 'flake',
+  'Metallic Epoxy': 'metallic',
+  'Solid Color Epoxy': 'solid',
+  'Quartz System': 'quartz',
+  'Glitter Epoxy': 'glitter',
+  'Polished Concrete': 'dye_stain',
+  'Stained Concrete': 'dye_stain',
+  'Joint Fill & Repair': 'joint_filler',
+};
 
-// Returns the brightened actual color-chart hex values for a floor system.
-export function getSystemColors(name: string): string[] {
-  const sys = systemByName[name];
-  if (!sys || !sys.colors?.length) return ['#888888'];
-  return sys.colors.map(c => brighten(c.hex));
+// Index COLOR_DATA by system key for O(1) lookup.
+const colorsBySystem: Record<string, typeof COLOR_DATA> = {};
+for (const c of COLOR_DATA) {
+  if (!colorsBySystem[c.system]) colorsBySystem[c.system] = [];
+  colorsBySystem[c.system].push(c);
 }
 
-// Returns color records (name + brightened hex + code) for full chart display.
-export function getSystemColorRecords(name: string): { name: string; hex: string; code: string }[] {
-  const sys = systemByName[name];
-  if (!sys || !sys.colors?.length) return [];
-  return sys.colors.map(c => ({ name: c.name, hex: brighten(c.hex), code: c.code }));
+// Returns the brightened actual color-chart hex values for a floor system (full chart).
+export function getSystemColors(name: string): string[] {
+  const key = SYSTEM_KEY_MAP[name];
+  const colors = key ? colorsBySystem[key] : undefined;
+  if (!colors?.length) {
+    // Fallback to FLOOR_SYSTEM_DATA subset
+    const sys = FLOOR_SYSTEM_DATA.find(s => s.name === name);
+    if (!sys || !sys.colors?.length) return ['#888888'];
+    return sys.colors.map(c => brighten(c.hex));
+  }
+  return colors.map(c => brighten(c.hex));
+}
+
+// Returns color records (name + brightened hex + code + image_url) for full chart display.
+export function getSystemColorRecords(name: string): { name: string; hex: string; code: string; image_url?: string }[] {
+  const key = SYSTEM_KEY_MAP[name];
+  const colors = key ? colorsBySystem[key] : undefined;
+  if (!colors?.length) {
+    const sys = FLOOR_SYSTEM_DATA.find(s => s.name === name);
+    if (!sys || !sys.colors?.length) return [];
+    return sys.colors.map(c => ({ name: c.name, hex: brighten(c.hex), code: c.code }));
+  }
+  return colors.map(c => ({ name: c.color_name, hex: brighten(c.hex), code: c.code, image_url: c.image_url }));
 }
 
 // Representative multi-stop gradient built from the actual color chart.
