@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/vq/PageHeader";
 import EmptyState from "@/components/vq/EmptyState";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Loader2, Layers, Plus } from "lucide-react";
 
 export default function Systems() {
@@ -15,7 +11,13 @@ export default function Systems() {
   const load = () => base44.entities.FloorSystem.list("-created_date", 100).then(setSystems);
   useEffect(() => { load(); }, []);
 
-  if (!systems) return <div className="py-24 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>;
+  if (!systems) {
+    return (
+      <div className="py-24 grid place-items-center" style={{ color: "var(--vx-muted)" }}>
+        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--vx-accent)" }} />
+      </div>
+    );
+  }
 
   const save = async () => {
     const payload = {
@@ -37,40 +39,49 @@ export default function Systems() {
     load();
   };
 
+  const fieldStyle = { display: "grid", gap: 6, fontSize: 12, color: "var(--vx-muted)", fontWeight: 700 };
+
   return (
-    <div>
+    <div className="page">
       <PageHeader
         eyebrow="Configuration"
         title="Floor systems and colors"
         description="Systems, finishes, colors, and per-square-foot base rates that drive the visualizer and the preliminary range."
         actions={
-          <Button className="bg-slate-900" onClick={() => setDraft({ finishesText: "", colorsText: "", active: true })}>
-            <Plus className="w-4 h-4 mr-1.5" /> New system
-          </Button>
+          <button className="vx-btn primary" onClick={() => setDraft({ finishesText: "", colorsText: "", active: true })}>
+            <Plus size={16} /> New system
+          </button>
         }
       />
 
       {draft && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-5 space-y-4">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5"><Label className="text-[12px]">Name</Label>
-              <Input value={draft.name || ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></div>
-            <div className="space-y-1.5"><Label className="text-[12px]">Category</Label>
-              <Input value={draft.category || ""} placeholder="epoxy / polished_concrete / coating" onChange={(e) => setDraft({ ...draft, category: e.target.value })} /></div>
-            <div className="space-y-1.5"><Label className="text-[12px]">Finishes (comma separated)</Label>
-              <Input value={draft.finishesText || ""} onChange={(e) => setDraft({ ...draft, finishesText: e.target.value })} /></div>
-            <div className="space-y-1.5"><Label className="text-[12px]">Colors (Name:#hex, comma separated)</Label>
-              <Input value={draft.colorsText || ""} onChange={(e) => setDraft({ ...draft, colorsText: e.target.value })} /></div>
-            <div className="space-y-1.5"><Label className="text-[12px]">Base rate low ($/sqft)</Label>
-              <Input type="number" value={draft.base_rate_low || ""} onChange={(e) => setDraft({ ...draft, base_rate_low: e.target.value })} /></div>
-            <div className="space-y-1.5"><Label className="text-[12px]">Base rate high ($/sqft)</Label>
-              <Input type="number" value={draft.base_rate_high || ""} onChange={(e) => setDraft({ ...draft, base_rate_high: e.target.value })} /></div>
-            <div className="space-y-1.5 sm:col-span-2"><Label className="text-[12px]">Description</Label>
-              <Input value={draft.description || ""} onChange={(e) => setDraft({ ...draft, description: e.target.value })} /></div>
+        <div className="content-card form-grid">
+          <div className="form-grid two">
+            <label className="field">Name
+              <input className="vx-input" value={draft.name || ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+            </label>
+            <label className="field">Category
+              <input className="vx-input" value={draft.category || ""} placeholder="epoxy / polished_concrete / coating" onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
+            </label>
+            <label className="field">Finishes (comma separated)
+              <input className="vx-input" value={draft.finishesText || ""} onChange={(e) => setDraft({ ...draft, finishesText: e.target.value })} />
+            </label>
+            <label className="field">Colors (Name:#hex, comma separated)
+              <input className="vx-input" value={draft.colorsText || ""} onChange={(e) => setDraft({ ...draft, colorsText: e.target.value })} />
+            </label>
+            <label className="field">Base rate low ($/sqft)
+              <input className="vx-input" type="number" value={draft.base_rate_low || ""} onChange={(e) => setDraft({ ...draft, base_rate_low: e.target.value })} />
+            </label>
+            <label className="field">Base rate high ($/sqft)
+              <input className="vx-input" type="number" value={draft.base_rate_high || ""} onChange={(e) => setDraft({ ...draft, base_rate_high: e.target.value })} />
+            </label>
+            <label className="field" style={{ gridColumn: "1 / -1" }}>Description
+              <input className="vx-input" value={draft.description || ""} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+            </label>
           </div>
-          <div className="flex items-center gap-3">
-            <Button className="bg-slate-900" disabled={!draft.name} onClick={save}>Save system</Button>
-            <Button variant="ghost" onClick={() => setDraft(null)}>Cancel</Button>
+          <div className="viz-toggle-row">
+            <button className="vx-btn primary" disabled={!draft.name} onClick={save}>Save system</button>
+            <button className="vx-btn" onClick={() => setDraft(null)}>Cancel</button>
           </div>
         </div>
       )}
@@ -78,42 +89,44 @@ export default function Systems() {
       {!systems.length ? (
         <EmptyState icon={Layers} title="No floor systems configured" hint="Add a system so the visualizer and pricing engine have something to work with." />
       ) : (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="section" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
           {systems.map((s) => (
-            <div key={s.id} className="bg-white border border-slate-200 rounded-2xl p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-[14px] font-semibold text-slate-900 truncate">{s.name}</p>
-                  <p className="text-[11px] uppercase tracking-[0.1em] text-slate-400">{s.category?.replace(/_/g, " ")}</p>
+            <div key={s.id} className="content-card">
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "var(--vx-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</p>
+                  <span className="vx-kicker">{s.category?.replace(/_/g, " ")}</span>
                 </div>
-                <Switch
-                  checked={s.active !== false}
-                  onCheckedChange={async (v) => { await base44.entities.FloorSystem.update(s.id, { active: v }); load(); }}
-                />
+                <button
+                  className="vx-btn compact"
+                  style={s.active !== false ? { background: "var(--vx-accent)", color: "#061000", borderColor: "var(--vx-accent)" } : {}}
+                  onClick={async () => { await base44.entities.FloorSystem.update(s.id, { active: !(s.active !== false) }); load(); }}
+                >
+                  {s.active !== false ? "Active" : "Inactive"}
+                </button>
               </div>
-              <p className="mt-2 text-[12px] text-slate-500 leading-relaxed line-clamp-2">{s.description}</p>
-              <div className="mt-3 flex gap-1.5">
+              <p style={{ marginTop: 8, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5 }}>{s.description}</p>
+              <div style={{ marginTop: 12, display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {(s.colors || []).map((c) => (
-                  <span key={c.name} title={c.name} className="w-5 h-5 rounded-full border border-black/10" style={{ background: c.hex }} />
+                  <span key={c.name} title={c.name} style={{ width: 20, height: 20, borderRadius: 5, border: "1px solid var(--vx-border-soft)", background: c.hex }} />
                 ))}
               </div>
-              <p className="mt-3 text-[13px] font-medium text-slate-900">${s.base_rate_low} – ${s.base_rate_high} / sq ft</p>
-              <p className="mt-1 text-[11px] text-slate-400">{(s.finishes || []).join(" · ")}</p>
+              <p style={{ marginTop: 12, fontSize: 14, fontWeight: 700, color: "var(--vx-accent)" }}>${s.base_rate_low} – ${s.base_rate_high} / sq ft</p>
+              <p style={{ marginTop: 4, fontSize: 11, color: "var(--vx-faint)" }}>{(s.finishes || []).join(" · ")}</p>
               {s.sheen_levels && s.sheen_levels.length > 0 && (
-                <p className="mt-1.5 text-[10px] text-slate-400">Sheen: {s.sheen_levels.join(" · ")}</p>
+                <p style={{ marginTop: 6, fontSize: 10, color: "var(--vx-faint)" }}>Sheen: {s.sheen_levels.join(" · ")}</p>
               )}
               {s.product_skus && s.product_skus.length > 0 && (
-                <div className="mt-1.5 flex flex-wrap gap-1">
+                <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
                   {s.product_skus.slice(0, 4).map((sku) => (
-                    <span key={sku} className="px-1.5 py-0.5 rounded text-[9px] bg-slate-100 text-slate-500 font-mono">{sku}</span>
+                    <span key={sku} style={{ padding: "2px 6px", borderRadius: 5, fontSize: 9, background: "var(--vx-panel-3)", color: "var(--vx-muted)", fontFamily: "monospace" }}>{sku}</span>
                   ))}
-                  {s.product_skus.length > 4 && <span className="text-[9px] text-slate-400">+{s.product_skus.length - 4}</span>}
+                  {s.product_skus.length > 4 && <span style={{ fontSize: 9, color: "var(--vx-faint)" }}>+{s.product_skus.length - 4}</span>}
                 </div>
               )}
-              <Button
-                size="sm"
-                variant="outline"
-                className="mt-3 text-[12px]"
+              <button
+                className="vx-btn outline-accent"
+                style={{ marginTop: 14, width: "100%" }}
                 onClick={() => setDraft({
                   ...s,
                   finishesText: (s.finishes || []).join(", "),
@@ -121,7 +134,7 @@ export default function Systems() {
                 })}
               >
                 Edit
-              </Button>
+              </button>
             </div>
           ))}
         </div>
