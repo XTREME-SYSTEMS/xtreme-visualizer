@@ -31,6 +31,7 @@ export function QuoteRoute() {
   const save = async () => {
     if (!leadId) { notify('Select a lead first.'); return; }
     setSaving(true);
+    notify('Saving quote…');
     try {
       const result = await api.v2.create('quotes', { projectId: leadId, customerName: selectedLead?.customerName || '', lineItems, marginPercent: margin, status: 'internal_draft' });
       notify('Quote saved.');

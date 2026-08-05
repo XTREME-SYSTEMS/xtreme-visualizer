@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Home, ScanLine, PackageSearch, ReceiptText, Menu, Sun, Moon, ChevronLeft, Trash2, Settings } from 'lucide-react';
 import { VisualXDrawer, VisualXDialog } from './VisualXPrimitives';
 import { useApp } from '@/components/AppProvider';
@@ -32,12 +32,29 @@ export function DeviceShell() {
   const [settings, setSettings] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [tabHistory, setTabHistory] = useState<Record<string, string>>(() => {
+    try { return JSON.parse(localStorage.getItem('vx-tab-history') || '{}'); } catch { return {}; }
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const { notice, notify } = useApp();
   const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   const screen = location.pathname.split('/').pop() || 'home';
   const showBack = ['scan', 'compare', 'blends', 'metallic', 'proposal', 'lead'].includes(screen);
+  const activeTab = NAV.find(n => location.pathname === n.to)?.to || null;
+  useEffect(() => {
+    if (!activeTab) return;
+    setTabHistory(prev => {
+      if (prev[activeTab] === location.pathname) return prev;
+      const next = { ...prev, [activeTab]: location.pathname };
+      try { localStorage.setItem('vx-tab-history', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, [activeTab, location.pathname]);
+  const handleTabClick = (root: string) => {
+    if (activeTab === root) navigate(root);
+    else navigate(tabHistory[root] || root);
+  };
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
   }, [theme]);
@@ -82,7 +99,7 @@ export function DeviceShell() {
             <div className="vx-page vx-page-scroll"><Outlet /></div>
           </div>
           <nav className="vx-nav">
-            {NAV.map(i => <NavLink key={i.to} to={i.to} className={({ isActive }) => isActive ? 'active' : ''}><i.icon className="vx-icon" /><span>{i.label}</span></NavLink>)}
+            {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
             <button onClick={() => setMore(true)}><Menu className="vx-icon" /><span>More</span></button>
           </nav>
           <VisualXDrawer open={more} title="All screens" onClose={() => setMore(false)}>

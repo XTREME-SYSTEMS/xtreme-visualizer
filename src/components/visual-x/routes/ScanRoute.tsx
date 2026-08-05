@@ -30,9 +30,10 @@ export function ScanRoute() {
   const save = async () => {
     if (!photo) { notify('Upload a photo first.'); return; }
     setSaving(true);
+    notify('Saving project…');
     try {
       await api.v2.create('projects', { name: `${spaceType} scan`, address: 'Address pending', squareFeet: totalSqft, floorSystem: '', status: 'New Lead', projectImageUrl: photo });
-      notify('Project saved with audit receipt.');
+      notify('Project saved.');
       await refresh();
       navigate('/app/visualizer');
     } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'error')); }
