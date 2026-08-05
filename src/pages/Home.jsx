@@ -1,99 +1,130 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Camera, Ruler, Calculator, FileText, FileSignature, ChevronRight, ArrowRight, Sparkles } from "lucide-react";
+import {
+  Camera,
+  Ruler,
+  Calculator,
+  FileText,
+  FileSignature,
+  Layers,
+  Users,
+  Package,
+  Palette,
+  Mail,
+  Radar,
+  Gavel,
+  TrendingUp,
+  BookOpen,
+  Calendar,
+  Receipt,
+  Shield,
+  Settings,
+  Inbox,
+  MoreHorizontal,
+  Sparkles,
+} from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useUI } from "@/lib/uiContext";
-import { projectsFromLeads } from "@/lib/refData";
-import { FeatureCard, ProjectRow } from "@/components/vq/ProjectRow";
 
-const TOOLS = [
-  { label: "Vizualizer", icon: Camera, to: "/visualizer" },
-  { label: "Measure\n& Scope", icon: Ruler, to: "/projects" },
-  { label: "Preliminary\nPricing", icon: Calculator, to: "/visualizer" },
-  { label: "Proposal", icon: FileText, to: "/close" },
-  { label: "e-Sign", icon: FileSignature, to: "/close" },
+const NAV_GROUPS = [
+  {
+    title: "Sell",
+    items: [
+      { label: "Visualizer", icon: Camera, to: "/visualizer", desc: "Upload & preview finishes" },
+      { label: "Projects", icon: Ruler, to: "/projects", desc: "Measure & scope jobs" },
+      { label: "Leads", icon: Users, to: "/leads", desc: "Manage pipeline" },
+      { label: "Pricing", icon: Calculator, to: "/pricing", desc: "Rates & profiles" },
+      { label: "Close", icon: FileText, to: "/close", desc: "Proposals & e-sign" },
+      { label: "CRM", icon: FileSignature, to: "/crm", desc: "Customer relationships" },
+    ],
+  },
+  {
+    title: "Generate",
+    items: [
+      { label: "Lead Generator", icon: Radar, to: "/lead-generator", desc: "Find new opportunities" },
+      { label: "Bid Generator", icon: Gavel, to: "/bid-generator", desc: "Build competitive bids" },
+      { label: "Competitive Pricing", icon: TrendingUp, to: "/competitive-pricing", desc: "Market rate intel" },
+      { label: "Appointments", icon: Calendar, to: "/appointments", desc: "Schedule site visits" },
+    ],
+  },
+  {
+    title: "Reference",
+    items: [
+      { label: "Systems", icon: Layers, to: "/systems", desc: "Floor system catalog" },
+      { label: "Products", icon: Package, to: "/products", desc: "Materials & SKUs" },
+      { label: "Color Charts", icon: Palette, to: "/colors", desc: "Manufacturer swatches" },
+      { label: "Industry", icon: BookOpen, to: "/industry", desc: "Trade reference" },
+      { label: "Email Templates", icon: Mail, to: "/email-templates", desc: "Saved outreach" },
+      { label: "Receipts", icon: Receipt, to: "/receipts", desc: "Activity log" },
+    ],
+  },
+  {
+    title: "Manage",
+    items: [
+      { label: "Inbox", icon: Inbox, to: "/inbox", desc: "Messages" },
+      { label: "Guardrails", icon: Shield, to: "/guardrails", desc: "AI safety rules" },
+      { label: "Generator", icon: Sparkles, to: "/generator", desc: "AI content tools" },
+      { label: "Settings", icon: Settings, to: "/settings", desc: "App configuration" },
+      { label: "More", icon: MoreHorizontal, to: "/more", desc: "Additional tools" },
+    ],
+  },
 ];
 
 export default function Home() {
   const navigate = useNavigate();
-  const { openNewProject, query } = useUI();
-  const [projects, setProjects] = useState([]);
-
-  const load = () =>
-    base44.entities.Lead.list("-created_date", 50).then((l) => setProjects(projectsFromLeads(l))).catch(() => setProjects([]));
+  const { query } = useUI();
+  const [leads, setLeads] = useState([]);
 
   useEffect(() => {
-    load();
-    const handler = () => load();
-    window.addEventListener("xv-projects-changed", handler);
-    return () => window.removeEventListener("xv-projects-changed", handler);
+    base44.entities.Lead.list("-created_date", 50)
+      .then((l) => setLeads(l))
+      .catch(() => setLeads([]));
   }, []);
 
-  const feature = projects[0];
-  const matches = query.trim()
-    ? projects.filter((p) => `${p.name} ${p.location} ${p.system}`.toLowerCase().includes(query.toLowerCase()))
-    : projects.filter((p) => p.id !== feature?.id);
-  const recent = matches.slice(0, 3);
+  const q = query.trim().toLowerCase();
 
   return (
-    <>
-      <section className="greeting-row">
-        <div className="greeting">
-          <h1>Good morning, Mike!</h1>
-          <p>Let's turn this visit into a signed job.</p>
+    <div className="home-full">
+      <div className="home-hero">
+        <img
+          src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png"
+          alt=""
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+        />
+        <div className="home-hero-content">
+          <span className="vx-kicker">VISUAL X · COMMAND CENTER</span>
+          <h1>
+            Design, quote,
+            <span>and win floors.</span>
+          </h1>
+          <p>Scan spaces, visualize finishes, generate quotes, and share proposals — all from one verified workspace.</p>
         </div>
-        <button className="gold-button" onClick={openNewProject}>
-          <Plus size={20} /> New Project
-        </button>
-      </section>
+      </div>
 
-      {feature && !query.trim() && (
-        <FeatureCard project={feature} onClick={() => navigate(`/leads/${feature.id}`)} />
-      )}
-
-      <section className="section">
-        <h2 className="section-title">Close More Jobs</h2>
-        <div className="tools-grid">
-          {TOOLS.map(({ label, icon: Icon, to }) => (
-            <button key={label} className="tool" onClick={() => navigate(to)}>
-              <span className="tool-icon">
-                <Icon size={32} />
-              </span>
-              <span className="tool-label">{label}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="divider">
-        <div className="section-title-row">
-          <h2 className="section-title">Recent Projects</h2>
-          <button className="text-link" onClick={() => navigate("/projects")}>
-            View All <ChevronRight size={19} />
-          </button>
-        </div>
-        <div className="project-list">
-          {recent.length ? (
-            recent.map((p) => <ProjectRow key={p.id} project={p} onClick={() => navigate(`/leads/${p.id}`)} />)
-          ) : (
-            <div className="empty">No projects match this search.</div>
-          )}
-        </div>
-      </section>
-
-      <section className="vizzy-card">
-        <div className="vizzy-copy">
-          <div className="vizzy-mark">
-            <Sparkles size={30} color="#e6a90b" />
-          </div>
-          <div className="vizzy-text">
-            <strong>Let Vizzy AI Assistant help you close today.</strong>
-            <button onClick={() => navigate("/visualizer")}>
-              Ask Vizzy <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
-      </section>
-    </>
+      {NAV_GROUPS.map((group) => {
+        const items = q
+          ? group.items.filter((i) => `${i.label} ${i.desc}`.toLowerCase().includes(q))
+          : group.items;
+        if (!items.length) return null;
+        return (
+          <section key={group.title} className="home-nav-section">
+            <h2 className="home-nav-title">{group.title}</h2>
+            <div className="home-nav-grid">
+              {items.map(({ label, icon: Icon, to, desc }) => (
+                <button key={label} className="home-nav-card" onClick={() => navigate(to)}>
+                  <span className="home-nav-icon">
+                    <Icon size={26} />
+                  </span>
+                  <span className="home-nav-label">
+                    <strong>{label}</strong>
+                    <small>{desc}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
   );
 }
