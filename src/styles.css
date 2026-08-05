@@ -145,6 +145,11 @@ img{display:block;max-width:100%}
 /* overlay/drawer/toast */
 .vx-overlay{position:absolute;inset:0;z-index:100;background:rgba(0,0,0,.72);display:grid;align-items:end;backdrop-filter:blur(7px)}.vx-drawer{max-height:78%;overflow:auto;background:var(--vx-panel);border:1px solid var(--vx-border);border-bottom:0;border-radius:28px 28px 0 0;padding:20px 24px 34px;box-shadow:0 -20px 70px rgba(0,0,0,.7)}.vx-drawer header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.vx-drawer h2{margin:0;font-size:24px}.vx-drawer-body{display:grid;gap:13px}.vx-toast{position:absolute;z-index:150;left:50%;bottom:145px;transform:translateX(-50%);max-width:80%;padding:12px 17px;background:rgba(10,10,10,.95);color:#fff;border:1px solid #528500;border-radius:12px;box-shadow:var(--vx-glow);font-size:13px;text-align:center}.vx-loading{height:100%;display:grid;place-items:center}.vx-spinner{width:44px;height:44px;border-radius:50%;border:4px solid var(--vx-border);border-top-color:var(--vx-accent);animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 
+/* desktop: scale device shell to fit viewport height */
+@media(min-width:901px){
+  .vx-stage{padding:16px;overflow:hidden}
+  .vx-device{transform:scale(min(1,(100vh - 32px) / 1664px));transform-origin:center}
+}
 /* responsive runtime */
 @media(max-width:900px){
   .vx-stage{display:block;padding:0;background:var(--vx-bg)}
