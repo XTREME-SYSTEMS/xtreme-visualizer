@@ -19,11 +19,11 @@ check('system selection active',(await page.getByRole('button',{name:'Metallic E
 const silver=page.getByRole('button',{name:/Metallic Silver/}).first();
 check('official color option available',await silver.isVisible().catch(()=>false));
 if(await silver.isVisible().catch(()=>false)) await silver.click();
-const sqftInput=page.getByText('Project square feet',{exact:true}).locator('..').locator('input');
+const sqftInput=page.getByRole('spinbutton',{name:'Project square feet'});
 await sqftInput.fill('1250');
 await page.getByRole('button',{name:'Good',exact:true}).click();
 await page.getByRole('button',{name:/Add patches/}).click();
-const patchInput=page.getByText('Patch count',{exact:true}).locator('..').locator('input');
+const patchInput=page.getByRole('spinbutton',{name:'Patch count'});
 await patchInput.fill('3');
 await page.waitForTimeout(300);
 const body=await page.locator('body').innerText();
