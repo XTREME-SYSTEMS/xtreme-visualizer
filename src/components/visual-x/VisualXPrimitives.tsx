@@ -1,10 +1,11 @@
 import { forwardRef, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
 import { AlertTriangle, Ban, Check, CheckCircle2, ChevronDown, CircleDashed, Info, LoaderCircle, X } from 'lucide-react';
 import type { VerificationStatus } from '../../contracts/runtime';
+import { brighten } from '../../lib/floorColors';
 
 export function swatchSrc(color: { image_url?: string | null; hex?: string | null }): string {
   if (color.image_url) return color.image_url;
-  const hex = color.hex || '#888888';
+  const hex = brighten(color.hex || '#888888');
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><defs><radialGradient id='g' cx='35%' cy='30%'><stop offset='0' stop-color='${hex}' stop-opacity='0.95'/><stop offset='1' stop-color='${hex}' stop-opacity='0.6'/></radialGradient></defs><rect width='120' height='120' fill='url(#g)'/></svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }

@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
+import { base44 } from '@/api/base44Client';
 import { VisualXField, VisualXProvenanceBadge } from '../VisualXPrimitives';
 import { systemRates, money } from '@/lib/refData';
+import { getSystemColors, getSystemColorRecords } from '@/lib/floorColors';
 import { computeRange, money as moneyFmt } from '@/lib/pricing';
 import { PRICE_DISCLOSURE } from '@/lib/brand';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText, MapPin, Loader2, Check } from 'lucide-react';
 
 const CONDITIONS = ['good', 'fair', 'poor'] as const;
 
@@ -15,24 +17,44 @@ export function VisualizerRoute() {
   const navigate = useNavigate();
   const [image, setImage] = useState('');
   const [fileUrl, setFileUrl] = useState('');
-  const [system, setSystem] = useState('Epoxy Flake System');
+  const [system, setSystem] = useState('Flake Epoxy');
   const [sqft, setSqft] = useState(850);
   const [condition, setCondition] = useState<'good' | 'fair' | 'poor'>('fair');
   const [needsGrinding, setNeedsGrinding] = useState(true);
   const [needsMoisture, setNeedsMoisture] = useState(false);
   const [crackLf, setCrackLf] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [zipCode, setZipCode] = useState('');
+  const [localRates, setLocalRates] = useState<{ low: number; high: number; summary: string; confidence: string } | null>(null);
+  const [fetchingPricing, setFetchingPricing] = useState(false);
 
-  const rates = systemRates[system];
+  const baseRates = localRates || systemRates[system];
+  const colorRecords = useMemo(() => getSystemColorRecords(system), [system]);
   const range = useMemo(() => computeRange({
     square_feet: sqft,
     condition,
-    base_rate_low: rates.low,
-    base_rate_high: rates.high,
+    base_rate_low: baseRates.low,
+    base_rate_high: baseRates.high,
     needs_grinding: needsGrinding,
     needs_moisture_mitigation: needsMoisture,
     linear_feet_cracks: crackLf,
-  }), [sqft, condition, rates, needsGrinding, needsMoisture, crackLf]);
+  }), [sqft, condition, baseRates, needsGrinding, needsMoisture, crackLf]);
+
+  const fetchLocalPricing = async () => {
+    if (!zipCode.trim()) { notify('Enter a ZIP code first.'); return; }
+    setFetchingPricing(true);
+    try {
+      const res = await base44.functions.invoke('fetchLocalPricing', { zipCode: zipCode.trim(), systemName: system });
+      const d = res.data;
+      if (d.low && d.high) {
+        setLocalRates({ low: d.low, high: d.high, summary: d.summary || '', confidence: d.confidence || 'low' });
+        notify(`Local pricing applied — ${moneyFmt(d.low)}–${moneyFmt(d.high)}/sq ft (${d.confidence} confidence)`);
+      } else {
+        notify('Could not find local pricing for that ZIP.');
+      }
+    } catch (e) { notify('Local pricing failed: ' + (e instanceof Error ? e.message : 'error')); }
+    finally { setFetchingPricing(false); }
+  };
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,12 +122,30 @@ export function VisualizerRoute() {
         <div>
           <div className="vx-section-title"><h2>Floor system</h2><VisualXProvenanceBadge status="VERIFIED" source="XPS catalog rates" /></div>
           <div className="viz-swatches">
-            {Object.entries(systemRates).map(([name, r]) => (
-              <button key={name} className={`viz-swatch ${system === name ? 'active' : ''}`} onClick={() => setSystem(name)}>
-                <span className="viz-swatch-color" style={{ background: r.gradient }} />
-                <strong>{name}</strong>
-              </button>
-            ))}
+            {Object.entries(systemRates).map(([name, r]) => {
+              const colors = getSystemColors(name);
+              return (
+                <button key={name} className={`viz-swatch ${system === name ? 'active' : ''}`} onClick={() => { setSystem(name); setLocalRates(null); }}>
+                  <span className="viz-swatch-color">
+                    {colors.slice(0, 6).map((hex, i) => (
+                      <span key={i} style={{ background: hex }} />
+                    ))}
+                  </span>
+                  <strong>{name}</strong>
+                </button>
+              );
+            })}
+          </div>
+          <div className="vx-color-chart-preview">
+            <div className="vx-section-title"><h2>{system} color chart</h2><VisualXProvenanceBadge status="VERIFIED" source="Xtreme Polishing Systems" /></div>
+            <div className="vx-chart-strip">
+              {colorRecords.map(c => (
+                <div key={c.code} className="vx-chart-chip" title={`${c.name} (${c.code})`}>
+                  <span style={{ background: c.hex }} />
+                  <small>{c.name}</small>
+                </div>
+              ))}
+            </div>
           </div>
           <div style={{ marginTop: 17, display: 'grid', gap: 12 }}>
             <VisualXField label="Project square feet" inputProps={{ type: 'number', min: 1, value: sqft, onChange: e => setSqft(Math.max(1, Number(e.target.value || 1))) }} />
@@ -124,11 +164,32 @@ export function VisualizerRoute() {
           <div className="price-panel">
             <span className="range-label">Preliminary installed range</span>
             <span className="range">{moneyFmt(range.low)} – {moneyFmt(range.high)}</span>
-            <span className="price-detail">{money.format(rates.low)} – {money.format(rates.high)} per sq ft · includes prep, mobilization, condition factor. {PRICE_DISCLOSURE}</span>
-            <button className="vx-btn primary" onClick={save} disabled={saving}>
-              <FileText className="vx-icon" /> {saving ? 'Saving…' : 'Save Project'}
-            </button>
+            <span className="price-detail">{money.format(baseRates.low)} – {money.format(baseRates.high)} per sq ft · includes prep, mobilization, condition factor. {PRICE_DISCLOSURE}</span>
+            {localRates && (
+              <span className="vx-chip ready" style={{ display: 'inline-flex', gap: 4, alignItems: 'center', marginTop: 6 }}>
+                <Check className="vx-icon vx-icon-sm" /> Local pricing · {localRates.confidence} confidence
+              </span>
+            )}
           </div>
+          <div className="vx-card local-pricing-panel">
+            <div className="vx-section-title"><h2>Local pricing</h2><VisualXProvenanceBadge status="VERIFIED" source="Web-scraped local market rates" /></div>
+            <p className="vx-muted" style={{ fontSize: 12, margin: '0 0 10px' }}>Enter your ZIP code to scrape live local contractor pricing for your area instead of using the national catalog average.</p>
+            <div className="vx-grid vx-grid-2" style={{ alignItems: 'end' }}>
+              <VisualXField label="ZIP code" inputProps={{ type: 'text', inputMode: 'numeric', maxLength: 5, value: zipCode, onChange: e => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5)), placeholder: '33101' }} />
+              <button className="vx-btn outline-accent" onClick={fetchLocalPricing} disabled={fetchingPricing}>
+                {fetchingPricing ? <Loader2 className="vx-icon" style={{ animation: 'spin .8s linear infinite' }} /> : <MapPin className="vx-icon" />}
+                {fetchingPricing ? 'Scraping…' : 'Get local pricing'}
+              </button>
+            </div>
+            {localRates && localRates.summary && (
+              <div className="vx-card-soft" style={{ padding: 10, marginTop: 10 }}>
+                <small className="vx-muted" style={{ fontSize: 12, lineHeight: 1.4 }}>{localRates.summary}</small>
+              </div>
+            )}
+          </div>
+          <button className="vx-btn primary" style={{ width: '100%' }} onClick={save} disabled={saving}>
+            <FileText className="vx-icon" /> {saving ? 'Saving…' : 'Save Project'}
+          </button>
         </div>
       </div>
     </>

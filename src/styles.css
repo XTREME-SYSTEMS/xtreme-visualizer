@@ -149,6 +149,15 @@ img{display:block;max-width:100%}
 /* Lead */
 .lead-card{display:grid;grid-template-columns:1fr 250px;gap:14px;padding:15px}.lead-card img{height:180px;width:100%;object-fit:cover;border-radius:13px}.lead-card h2{font-size:22px;margin:0 0 7px}.lead-card p{margin:4px 0;color:var(--vx-muted);font-size:12px}.lead-photo-grid{grid-template-columns:repeat(4,1fr)}.lead-photo{height:145px;border-radius:13px;border:1px solid var(--vx-border);overflow:hidden;position:relative;background:var(--vx-panel);display:grid;place-items:center}.lead-photo img{width:100%;height:100%;object-fit:cover}.lead-photo span{position:absolute;bottom:8px;left:8px;font-size:9px;background:rgba(0,0,0,.72);color:#fff;border-radius:6px;padding:4px 6px}.lead-task{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--vx-border-soft)}.lead-task:last-child{border-bottom:0}.lead-task input{width:20px;height:20px;accent-color:var(--vx-accent)}.lead-task small{color:var(--vx-muted)}.ai-card{display:grid;grid-template-columns:95px 1fr 150px;gap:14px;padding:14px;align-items:center}.ai-score{width:78px;height:78px;border-radius:50%;border:6px solid var(--vx-accent);display:grid;place-items:center;color:var(--vx-accent);font-weight:900;font-size:22px}.ai-card h3{margin:0 0 5px}.ai-card p{margin:0;color:var(--vx-muted);font-size:11px}.lead-actions{grid-template-columns:1.2fr 1fr 1.15fr}
 
+/* Visualizer color chart preview */
+.vx-color-chart-preview{margin-top:14px}
+.vx-chart-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:8px}
+.vx-chart-chip{display:grid;gap:4px;text-align:center}
+.vx-chart-chip span{height:44px;border-radius:9px;border:1px solid var(--vx-border-soft);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.vx-chart-chip small{font-size:10px;color:var(--vx-muted);line-height:1.2;word-break:break-word}
+.viz-swatch-color{display:flex!important;height:40px;border-radius:8px;overflow:hidden;border:1px solid var(--vx-border-soft)}
+.viz-swatch-color span{flex:1;height:100%}
+.local-pricing-panel{margin-top:14px}
 /* Integrations */
 .integrations-grid{display:grid;gap:12px}
 .integration-card{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:15px;border:1px solid var(--vx-border-soft);border-radius:15px;background:var(--vx-panel);transition:border-color .15s}
