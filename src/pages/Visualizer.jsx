@@ -25,7 +25,7 @@ export default function Visualizer() {
   const [fileUrl, setFileUrl] = useState("");
   const [system, setSystem] = useState("Flake Epoxy");
   const [color, setColor] = useState("");
-  const [sqft, setSqft] = useState(850);
+  const [sqft, setSqft] = useState(0);
   const [condition, setCondition] = useState("fair");
   const [needsGrinding, setNeedsGrinding] = useState(true);
   const [needsMoisture, setNeedsMoisture] = useState(false);
@@ -284,7 +284,7 @@ export default function Visualizer() {
         <div className="viz-specs">
           <label className="field">
             Project square feet
-            <input type="number" min="1" value={sqft} onChange={(e) => setSqft(Math.max(1, Number(e.target.value || 1)))} />
+            <input type="number" min="0" value={sqft} onChange={(e) => setSqft(Math.max(0, Number(e.target.value || 0)))} />
           </label>
           <div className="field">
             <span>Slab condition</span>
