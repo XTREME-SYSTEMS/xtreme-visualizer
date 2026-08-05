@@ -1,0 +1,35 @@
+{
+  "name": "FeatureFlag",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "sandbox",
+        "preview",
+        "production"
+      ],
+      "default": "sandbox"
+    },
+    "approval_required": {
+      "type": "boolean",
+      "default": true
+    },
+    "blocked_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "key"
+  ]
+}

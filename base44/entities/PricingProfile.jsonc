@@ -1,0 +1,57 @@
+{
+  "name": "PricingProfile",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string"
+    },
+    "labor_rate_per_hr": {
+      "type": "number"
+    },
+    "crew_size": {
+      "type": "number"
+    },
+    "fuel_rate_per_mile": {
+      "type": "number"
+    },
+    "avg_travel_miles": {
+      "type": "number"
+    },
+    "material_markup_pct": {
+      "type": "number"
+    },
+    "mobilization_fee": {
+      "type": "number"
+    },
+    "overhead_pct": {
+      "type": "number"
+    },
+    "profit_pct": {
+      "type": "number"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "base_rates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "rate_low": {
+            "type": "number"
+          },
+          "rate_high": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "company_name"
+  ]
+}

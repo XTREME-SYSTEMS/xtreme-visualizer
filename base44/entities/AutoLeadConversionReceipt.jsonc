@@ -1,0 +1,33 @@
+{
+  "name": "AutoLeadConversionReceipt",
+  "type": "object",
+  "properties": {
+    "opportunity_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "converted",
+        "duplicate",
+        "blocked"
+      ]
+    },
+    "detail": {
+      "type": "string"
+    },
+    "converted_at": {
+      "type": "string"
+    },
+    "converted_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "opportunity_id",
+    "status"
+  ]
+}

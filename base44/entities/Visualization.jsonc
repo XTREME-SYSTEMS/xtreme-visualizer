@@ -1,0 +1,71 @@
+{
+  "name": "Visualization",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "option_index": {
+      "type": "number"
+    },
+    "label": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "source_photo_url": {
+      "type": "string"
+    },
+    "mask_points": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      }
+    },
+    "system_name": {
+      "type": "string"
+    },
+    "system_slug": {
+      "type": "string"
+    },
+    "finish": {
+      "type": "string"
+    },
+    "color_name": {
+      "type": "string"
+    },
+    "color_hex": {
+      "type": "string"
+    },
+    "gloss": {
+      "type": "number"
+    },
+    "texture": {
+      "type": "number"
+    },
+    "coverage": {
+      "type": "number"
+    },
+    "square_feet": {
+      "type": "number"
+    },
+    "selected": {
+      "type": "boolean",
+      "default": false
+    },
+    "disclosure": {
+      "type": "string",
+      "default": "Approximate visualization. Color, gloss, lighting, texture, and final installation may vary."
+    }
+  },
+  "required": [
+    "source_photo_url"
+  ]
+}

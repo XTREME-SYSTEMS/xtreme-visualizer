@@ -1,0 +1,86 @@
+{
+  "name": "Quote",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "square_feet": {
+      "type": "number"
+    },
+    "system_name": {
+      "type": "string"
+    },
+    "finish_name": {
+      "type": "string"
+    },
+    "margin_percent": {
+      "type": "number",
+      "default": 25
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "rate": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "margin_amount": {
+      "type": "number"
+    },
+    "total": {
+      "type": "number"
+    },
+    "range_low": {
+      "type": "number"
+    },
+    "range_high": {
+      "type": "number"
+    },
+    "price_source": {
+      "type": "string",
+      "description": "Recorded source of the rates used"
+    },
+    "approver": {
+      "type": "string",
+      "description": "Operator who approved the rates"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "internal_draft",
+        "approved_internal",
+        "archived"
+      ],
+      "default": "internal_draft"
+    }
+  },
+  "required": [
+    "customer_name"
+  ]
+}

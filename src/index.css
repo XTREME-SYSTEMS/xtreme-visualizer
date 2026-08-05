@@ -4,89 +4,144 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --vx-accent: #9cff00;
+    --vx-accent-2: #c4ff3f;
+    --vx-accent-soft: rgba(156, 255, 0, 0.12);
+    --vx-bg: #030303;
+    --vx-bg-2: #080808;
+    --vx-panel: #101010;
+    --vx-panel-2: #171717;
+    --vx-panel-3: #202020;
+    --vx-text: #f7f7f7;
+    --vx-muted: #b7b7b7;
+    --vx-faint: #747474;
+    --vx-border: #4a4a4a;
+    --vx-border-soft: #2f2f2f;
+    --vx-danger: #ff5258;
+    --vx-warning: #ffd000;
+    --vx-info: #43a9ff;
+    --vx-radius: 18px;
+    --vx-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
+    --vx-glow: 0 0 24px rgba(156, 255, 0, 0.28);
+    color-scheme: dark;
+
+    --background: 0 0% 1.5%;
+    --foreground: 0 0% 97%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 97%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 97%;
+    --primary: 76 100% 50%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 97%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 72%;
+    --accent: 76 100% 50%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 358 100% 66%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 76 100% 50%;
+    --radius: 18px;
+    --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+    --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+    --vx-bg: #f3f5f0;
+    --vx-bg-2: #ffffff;
+    --vx-panel: #ffffff;
+    --vx-panel-2: #f1f3ed;
+    --vx-panel-3: #e5e9de;
+    --vx-text: #11140d;
+    --vx-muted: #50564c;
+    --vx-faint: #7b8276;
+    --vx-border: #aeb7a8;
+    --vx-border-soft: #d8ddd2;
+    --vx-shadow: 0 14px 34px rgba(32, 45, 18, 0.12);
+    --vx-glow: 0 0 18px rgba(116, 190, 0, 0.18);
+
+    --background: 80 18% 95%;
+    --foreground: 80 22% 7%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 80 22% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --font-heading: ui-sans-serif, system-ui, sans-serif;
-    --font-body: ui-sans-serif, system-ui, sans-serif;
-    --font-display: ui-sans-serif, system-ui, sans-serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 80 22% 7%;
+    --secondary: 80 14% 92%;
+    --secondary-foreground: 80 22% 7%;
+    --muted: 80 14% 92%;
+    --muted-foreground: 100 6% 32%;
+    --border: 100 10% 82%;
+    --input: 100 10% 82%;
   }
 
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-
-
-@layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--vx-bg);
+    color: var(--vx-text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
-    @apply bg-background text-foreground font-body;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .vx-kicker {
+    @apply block text-[10px] font-bold tracking-[0.18em] uppercase;
+    color: var(--vx-faint);
+  }
+
+  .vx-card {
+    background: var(--vx-panel);
+    border: 1px solid var(--vx-border-soft);
+    border-radius: var(--vx-radius);
+    box-shadow: var(--vx-shadow);
+  }
+
+  .vx-input {
+    @apply w-full rounded-xl px-3 py-2.5 text-sm outline-none transition;
+    background: var(--vx-panel-2);
+    border: 1px solid var(--vx-border-soft);
+    color: var(--vx-text);
+  }
+
+  .vx-input:focus {
+    border-color: var(--vx-accent);
+    box-shadow: var(--vx-glow);
+  }
+
+  .vx-range {
+    @apply h-1.5 w-full appearance-none rounded-full;
+    background: var(--vx-panel-3);
+  }
+
+  .vx-range::-webkit-slider-thumb {
+    @apply h-4 w-4 appearance-none rounded-full;
+    background: var(--vx-accent);
+    box-shadow: var(--vx-glow);
+  }
+
+  .vx-range::-moz-range-thumb {
+    @apply h-4 w-4 rounded-full border-0;
+    background: var(--vx-accent);
+  }
+
+  .vx-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
 }

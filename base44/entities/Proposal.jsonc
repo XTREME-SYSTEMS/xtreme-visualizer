@@ -1,0 +1,78 @@
+{
+  "name": "Proposal",
+  "type": "object",
+  "properties": {
+    "quote_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "reference": {
+      "type": "string"
+    },
+    "company_name": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "system": {
+      "type": "string"
+    },
+    "timeline": {
+      "type": "string"
+    },
+    "warranty": {
+      "type": "string"
+    },
+    "scope_summary": {
+      "type": "string"
+    },
+    "total": {
+      "type": "number"
+    },
+    "content_markdown": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "default": "v1"
+    },
+    "signature_status": {
+      "type": "string",
+      "enum": [
+        "not_requested",
+        "local_ack",
+        "disabled"
+      ],
+      "default": "not_requested"
+    },
+    "signature_name": {
+      "type": "string"
+    },
+    "signed_at": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved_to_send",
+        "sent",
+        "accepted",
+        "archived"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "customer_name"
+  ]
+}

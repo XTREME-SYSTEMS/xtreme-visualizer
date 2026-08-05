@@ -1,0 +1,57 @@
+{
+  "name": "Scope",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "square_feet": {
+      "type": "number"
+    },
+    "slab_condition": {
+      "type": "string",
+      "enum": [
+        "Good",
+        "Fair",
+        "Poor"
+      ]
+    },
+    "crack_repair": {
+      "type": "boolean",
+      "default": false
+    },
+    "moisture_mitigation": {
+      "type": "string",
+      "enum": [
+        "Recommended",
+        "Required",
+        "Not Needed"
+      ]
+    },
+    "grinding_prep": {
+      "type": "boolean",
+      "default": true
+    },
+    "demolition": {
+      "type": "boolean",
+      "default": false
+    },
+    "coving": {
+      "type": "boolean",
+      "default": false
+    },
+    "notes": {
+      "type": "string"
+    },
+    "verified_on_site": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "square_feet"
+  ]
+}

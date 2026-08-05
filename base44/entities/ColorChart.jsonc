@@ -1,0 +1,56 @@
+{
+  "name": "ColorChart",
+  "type": "object",
+  "properties": {
+    "system": {
+      "type": "string",
+      "enum": [
+        "metallic",
+        "flake",
+        "quartz",
+        "solid",
+        "glitter",
+        "dye_stain",
+        "joint_filler"
+      ]
+    },
+    "color_name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "hex": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "collection": {
+      "type": "string"
+    },
+    "sheen": {
+      "type": "string",
+      "default": "High Gloss"
+    },
+    "product_sku": {
+      "type": "string"
+    },
+    "rank": {
+      "type": "number"
+    },
+    "in_stock": {
+      "type": "boolean",
+      "default": false
+    },
+    "vendor": {
+      "type": "string",
+      "default": "Xtreme Polishing Systems"
+    }
+  },
+  "required": [
+    "system",
+    "color_name",
+    "code"
+  ]
+}

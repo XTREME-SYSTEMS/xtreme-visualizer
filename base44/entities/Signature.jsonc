@@ -1,0 +1,43 @@
+{
+  "name": "Signature",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "proposal_id": {
+      "type": "string"
+    },
+    "signer_name": {
+      "type": "string"
+    },
+    "signer_email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "local_ack",
+        "requested",
+        "viewed",
+        "signed",
+        "declined"
+      ],
+      "default": "draft"
+    },
+    "signature_asset_url": {
+      "type": "string"
+    },
+    "signed_at": {
+      "type": "string"
+    },
+    "legally_binding": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "status"
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "customer_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "project_address": {
+      "type": "string"
+    },
+    "space_type": {
+      "type": "string",
+      "enum": [
+        "garage",
+        "basement",
+        "warehouse",
+        "showroom",
+        "patio",
+        "commercial_kitchen",
+        "retail",
+        "other"
+      ],
+      "default": "garage"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Original customer photo (immutable source)"
+    },
+    "mask_url": {
+      "type": "string"
+    },
+    "mask_coverage_pct": {
+      "type": "number"
+    },
+    "system_id": {
+      "type": "string"
+    },
+    "system_name": {
+      "type": "string"
+    },
+    "finish": {
+      "type": "string"
+    },
+    "floor_type": {
+      "type": "string"
+    },
+    "color_name": {
+      "type": "string"
+    },
+    "color_hex": {
+      "type": "string"
+    },
+    "square_feet": {
+      "type": "number"
+    },
+    "linear_feet_cracks": {
+      "type": "number",
+      "default": 0
+    },
+    "linear_feet_coving": {
+      "type": "number",
+      "default": 0
+    },
+    "linear_feet_joints": {
+      "type": "number",
+      "default": 0
+    },
+    "patch_count": {
+      "type": "number",
+      "default": 0
+    },
+    "demolition_sqft": {
+      "type": "number",
+      "default": 0
+    },
+    "extra_prep": {
+      "type": "boolean",
+      "default": false
+    },
+    "has_joints": {
+      "type": "boolean",
+      "default": false
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "good",
+        "fair",
+        "poor"
+      ],
+      "default": "fair"
+    },
+    "needs_grinding": {
+      "type": "boolean",
+      "default": true
+    },
+    "needs_moisture_mitigation": {
+      "type": "boolean",
+      "default": false
+    },
+    "estimate_low": {
+      "type": "number"
+    },
+    "estimate_high": {
+      "type": "number"
+    },
+    "pricing_version": {
+      "type": "string"
+    },
+    "proposal_total": {
+      "type": "number"
+    },
+    "desired_install_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "floor_logo_description": {
+      "type": "string"
+    },
+    "specifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "visualizer",
+        "lead_generator",
+        "manual",
+        "referral",
+        "phone",
+        "onsite"
+      ],
+      "default": "manual"
+    },
+    "division": {
+      "type": "string",
+      "default": "National Concrete Polishing"
+    },
+    "follow_up_stage": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "welcome_sent",
+        "first_followup_sent",
+        "second_followup_sent",
+        "final_reminder_sent"
+      ],
+      "default": "not_started"
+    },
+    "last_contacted_date": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "qualified",
+        "estimate_sent",
+        "proposal_sent",
+        "won",
+        "lost",
+        "follow_up"
+      ],
+      "default": "new"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "customer_name"
+  ]
+}

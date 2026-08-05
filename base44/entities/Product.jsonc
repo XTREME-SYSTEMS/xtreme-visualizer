@@ -1,0 +1,83 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "epoxy_kit",
+        "polyaspartic",
+        "pigment",
+        "sealer",
+        "densifier",
+        "joint_filler",
+        "moisture_barrier",
+        "cleaner",
+        "overlayment",
+        "glitter",
+        "cove_base",
+        "traction",
+        "equipment",
+        "tooling",
+        "flake",
+        "quartz",
+        "accessory"
+      ]
+    },
+    "size": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "description": "USD sale price"
+    },
+    "price_unit": {
+      "type": "string"
+    },
+    "specs": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "system_slug": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "product_url": {
+      "type": "string"
+    },
+    "price_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Unverified prices stay disabled for customer-facing use"
+    },
+    "customer_facing_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "vendor": {
+      "type": "string",
+      "default": "Xtreme Polishing Systems"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "category"
+  ]
+}

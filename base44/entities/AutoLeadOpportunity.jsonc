@@ -1,0 +1,134 @@
+{
+  "name": "AutoLeadOpportunity",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "jurisdiction": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "qualification",
+        "takeoff",
+        "estimating",
+        "proposal",
+        "won",
+        "lost"
+      ],
+      "default": "qualification"
+    },
+    "estimated_value": {
+      "type": "number"
+    },
+    "bid_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "bidability_score": {
+      "type": "number"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "pursue",
+        "review",
+        "decline"
+      ],
+      "default": "review"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "authority": {
+      "type": "string"
+    },
+    "retrieval_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "needs_review",
+        "verified",
+        "rejected"
+      ],
+      "default": "needs_review"
+    },
+    "verification_notes": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "last_verified_date": {
+      "type": "string"
+    },
+    "converted_lead_id": {
+      "type": "string"
+    },
+    "data_class": {
+      "type": "string",
+      "enum": [
+        "production",
+        "NON_PRODUCTION_EXAMPLE"
+      ],
+      "default": "NON_PRODUCTION_EXAMPLE"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

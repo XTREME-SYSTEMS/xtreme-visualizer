@@ -1,0 +1,35 @@
+{
+  "name": "AutoLeadVerificationReceipt",
+  "type": "object",
+  "properties": {
+    "opportunity_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "rejected"
+      ]
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "verified_at": {
+      "type": "string"
+    },
+    "verified_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "opportunity_id",
+    "status"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "customer_email": {
+      "type": "string"
+    },
+    "customer_phone": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "square_feet": {
+      "type": "number"
+    },
+    "floor_system": {
+      "type": "string"
+    },
+    "finish_name": {
+      "type": "string"
+    },
+    "preliminary_low": {
+      "type": "number"
+    },
+    "preliminary_high": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "New Lead",
+        "Qualified",
+        "Active",
+        "Viewed",
+        "Estimate Sent",
+        "Proposal Sent",
+        "Won",
+        "Lost"
+      ],
+      "default": "New Lead"
+    },
+    "project_image_url": {
+      "type": "string"
+    },
+    "visit_date": {
+      "type": "string"
+    },
+    "followup_date": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "location",
+    "status"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "FloorSystem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "epoxy",
+        "polished_concrete",
+        "decorative_concrete",
+        "coating",
+        "specialty"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "finishes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sheen_levels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Matte",
+          "Satin",
+          "Semi-Gloss",
+          "High Gloss",
+          "Wet Look",
+          "Textured"
+        ]
+      }
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "hex": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "product_skus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "base_rate_low": {
+      "type": "number"
+    },
+    "base_rate_high": {
+      "type": "number"
+    },
+    "rates_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "base_rate_low",
+    "base_rate_high"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "ActivityReceipt",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "actor": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string"
+    },
+    "detail": {
+      "type": "string"
+    },
+    "idempotency_key": {
+      "type": "string"
+    },
+    "rollback_hint": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "photo",
+        "mask",
+        "visualization",
+        "quote",
+        "proposal",
+        "appointment",
+        "validation",
+        "audit",
+        "lead"
+      ],
+      "default": "audit"
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
