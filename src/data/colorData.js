@@ -74,7 +74,7 @@ export const COLOR_DATA = [
   { system: "flake", color_name: "Shadow", code: "FB-913", hex: "#2A2A2A", collection: "Signature Collection", sheen: "Semi-Gloss", in_stock: false, rank: 29, image_url: "https://xtremepolishingsystems.com/cdn/shop/files/FB-913_SHADOW_1.4_3f3fbbd4-b54f-4c77-ae35-ffdc6f5e582f.jpg" },
   { system: "flake", color_name: "Stonehenge", code: "FB-427", hex: "#7A6A5A", collection: "Signature Collection", sheen: "Semi-Gloss", in_stock: false, rank: 30, image_url: "https://xtremepolishingsystems.com/cdn/shop/files/FB-427_STONEHENGE_1.4_6735b080-9f89-4aff-b53a-d1050af73686.jpg" },
   { system: "flake", color_name: "Anvil", code: "FB-726", hex: "#4A4A4A", collection: "Signature Collection", sheen: "Semi-Gloss", in_stock: false, rank: 31, image_url: "https://xtremepolishingsystems.com/cdn/shop/files/ProductImage_FLAKE-FLOOR_FB-726_ANVIL_1.4.jpg" },
-  { system: "flake", color_name: "Koala", code: "FB-811", hex: "#8A8A7A", collection: "Signature Collection", sheen: "Semi-Gloss", in_stock: false, rank: 32, image_url: "https://xtremepolishingsystems.com/cdn/shop/files/FB-811_KOALA_1.4_e0a06e89-6279-47b7-.jpg" },
+  { system: "flake", color_name: "Koala", code: "FB-811", hex: "#8A8A7A", collection: "Signature Collection", sheen: "Semi-Gloss", in_stock: false, rank: 32 },
 
   // ═══════════════════════════════════════════════════════════════
   // QUARTZ — Torginol Quartz Sand (QB codes)

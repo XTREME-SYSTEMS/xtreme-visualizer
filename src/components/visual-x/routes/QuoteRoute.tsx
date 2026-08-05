@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
 import { VisualXSelect, VisualXButton, VisualXSlider, VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
-import { Plus, Trash2, Save, FileText, Copy } from 'lucide-react';
+import { Plus, Save, FileText, Copy } from 'lucide-react';
 
 export function QuoteRoute() {
   const { state, notify, refresh } = useApp();
