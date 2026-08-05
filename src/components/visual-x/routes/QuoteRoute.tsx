@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
 import { VisualXSelect, VisualXButton, VisualXSlider, VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
-import { Plus, Save, FileText, Copy } from 'lucide-react';
+import { Plus, Save, FileText, Copy, Check } from 'lucide-react';
+import { buildPackages } from '@/lib/closeEngine';
+import { money as moneyFmt } from '@/lib/pricing';
 
 export function QuoteRoute() {
   const { state, notify, refresh, optimisticAdd, optimisticRemove } = useApp();
@@ -22,6 +24,7 @@ export function QuoteRoute() {
   const selectedLead = leads.find(l => l.id === leadId);
   const sqft = selectedLead?.squareFeet || 0;
   const calc = useMemo(() => api.calculateQuote({ lineItems, marginPercent: margin, rangeVariancePercent: 8 }), [lineItems, margin]);
+  const packages = useMemo(() => selectedLead ? buildPackages(selectedLead) : [], [selectedLead]);
 
   const updateItem = (id: string, field: string, value: any) => setLineItems(items => items.map(i => i.id === id ? { ...i, [field]: value } : i));
   const addItem = () => setLineItems(items => [...items, { id: String(Date.now()), name: '', detail: '', quantity: 0, unit: 'sq ft', rate: 0 }]);
@@ -83,6 +86,23 @@ export function QuoteRoute() {
           <strong>${calc.low.toFixed(0)} – ${calc.high.toFixed(0)}</strong>
         </div>
       </div>
+      {packages.length > 0 && (
+        <div className="vx-card">
+          <div className="vx-section-title"><h2>Close packages</h2><VisualXProvenanceBadge status="VERIFIED" source="vx2 close engine" /></div>
+          <p className="vx-muted" style={{ fontSize: 12, margin: '4px 0 10px' }}>Good / Better / Best tiers derived from the lead's preliminary range midpoint.</p>
+          <div className="vx-grid vx-grid-3">
+            {packages.map(p => (
+              <div key={p.id} className={`vx-card-soft ${p.recommended ? '' : ''}`} style={{ padding: 14, position: 'relative', borderColor: p.recommended ? 'var(--vx-accent)' : undefined }}>
+                {p.recommended && <span style={{ position: 'absolute', top: -10, right: 10, background: 'var(--vx-accent)', color: '#061000', fontSize: 9, fontWeight: 900, padding: '2px 8px', borderRadius: 6, letterSpacing: '.06em' }}>RECOMMENDED</span>}
+                <strong style={{ fontSize: 14 }}>{p.name}</strong>
+                <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--vx-accent)', margin: '4px 0' }}>{moneyFmt(p.price)}</div>
+                <small className="vx-muted" style={{ fontSize: 12, lineHeight: 1.4 }}>{p.detail}</small>
+                <div className="vx-muted" style={{ fontSize: 12, marginTop: 6 }}>Margin {Math.round(p.margin * 100)}%</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="vx-grid vx-grid-2">
         <VisualXButton variant="primary" onClick={save} disabled={saving || !leadId}><Save className="vx-icon" />{saving ? 'Saving…' : 'Save draft'}</VisualXButton>
         <VisualXButton variant="outline-accent" onClick={() => navigate('/app/proposal')}><FileText className="vx-icon" />Generate proposal</VisualXButton>

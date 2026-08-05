@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
 import { VisualXField, VisualXProvenanceBadge } from '../VisualXPrimitives';
 import { systemRates, money } from '@/lib/refData';
+import { computeRange, money as moneyFmt } from '@/lib/pricing';
+import { PRICE_DISCLOSURE } from '@/lib/brand';
 import { Upload, FileText } from 'lucide-react';
+
+const CONDITIONS = ['good', 'fair', 'poor'] as const;
 
 export function VisualizerRoute() {
   const { notify, refresh, optimisticAdd, optimisticRemove } = useApp();
@@ -13,11 +17,22 @@ export function VisualizerRoute() {
   const [fileUrl, setFileUrl] = useState('');
   const [system, setSystem] = useState('Epoxy Flake System');
   const [sqft, setSqft] = useState(850);
+  const [condition, setCondition] = useState<'good' | 'fair' | 'poor'>('fair');
+  const [needsGrinding, setNeedsGrinding] = useState(true);
+  const [needsMoisture, setNeedsMoisture] = useState(false);
+  const [crackLf, setCrackLf] = useState(0);
   const [saving, setSaving] = useState(false);
 
   const rates = systemRates[system];
-  const low = Math.round(sqft * rates.low);
-  const high = Math.round(sqft * rates.high);
+  const range = useMemo(() => computeRange({
+    square_feet: sqft,
+    condition,
+    base_rate_low: rates.low,
+    base_rate_high: rates.high,
+    needs_grinding: needsGrinding,
+    needs_moisture_mitigation: needsMoisture,
+    linear_feet_cracks: crackLf,
+  }), [sqft, condition, rates, needsGrinding, needsMoisture, crackLf]);
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,11 +50,26 @@ export function VisualizerRoute() {
     const tempId = 'pending-' + Date.now();
     optimisticAdd('leads', { id: tempId, customerName: 'Visualizer Project', address: 'Site verification pending', squareFeet: sqft, status: 'new' });
     try {
-      await api.v2.create('leads', { customerName: 'Visualizer Project', address: 'Site verification pending', squareFeet: sqft, systemName: system, floorType: system, estimateLow: low, estimateHigh: high, photoUrl: fileUrl || image, status: 'new', source: 'visualizer' });
-      try { await api.v2.create('activityReceipts', { action: 'visualization_saved', detail: `${system} concept saved with preliminary range $${low}–$${high}`, category: 'visualization' }); } catch {}
+      await api.v2.create('leads', {
+        customerName: 'Visualizer Project',
+        address: 'Site verification pending',
+        squareFeet: sqft,
+        systemName: system,
+        floorType: system,
+        condition,
+        needsGrinding,
+        needsMoistureMitigation: needsMoisture,
+        linearFeetCracks: crackLf,
+        estimateLow: range.low,
+        estimateHigh: range.high,
+        pricingVersion: range.version,
+        photoUrl: fileUrl || image,
+        status: 'new',
+        source: 'visualizer',
+      });
+      try { await api.v2.create('activityReceipts', { action: 'visualization_saved', detail: `${system} concept saved with preliminary range ${moneyFmt(range.low)}–${moneyFmt(range.high)} (v${range.version})`, category: 'visualization' }); } catch {}
       notify('Visualization project saved.');
-      setFileUrl('');
-      setImage('');
+      setFileUrl(''); setImage('');
       await refresh();
       navigate('/app/quote');
     } catch (e) { notify('Save failed: ' + (e instanceof Error ? e.message : 'error')); optimisticRemove('leads', tempId); }
@@ -77,13 +107,24 @@ export function VisualizerRoute() {
               </button>
             ))}
           </div>
-          <div style={{ marginTop: 17 }}>
+          <div style={{ marginTop: 17, display: 'grid', gap: 12 }}>
             <VisualXField label="Project square feet" inputProps={{ type: 'number', min: 1, value: sqft, onChange: e => setSqft(Math.max(1, Number(e.target.value || 1))) }} />
+            <div className="vx-field">
+              <label>Slab condition</label>
+              <div className="vx-tabbar">
+                {CONDITIONS.map(c => <button key={c} className={condition === c ? 'active' : ''} onClick={() => setCondition(c)} style={{ textTransform: 'capitalize' }}>{c}</button>)}
+              </div>
+            </div>
+            <div className="vx-grid vx-grid-2">
+              <button className={`vx-btn compact ${needsGrinding ? 'outline-accent' : ''}`} onClick={() => setNeedsGrinding(v => !v)}>Grinding prep</button>
+              <button className={`vx-btn compact ${needsMoisture ? 'outline-accent' : ''}`} onClick={() => setNeedsMoisture(v => !v)}>Moisture barrier</button>
+            </div>
+            <VisualXField label="Linear feet of cracks" inputProps={{ type: 'number', min: 0, value: crackLf, onChange: e => setCrackLf(Math.max(0, Number(e.target.value || 0))) }} />
           </div>
           <div className="price-panel">
             <span className="range-label">Preliminary installed range</span>
-            <span className="range">{money.format(low)} – {money.format(high)}</span>
-            <span className="price-detail">{money.format(rates.low)} – {money.format(rates.high)} per sq ft before verified prep, repairs, mobilization, tax, or site conditions.</span>
+            <span className="range">{moneyFmt(range.low)} – {moneyFmt(range.high)}</span>
+            <span className="price-detail">{money.format(rates.low)} – {money.format(rates.high)} per sq ft · includes prep, mobilization, condition factor. {PRICE_DISCLOSURE}</span>
             <button className="vx-btn primary" onClick={save} disabled={saving}>
               <FileText className="vx-icon" /> {saving ? 'Saving…' : 'Save Project'}
             </button>
