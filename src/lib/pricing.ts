@@ -4,8 +4,8 @@
 
 export const DEFAULT_RULES = {
   version: "v1.1",
-  mobilization_fee: 350,
-  min_job_price: 1200,
+  mobilization_fee: 0,
+  min_job_price: 0,
   prep_grinding_rate: 0.75,
   moisture_mitigation_rate: 1.5,
   crack_repair_rate: 12,
