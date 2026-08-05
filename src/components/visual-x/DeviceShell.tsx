@@ -35,12 +35,7 @@ const TAB_PATHS = ['/', '/visualizer', '/leads', '/inbox', '/more'];
 
 export function DeviceShell() {
   const [more, setMore] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    }
-    return 'dark';
-  });
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [userToggled, setUserToggled] = useState(false);
   const [settings, setSettings] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -71,13 +66,7 @@ export function DeviceShell() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
   }, [theme]);
-  useEffect(() => {
-    if (!window.matchMedia) return;
-    const mq = window.matchMedia('(prefers-color-scheme: light)');
-    const handler = (e: MediaQueryListEvent) => { if (!userToggled) setTheme(e.matches ? 'light' : 'dark'); };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [userToggled]);
+
   const toggleTheme = () => {
     setUserToggled(true);
     const next = theme === 'dark' ? 'light' : 'dark';
