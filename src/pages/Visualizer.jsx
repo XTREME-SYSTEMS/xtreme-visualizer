@@ -1,22 +1,60 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, FileText } from "lucide-react";
+import { Upload, Sparkles, Loader2, FileText, Check, Wand2, Layers } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { systemRates, money } from "@/lib/refData";
+import { getSystemColorRecords } from "@/lib/floorColors";
+import { computeRange, money as moneyFmt } from "@/lib/pricing";
+import { PRICE_DISCLOSURE } from "@/lib/brand";
+
+const CONDITIONS = ["good", "fair", "poor"];
+
+const BID_TIERS = [
+  { key: "essential", label: "Essential", factor: 0.92, blurb: "Core system, standard color, standard prep." },
+  { key: "recommended", label: "Recommended", factor: 1.0, blurb: "Premium color + full prep + sealing." },
+  { key: "premier", label: "Premier", factor: 1.12, blurb: "Decorative finish, coving, moisture barrier." },
+];
 
 export default function Visualizer() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [image, setImage] = useState("");
-  const [system, setSystem] = useState("Flake Epoxy");
-  const [sqft, setSqft] = useState(850);
-  const [saving, setSaving] = useState(false);
   const [fileUrl, setFileUrl] = useState("");
+  const [system, setSystem] = useState("Flake Epoxy");
+  const [color, setColor] = useState("");
+  const [sqft, setSqft] = useState(850);
+  const [condition, setCondition] = useState("fair");
+  const [needsGrinding, setNeedsGrinding] = useState(true);
+  const [needsMoisture, setNeedsMoisture] = useState(false);
+  const [crackLf, setCrackLf] = useState(0);
+  const [generating, setGenerating] = useState(false);
+  const [concept, setConcept] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const rates = systemRates[system];
-  const low = Math.round(sqft * rates.low);
-  const high = Math.round(sqft * rates.high);
+  const colorRecords = useMemo(() => getSystemColorRecords(system), [system]);
+  const selectedColor = colorRecords.find((c) => c.name === color) || colorRecords[0];
+
+  const range = useMemo(
+    () =>
+      computeRange({
+        square_feet: sqft,
+        condition,
+        base_rate_low: rates.low,
+        base_rate_high: rates.high,
+        needs_grinding: needsGrinding,
+        needs_moisture_mitigation: needsMoisture,
+        linear_feet_cracks: crackLf,
+      }),
+    [sqft, condition, rates, needsGrinding, needsMoisture, crackLf]
+  );
+
+  const bids = BID_TIERS.map((t) => ({
+    ...t,
+    low: Math.round((range.low * t.factor) / 25) * 25,
+    high: Math.round((range.high * t.factor) / 25) * 25,
+  }));
 
   const onFile = async (e) => {
     const file = e.target.files?.[0];
@@ -30,10 +68,34 @@ export default function Visualizer() {
     } catch {
       /* preview only */
     }
+    setConcept("");
     toast({ title: "Photo loaded for concept preview." });
   };
 
-  const save = async () => {
+  const generate = async () => {
+    if (!image && !fileUrl) {
+      toast({ title: "Upload a photo first.", variant: "destructive" });
+      return;
+    }
+    setGenerating(true);
+    setConcept("");
+    try {
+      const colorName = selectedColor?.name || "";
+      const prompt = `Photorealistic interior design rendering of the uploaded room with a newly installed ${system} floor in the color "${colorName}". Seamless, glossy, professional concrete coating finish. Same room geometry, walls, and lighting as the original photo. High-end real-estate photography, wide angle, natural light.`;
+      const res = await base44.integrations.Core.GenerateImage({
+        prompt,
+        existing_image_urls: fileUrl ? [fileUrl] : undefined,
+      });
+      setConcept(res.url);
+      toast({ title: "Visualization concept generated." });
+    } catch (err) {
+      toast({ title: "Generation failed", description: err.message, variant: "destructive" });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const save = async (tier) => {
     setSaving(true);
     try {
       const lead = await base44.entities.Lead.create({
@@ -42,8 +104,15 @@ export default function Visualizer() {
         square_feet: Number(sqft) || 0,
         system_name: system,
         floor_type: system,
-        estimate_low: low,
-        estimate_high: high,
+        color_name: selectedColor?.name || "",
+        color_hex: selectedColor?.hex || "",
+        condition,
+        needs_grinding: needsGrinding,
+        needs_moisture_mitigation: needsMoisture,
+        linear_feet_cracks: Number(crackLf) || 0,
+        estimate_low: tier ? tier.low : range.low,
+        estimate_high: tier ? tier.high : range.high,
+        pricing_version: range.version,
         photo_url: fileUrl || image || undefined,
         status: "new",
         source: "visualizer",
@@ -51,11 +120,23 @@ export default function Visualizer() {
       try {
         await base44.entities.ActivityReceipt.create({
           action: "visualization_saved",
-          detail: `${system} concept saved with preliminary range`,
+          detail: `${system} concept saved with preliminary range ${moneyFmt(range.low)}–${moneyFmt(range.high)}`,
           category: "visualization",
         });
       } catch {}
-      window.dispatchEvent(new Event("xv-projects-changed"));
+      if (concept) {
+        try {
+          await base44.entities.Visualization.create({
+            lead_id: lead.id,
+            image_url: concept,
+            source_photo_url: fileUrl || image || undefined,
+            system_name: system,
+            color_name: selectedColor?.name || "",
+            label: "AI concept",
+            disclosure: "AI concept visualization, not a completed customer project.",
+          });
+        } catch {}
+      }
       toast({ title: "Visualization project saved." });
       navigate(`/leads/${lead.id}`);
     } catch (err) {
@@ -66,61 +147,152 @@ export default function Visualizer() {
   };
 
   return (
-    <>
-      <div className="content-header">
-        <div>
-          <h1>Vizualizer</h1>
-          <p>Upload the customer's space, compare systems, and build a preliminary range.</p>
+    <div className="visualizer-flow">
+      {/* 1. Upload hero */}
+      <section className="viz-step">
+        <div className="viz-step-head">
+          <span className="viz-step-num">1</span>
+          <h2>Upload the customer's space</h2>
         </div>
-      </div>
-      <div className="content-card visualizer-grid">
-        <div>
-          <div className="upload-zone">
-            {image ? (
-              <img src={image} alt="Uploaded project" />
-            ) : (
-              <div className="upload-message">
-                <Upload size={42} />
-                <strong>Upload a customer photo</strong>
-                <span>Tap anywhere to select a garage, basement, warehouse, showroom, or patio photo.</span>
-              </div>
-            )}
-            <input type="file" accept="image/*" onChange={onFile} />
-          </div>
-          <div className="guardrail" style={{ marginTop: 14 }}>
-            <strong>AI concept guardrail:</strong> Visualizations are design concepts, not completed customer projects. Final system suitability requires site verification.
-          </div>
+        <div className="upload-zone viz-upload-hero">
+          {image ? (
+            <img src={image} alt="Uploaded project" />
+          ) : (
+            <div className="upload-message">
+              <Upload size={42} />
+              <strong>Upload a customer photo</strong>
+              <span>Tap anywhere to select a garage, basement, warehouse, showroom, or patio photo.</span>
+            </div>
+          )}
+          <input type="file" accept="image/*" onChange={onFile} />
         </div>
-        <div>
-          <h2 className="section-title" style={{ fontSize: 20 }}>Floor system</h2>
-          <div className="swatches">
-            {Object.entries(systemRates).map(([name, r]) => (
+        <div className="guardrail">
+          <strong>AI concept guardrail:</strong> Visualizations are design concepts, not completed customer projects. Final system suitability requires site verification.
+        </div>
+      </section>
+
+      {/* 2. System + color + specs */}
+      <section className="viz-step">
+        <div className="viz-step-head">
+          <span className="viz-step-num">2</span>
+          <h2>Choose floor system &amp; color</h2>
+        </div>
+        <div className="swatches">
+          {Object.entries(systemRates).map(([name, r]) => (
+            <button
+              key={name}
+              className={`swatch ${system === name ? "active" : ""}`}
+              onClick={() => { setSystem(name); setColor(""); setConcept(""); }}
+            >
+              <span className="swatch-color" style={{ background: r.gradient }} />
+              <strong>{name}</strong>
+            </button>
+          ))}
+        </div>
+        <div className="vx-color-chart-preview" style={{ marginTop: 14 }}>
+          <div className="vx-section-title"><h3>{system} color chart</h3></div>
+          <div className="vx-chart-strip">
+            {colorRecords.map((c) => (
               <button
-                key={name}
-                className={`swatch ${system === name ? "active" : ""}`}
-                onClick={() => setSystem(name)}
+                key={c.code}
+                className={`vx-chart-chip ${selectedColor?.name === c.name ? "active" : ""}`}
+                title={`${c.name} (${c.code})`}
+                onClick={() => setColor(c.name)}
+                style={{ border: selectedColor?.name === c.name ? "1px solid var(--vx-accent)" : undefined }}
               >
-                <span className="swatch-color" style={{ background: r.gradient }} />
-                <strong>{name}</strong>
+                {c.image_url ? <img src={c.image_url} alt={c.name} loading="lazy" /> : <span style={{ background: c.hex }} />}
+                <small>{c.name}</small>
               </button>
             ))}
           </div>
-          <label className="field" style={{ marginTop: 17 }}>
+        </div>
+        <div className="viz-specs">
+          <label className="field">
             Project square feet
             <input type="number" min="1" value={sqft} onChange={(e) => setSqft(Math.max(1, Number(e.target.value || 1)))} />
           </label>
-          <div className="price-panel">
-            <span className="range-label">Preliminary installed range</span>
-            <span className="range">{money.format(low)} – {money.format(high)}</span>
-            <span style={{ fontSize: 12, color: "#bbb" }}>
-              {money.format(rates.low)} – {money.format(rates.high)} per sq ft before verified prep, repairs, mobilization, tax, or site conditions.
-            </span>
-            <button className="gold-button" onClick={save} disabled={saving}>
-              <FileText size={19} /> {saving ? "Saving…" : "Save Project"}
-            </button>
+          <div className="field">
+            <span>Slab condition</span>
+            <div className="vx-tabbar">
+              {CONDITIONS.map((c) => (
+                <button key={c} className={condition === c ? "active" : ""} onClick={() => setCondition(c)} style={{ textTransform: "capitalize" }}>
+                  {c}
+                </button>
+              ))}
+            </div>
           </div>
+          <div className="viz-toggle-row">
+            <button className={`vx-btn compact ${needsGrinding ? "outline-accent" : ""}`} onClick={() => setNeedsGrinding((v) => !v)}>Grinding prep</button>
+            <button className={`vx-btn compact ${needsMoisture ? "outline-accent" : ""}`} onClick={() => setNeedsMoisture((v) => !v)}>Moisture barrier</button>
+          </div>
+          <label className="field">
+            Linear feet of cracks
+            <input type="number" min="0" value={crackLf} onChange={(e) => setCrackLf(Math.max(0, Number(e.target.value || 0)))} />
+          </label>
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* 3. Generate before/after */}
+      <section className="viz-step">
+        <div className="viz-step-head">
+          <span className="viz-step-num">3</span>
+          <h2>Generate visualization</h2>
+        </div>
+        <button className="gold-button viz-generate-btn" onClick={generate} disabled={generating || (!image && !fileUrl)}>
+          {generating ? <Loader2 size={19} style={{ animation: "spin .8s linear infinite" }} /> : <Wand2 size={19} />}
+          {generating ? "Rendering concept…" : "Generate before / after"}
+        </button>
+        {(image || concept) && (
+          <div className="viz-before-after">
+            <div className="viz-ba-panel">
+              <span className="viz-ba-label">Before</span>
+              {image ? <img src={image} alt="Before" /> : <div className="viz-ba-empty"><Upload size={28} /></div>}
+            </div>
+            <div className="viz-ba-panel">
+              <span className="viz-ba-label">After</span>
+              {generating ? (
+                <div className="viz-ba-empty"><Loader2 size={28} style={{ animation: "spin .8s linear infinite" }} /></div>
+              ) : concept ? (
+                <img src={concept} alt="After" />
+              ) : (
+                <div className="viz-ba-empty"><Sparkles size={28} /></div>
+              )}
+            </div>
+          </div>
+        )}
+        {concept && <p className="viz-disclosure">{PRICE_DISCLOSURE}</p>}
+      </section>
+
+      {/* 4. Instant bid options */}
+      <section className="viz-step">
+        <div className="viz-step-head">
+          <span className="viz-step-num">4</span>
+          <h2>Instant bid options</h2>
+        </div>
+        <div className="price-panel" style={{ marginBottom: 12 }}>
+          <span className="range-label">Preliminary installed range</span>
+          <span className="range">{moneyFmt(range.low)} – {moneyFmt(range.high)}</span>
+          <span style={{ fontSize: 12, color: "#bbb" }}>
+            {money.format(rates.low)} – {money.format(rates.high)} per sq ft · includes prep, mobilization, condition factor.
+          </span>
+        </div>
+        <div className="viz-bids">
+          {bids.map((b) => (
+            <div key={b.key} className={`viz-bid-card ${b.key === "recommended" ? "featured" : ""}`}>
+              {b.key === "recommended" && <span className="viz-bid-badge">Best value</span>}
+              <strong>{b.label}</strong>
+              <span className="viz-bid-range">{moneyFmt(b.low)} – {moneyFmt(b.high)}</span>
+              <small>{b.blurb}</small>
+              <button className="vx-btn primary" onClick={() => save(b)} disabled={saving}>
+                <FileText size={16} /> Save as {b.label}
+              </button>
+            </div>
+          ))}
+        </div>
+        <button className="vx-btn outline-accent" style={{ width: "100%", marginTop: 10 }} onClick={() => save(null)} disabled={saving}>
+          <Layers size={18} /> {saving ? "Saving…" : "Save without tier"}
+        </button>
+      </section>
+    </div>
   );
 }

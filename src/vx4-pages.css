@@ -278,6 +278,63 @@
 .home-nav-label strong { font-size: 13px; font-weight: 700; line-height: 1.2; }
 .home-nav-label small { font-size: 10px; color: var(--vx-muted); line-height: 1.3; }
 
+/* ===== Visualizer single-page flow ===== */
+.visualizer-flow { display: grid; gap: 18px; }
+.viz-step {
+  display: grid; gap: 12px; padding: 16px;
+  border: 1px solid var(--vx-border-soft); border-radius: 16px;
+  background: linear-gradient(145deg, var(--vx-panel-2), var(--vx-panel));
+  box-shadow: inset 0 1px rgba(255,255,255,.03), var(--vx-shadow);
+}
+.viz-step-head { display: flex; align-items: center; gap: 10px; }
+.viz-step-head h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+.viz-step-num {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: grid; place-items: center; font-size: 13px; font-weight: 900;
+  color: #061000; background: var(--vx-accent); box-shadow: var(--vx-glow);
+}
+.viz-upload-hero { min-height: 240px; }
+.viz-upload-hero img { min-height: 240px; }
+.viz-specs { display: grid; gap: 12px; margin-top: 4px; }
+.viz-toggle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.viz-generate-btn { width: 100%; justify-content: center; }
+.viz-before-after {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.viz-ba-panel {
+  position: relative; border-radius: 14px; overflow: hidden;
+  border: 1px solid var(--vx-border-soft); background: var(--vx-panel-3);
+  min-height: 160px; display: grid; place-items: center;
+}
+.viz-ba-panel img { width: 100%; height: 100%; min-height: 160px; object-fit: cover; }
+.viz-ba-label {
+  position: absolute; top: 8px; left: 8px; z-index: 2;
+  font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 6px; color: #061000; background: var(--vx-accent);
+}
+.viz-ba-empty { color: var(--vx-faint); display: grid; place-items: center; padding: 40px; }
+.viz-disclosure { font-size: 11px; color: var(--vx-faint); margin: 0; line-height: 1.4; }
+.viz-bids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.viz-bid-card {
+  position: relative; display: grid; gap: 6px; padding: 14px;
+  border: 1px solid var(--vx-border-soft); border-radius: 14px; background: var(--vx-panel);
+}
+.viz-bid-card.featured { border-color: var(--vx-accent); box-shadow: var(--vx-glow); background: linear-gradient(160deg, var(--vx-accent-soft), var(--vx-panel)); }
+.viz-bid-card strong { font-size: 15px; }
+.viz-bid-range { font-size: 17px; font-weight: 900; color: var(--vx-accent); }
+.viz-bid-card small { font-size: 11px; color: var(--vx-muted); line-height: 1.35; }
+.viz-bid-card .vx-btn { margin-top: 6px; font-size: 12px; min-height: 40px; }
+.viz-bid-badge {
+  position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 6px; color: #061000; background: var(--vx-accent); white-space: nowrap;
+}
+.vx-chart-chip { background: transparent; border: 1px solid var(--vx-border-soft); border-radius: 10px; padding: 4px; cursor: pointer; display: grid; gap: 3px; }
+.vx-chart-chip.active { border-color: var(--vx-accent); box-shadow: var(--vx-glow); }
+.vx-chart-chip img { width: 100%; height: 44px; object-fit: cover; border-radius: 6px; }
+.vx-chart-chip span { width: 100%; height: 44px; border-radius: 6px; display: block; }
+.vx-chart-chip small { font-size: 9px; color: var(--vx-muted); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .tools-grid { grid-template-columns: repeat(3, 1fr); }
@@ -292,4 +349,8 @@
   .home-nav-icon { width: 40px; height: 40px; border-radius: 11px; }
   .home-nav-label strong { font-size: 12px; }
   .home-nav-label small { display: none; }
+  .viz-bids { grid-template-columns: 1fr; }
+  .viz-before-after { grid-template-columns: 1fr; }
+  .viz-step { padding: 12px; }
+  .viz-upload-hero, .viz-upload-hero img, .viz-ba-panel, .viz-ba-panel img { min-height: 180px; }
 }
