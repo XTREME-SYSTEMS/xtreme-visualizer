@@ -37,11 +37,11 @@ export function VisualXField({ label, hint, error, children, inputProps, textare
 
 interface SelectProps { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; hint?: string; error?: string; }
 export function VisualXSelect({ label, value, onChange, options, hint, error }: SelectProps) {
-  const id = useId();
+  const selectId = useId();
   return (
-    <label className="vx-field" htmlFor={id}>
+    <label className="vx-field" htmlFor={selectId}>
       <span>{label}</span>
-      <select id={id} value={value} onChange={e => onChange(e.target.value)}>
+      <select id={selectId} value={value} onChange={e => onChange(e.target.value)}>
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
       {error ? <span className="vx-field__error">{error}</span> : hint ? <span className="vx-help">{hint}</span> : null}
