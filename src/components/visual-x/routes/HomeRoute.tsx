@@ -14,6 +14,7 @@ export function HomeRoute() {
   return (
     <>
       <div className="home-hero">
+        <img src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
         <div className="home-hero-content">
           <span className="vx-kicker">VISUAL X · COMMAND CENTER</span>
           <h1>Design, quote,<span>and win floors.</span></h1>
