@@ -88,7 +88,7 @@ export function DeviceShell() {
           <div className="vx-brandbar">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
-              <div className="vx-brand-logo" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, fontSize: 28, letterSpacing: '-.04em', color: 'var(--vx-text)' }}>VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
+              <div className="vx-brand-logo" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, fontSize: 56, letterSpacing: '-.04em', color: 'var(--vx-text)' }}>VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button onClick={toggleTheme} className="vx-icon-btn" aria-label="Toggle theme">{theme === 'dark' ? <Sun className="vx-icon" /> : <Moon className="vx-icon" />}</button>
