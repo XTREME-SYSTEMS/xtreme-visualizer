@@ -18,6 +18,7 @@ const MORE = [
   { to: '/app/metallic', label: 'Metallic Studio' },
   { to: '/app/proposal', label: 'Proposal Share' },
   { to: '/app/lead', label: 'Lead Capture' },
+  { to: '/app/integrations', label: 'Connections' },
 ];
 
 export function DeviceShell() {

@@ -1,4 +1,4 @@
-export type ScreenKey = 'home'|'scan'|'visualizer'|'compare'|'blends'|'metallic'|'products'|'quote'|'proposal'|'lead';
+export type ScreenKey = 'home'|'scan'|'visualizer'|'compare'|'blends'|'metallic'|'products'|'quote'|'proposal'|'lead'|'integrations';
 export interface Hotspot { label: string; x: number; y: number; w: number; h: number; action: string; }
 export interface ScreenConfig { key: ScreenKey; title: string; image: string; route: string; hotspots: Hotspot[]; }
 const navY=89.2, navH=7;

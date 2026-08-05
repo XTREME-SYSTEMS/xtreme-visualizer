@@ -12,6 +12,7 @@ import { VisualizerRoute } from './components/visual-x/routes/VisualizerRoute';
 import { CompareRoute } from './components/visual-x/routes/CompareRoute';
 import { BlendsRoute } from './components/visual-x/routes/BlendsRoute';
 import { MetallicRoute } from './components/visual-x/routes/MetallicRoute';
+import { IntegrationsRoute } from './components/visual-x/routes/IntegrationsRoute';
 import { VisualXLoadingState, VisualXErrorState, VisualXEmptyState } from './components/visual-x';
 import { screenByKey, type ScreenKey } from './data/screens';
 
@@ -26,6 +27,7 @@ const ROUTES: Partial<Record<ScreenKey, FC>> = {
   compare: CompareRoute,
   blends: BlendsRoute,
   metallic: MetallicRoute,
+  integrations: IntegrationsRoute,
 };
 
 export function VisualXScreen() {

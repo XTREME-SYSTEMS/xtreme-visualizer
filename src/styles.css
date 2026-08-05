@@ -149,6 +149,17 @@ img{display:block;max-width:100%}
 /* Lead */
 .lead-card{display:grid;grid-template-columns:1fr 250px;gap:14px;padding:15px}.lead-card img{height:180px;width:100%;object-fit:cover;border-radius:13px}.lead-card h2{font-size:22px;margin:0 0 7px}.lead-card p{margin:4px 0;color:var(--vx-muted);font-size:12px}.lead-photo-grid{grid-template-columns:repeat(4,1fr)}.lead-photo{height:145px;border-radius:13px;border:1px solid var(--vx-border);overflow:hidden;position:relative;background:var(--vx-panel);display:grid;place-items:center}.lead-photo img{width:100%;height:100%;object-fit:cover}.lead-photo span{position:absolute;bottom:8px;left:8px;font-size:9px;background:rgba(0,0,0,.72);color:#fff;border-radius:6px;padding:4px 6px}.lead-task{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--vx-border-soft)}.lead-task:last-child{border-bottom:0}.lead-task input{width:20px;height:20px;accent-color:var(--vx-accent)}.lead-task small{color:var(--vx-muted)}.ai-card{display:grid;grid-template-columns:95px 1fr 150px;gap:14px;padding:14px;align-items:center}.ai-score{width:78px;height:78px;border-radius:50%;border:6px solid var(--vx-accent);display:grid;place-items:center;color:var(--vx-accent);font-weight:900;font-size:22px}.ai-card h3{margin:0 0 5px}.ai-card p{margin:0;color:var(--vx-muted);font-size:11px}.lead-actions{grid-template-columns:1.2fr 1fr 1.15fr}
 
+/* Integrations */
+.integrations-grid{display:grid;gap:12px}
+.integration-card{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:15px;border:1px solid var(--vx-border-soft);border-radius:15px;background:var(--vx-panel);transition:border-color .15s}
+.integration-card.connected{border-color:#4f7d00;background:rgba(156,255,0,.03)}
+.integration-icon{width:56px;height:56px;border-radius:13px;display:grid;place-items:center;background:var(--vx-bg-2);border:1px solid var(--vx-border-soft)}
+.integration-body{display:grid;gap:8px;align-content:start}
+.integration-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.integration-head strong{font-size:15px}
+.integration-body p{margin:0;font-size:12px;color:var(--vx-muted);line-height:1.4}
+.integration-body .vx-btn{justify-self:start}
+[data-theme="light"] .integration-card.connected{background:rgba(116,190,0,.04)}
 /* provenance badges */
 .vx-provenance{display:inline-flex;align-items:center;gap:4px}
 .vx-provenance .vx-icon{width:13px;height:13px}

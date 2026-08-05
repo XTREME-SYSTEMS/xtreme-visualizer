@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
+import { base44 } from '@/api/base44Client';
 import { VisualXField, VisualXSelect, VisualXButton, VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
 import { PullToRefresh } from '../PullToRefresh';
-import { Camera, Save, User, MapPin } from 'lucide-react';
+import { Camera, Save, User, MapPin, Building2, CalendarPlus, Loader2 } from 'lucide-react';
+import { HubSpotIcon, GoogleCalendarIcon } from '../ConnectorIcons';
 
 export function LeadRoute() {
   const { state, notify, refresh, optimisticAdd, optimisticRemove } = useApp();
@@ -12,7 +14,44 @@ export function LeadRoute() {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState(false);
+  const [busyLead, setBusyLead] = useState<string | null>(null);
   const leads = state?.leads || [];
+
+  const pushToHubSpot = async (lead: any) => {
+    setBusyLead(lead.id);
+    try {
+      const res = await base44.functions.invoke('pushLeadToHubSpot', {
+        leadId: lead.id, customerName: lead.customerName, email: lead.email, phone: lead.phone,
+        address: lead.address, squareFeet: lead.squareFeet, systemName: lead.systemName || lead.floorType,
+        estimateLow: lead.estimateLow, estimateHigh: lead.estimateHigh,
+      });
+      notify(`Pushed to HubSpot — deal ${res.data.dealName}`);
+      await refresh();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'error';
+      notify(msg.includes('connection') || msg.includes('Unauthorized') ? 'Connect HubSpot first in Connections.' : 'HubSpot push failed: ' + msg);
+    } finally { setBusyLead(null); }
+  };
+
+  const scheduleVisit = async (lead: any) => {
+    if (!lead.appointment) { notify('Set an appointment date first.'); return; }
+    setBusyLead(lead.id);
+    try {
+      const start = new Date(lead.appointment + 'T09:00:00');
+      const end = new Date(lead.appointment + 'T10:00:00');
+      const res = await base44.functions.invoke('createCalendarAppointment', {
+        summary: `Site Visit — ${lead.customerName}`,
+        description: `Visual X site visit. ${lead.squareFeet} sq ft. Notes: ${lead.notes || ''}`,
+        startDateTime: start.toISOString(), endDateTime: end.toISOString(),
+        location: lead.address, leadId: lead.id,
+      });
+      notify(`Calendar event created — ${res.data.htmlLink ? 'check your calendar' : 'done'}`);
+      await refresh();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'error';
+      notify(msg.includes('connection') || msg.includes('Unauthorized') ? 'Connect Google Calendar first.' : 'Calendar failed: ' + msg);
+    } finally { setBusyLead(null); }
+  };
 
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
 
@@ -79,9 +118,25 @@ export function LeadRoute() {
         {leads.length === 0 ? <VisualXEmptyState title="No leads yet">Capture your first lead above.</VisualXEmptyState> : (
           <div className="project-list">
             {leads.slice(0, 8).map(l => (
-              <div key={l.id} className="project-row">
+              <div key={l.id} className="project-row" style={{ gridTemplateColumns: '48px 1fr auto' }}>
                 <div className="vx-icon-tile"><User className="vx-icon" /></div>
-                <div><h3>{l.customerName}</h3><p><MapPin className="vx-icon vx-icon-sm" /> {l.address}</p><span className="vx-chip ready">{l.status}</span></div>
+                <div>
+                  <h3>{l.customerName}</h3>
+                  <p><MapPin className="vx-icon vx-icon-sm" /> {l.address}</p>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+                    <span className="vx-chip ready">{l.status}</span>
+                    {l.hubspotDealId && <span className="vx-chip" style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}><HubSpotIcon size={12} /> HubSpot</span>}
+                    {l.visitDate && <span className="vx-chip" style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}><GoogleCalendarIcon size={12} /> Visit set</span>}
+                  </div>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                    <button className="vx-btn compact" style={{ minHeight: 36, fontSize: 11, padding: '5px 9px' }} disabled={busyLead === l.id} onClick={() => pushToHubSpot(l)}>
+                      {busyLead === l.id ? <Loader2 className="vx-icon vx-icon-sm" style={{ animation: 'spin .8s linear infinite' }} /> : <Building2 className="vx-icon vx-icon-sm" />} HubSpot
+                    </button>
+                    <button className="vx-btn compact" style={{ minHeight: 36, fontSize: 11, padding: '5px 9px' }} disabled={busyLead === l.id} onClick={() => scheduleVisit(l)}>
+                      {busyLead === l.id ? <Loader2 className="vx-icon vx-icon-sm" style={{ animation: 'spin .8s linear infinite' }} /> : <CalendarPlus className="vx-icon vx-icon-sm" />} Calendar
+                    </button>
+                  </div>
+                </div>
                 <div className="project-side"><span className="vx-muted">{l.squareFeet} sq ft</span></div>
               </div>
             ))}

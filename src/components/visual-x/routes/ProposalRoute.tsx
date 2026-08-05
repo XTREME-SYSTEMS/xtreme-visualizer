@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
-import { VisualXSelect, VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
+import { base44 } from '@/api/base44Client';
+import { VisualXSelect, VisualXField, VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
 import { FLOOR_TYPE_OPTIONS, generateSpecs } from '@/data/floorSpecs';
-import { Download, Share2, FileText } from 'lucide-react';
+import { Download, Share2, FileText, Mail, Loader2, X } from 'lucide-react';
 import { WARRANTY_TEXT, FINE_PRINT } from '@/lib/proposalBuilder';
 import { AI_DISCLOSURE, PRICE_DISCLOSURE } from '@/lib/brand';
+import { GmailIcon } from '../ConnectorIcons';
 
 export function ProposalRoute() {
   const { state, notify, refresh } = useApp();
@@ -13,6 +15,24 @@ export function ProposalRoute() {
   const [quoteId, setQuoteId] = useState('');
   const [floorType, setFloorType] = useState(FLOOR_TYPE_OPTIONS[0]);
   const [generating, setGenerating] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailTo, setEmailTo] = useState('');
+  const [emailing, setEmailing] = useState(false);
+
+  const sendViaGmail = async () => {
+    if (!emailTo.trim()) { notify('Enter a recipient email.'); return; }
+    setEmailing(true);
+    try {
+      const scope = specs.map(s => `${s.label}: ${s.detail}`).join('\n');
+      const body = `Hi ${selectedQuote?.customerName || ''},\n\nHere is your Visual X proposal preview.\n\nFloor System: ${floorType}\nEstimate: $${calc?.total.toFixed(0) || 0} (range $${calc?.low.toFixed(0) || 0} – $${calc?.high.toFixed(0) || 0})\n\nSCOPE OF WORK\n${scope}\n\n${PRICE_DISCLOSURE}\n\n${WARRANTY_TEXT}\n\n${FINE_PRINT}\n\n${AI_DISCLOSURE}`;
+      await base44.functions.invoke('sendGmailMessage', { to: emailTo, subject: `Visual X Proposal — ${selectedQuote?.customerName || 'Project'}`, body });
+      notify('Proposal emailed via your Gmail.');
+      setEmailOpen(false); setEmailTo('');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'error';
+      notify(msg.includes('connection') || msg.includes('Unauthorized') ? 'Connect Gmail first in Connections.' : 'Email failed: ' + msg);
+    } finally { setEmailing(false); }
+  };
 
   const selectedQuote = quotes.find(q => q.id === quoteId);
   const calc = useMemo(() => selectedQuote ? api.calculateQuote({ lineItems: selectedQuote.lineItems, marginPercent: selectedQuote.marginPercent, rangeVariancePercent: 8 }) : null, [selectedQuote]);
@@ -82,6 +102,19 @@ export function ProposalRoute() {
             <button className="proposal-action" onClick={downloadPreview}><Download className="vx-icon" />Download preview</button>
             <button className="proposal-action" onClick={copyLink}><Share2 className="vx-icon" />Copy share link</button>
           </div>
+          <button className="vx-btn outline-accent" style={{ width: '100%' }} onClick={() => setEmailOpen(true)} disabled={!quoteId}>
+            <GmailIcon size={20} /> Email via Gmail
+          </button>
+          {emailOpen && (
+            <div className="vx-card" style={{ display: 'grid', gap: 10 }}>
+              <div className="vx-section-title"><h2>Email proposal</h2><button onClick={() => setEmailOpen(false)} className="vx-icon-btn" style={{ width: 36, height: 36 }}><X className="vx-icon vx-icon-sm" /></button></div>
+              <VisualXField label="Recipient email" inputProps={{ type: 'email', value: emailTo, onChange: e => setEmailTo(e.target.value), placeholder: 'customer@email.com' }} />
+              <button className="vx-btn primary" onClick={sendViaGmail} disabled={emailing}>
+                {emailing ? <Loader2 className="vx-icon" style={{ animation: 'spin .8s linear infinite' }} /> : <Mail className="vx-icon" />}
+                {emailing ? 'Sending…' : 'Send via Gmail'}
+              </button>
+            </div>
+          )}
           <VisualXBlockedState title="Legally binding e-signature disabled">
             <p>Request signature and customer delivery remain disabled. Download the preview and deliver manually.</p>
           </VisualXBlockedState>
