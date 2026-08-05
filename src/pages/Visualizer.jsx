@@ -4,7 +4,7 @@ import { Upload, Sparkles, Loader2, FileText, Wand2, Layers, Mail, MessageSquare
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { systemRates, money } from "@/lib/refData";
-import { getSystemColorRecords, getSystemColors } from "@/lib/floorColors";
+import { getSystemColorRecords } from "@/lib/floorColors";
 import { computeRange, money as moneyFmt } from "@/lib/pricing";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 
@@ -237,17 +237,20 @@ export default function Visualizer() {
         </div>
         <div className="swatches">
           {Object.entries(systemRates).filter(([name]) => name !== "Joint Fill & Repair").map(([name]) => {
-            const colors = getSystemColors(name);
+            const records = getSystemColorRecords(name);
+            const rep = records[0];
             return (
               <button
                 key={name}
                 className={"swatch " + (system === name ? "active" : "")}
                 onClick={() => { setSystem(name); setColor(""); setConcept(""); }}
               >
-                <span className="swatch-color viz-swatch-strip">
-                  {colors.slice(0, 6).map((hex, i) => (
-                    <span key={i} style={{ background: hex }} />
-                  ))}
+                <span className="swatch-color viz-swatch-tile">
+                  {rep?.image_url ? (
+                    <img src={rep.image_url} alt={rep.name} loading="lazy" />
+                  ) : (
+                    <span className="viz-swatch-fill" style={{ background: rep?.hex || "#888" }} />
+                  )}
                 </span>
                 <strong>{name}</strong>
               </button>
