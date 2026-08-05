@@ -284,7 +284,7 @@ export default function Visualizer() {
         <div className="viz-specs">
           <label className="field">
             Project square feet
-            <input type="number" min="0" value={sqft} onChange={(e) => setSqft(Math.max(0, Number(e.target.value || 0)))} />
+            <input type="number" min="0" value={sqft || ""} onChange={(e) => setSqft(Math.max(0, Number(e.target.value || 0)))} />
           </label>
           <div className="field">
             <span>Slab condition</span>
@@ -302,7 +302,7 @@ export default function Visualizer() {
           </div>
           <label className="field">
             Linear feet of cracks
-            <input type="number" min="0" value={crackLf} onChange={(e) => setCrackLf(Math.max(0, Number(e.target.value || 0)))} />
+            <input type="number" min="0" value={crackLf || ""} onChange={(e) => setCrackLf(Math.max(0, Number(e.target.value || 0)))} />
           </label>
 
           {/* Blemishes expandable */}
@@ -316,27 +316,27 @@ export default function Visualizer() {
             <div className="viz-blemish-grid">
               <label className="field">
                 Patch count
-                <input type="number" min="0" value={patchCount} onChange={(e) => setPatchCount(Math.max(0, Number(e.target.value || 0)))} />
+                <input type="number" min="0" value={patchCount || ""} onChange={(e) => setPatchCount(Math.max(0, Number(e.target.value || 0)))} />
               </label>
               <label className="field">
                 Excessive patches
-                <input type="number" min="0" value={excessivePatch} onChange={(e) => setExcessivePatch(Math.max(0, Number(e.target.value || 0)))} />
+                <input type="number" min="0" value={excessivePatch || ""} onChange={(e) => setExcessivePatch(Math.max(0, Number(e.target.value || 0)))} />
               </label>
               <label className="field">
                 Large patches / deep spalls
-                <input type="number" min="0" value={largePatch} onChange={(e) => setLargePatch(Math.max(0, Number(e.target.value || 0)))} />
+                <input type="number" min="0" value={largePatch || ""} onChange={(e) => setLargePatch(Math.max(0, Number(e.target.value || 0)))} />
               </label>
               <label className="field">
                 Linear feet of joints
-                <input type="number" min="0" value={jointLf} onChange={(e) => setJointLf(Math.max(0, Number(e.target.value || 0)))} />
+                <input type="number" min="0" value={jointLf || ""} onChange={(e) => setJointLf(Math.max(0, Number(e.target.value || 0)))} />
               </label>
               <label className="field">
                 Linear feet of coving
-                <input type="number" min="0" value={covingLf} onChange={(e) => setCovingLf(Math.max(0, Number(e.target.value || 0)))} />
+                <input type="number" min="0" value={covingLf || ""} onChange={(e) => setCovingLf(Math.max(0, Number(e.target.value || 0)))} />
               </label>
               <label className="field">
                 Demolition sq ft
-                <input type="number" min="0" value={demoSqft} onChange={(e) => setDemoSqft(Math.max(0, Number(e.target.value || 0)))} />
+                <input type="number" min="0" value={demoSqft || ""} onChange={(e) => setDemoSqft(Math.max(0, Number(e.target.value || 0)))} />
               </label>
               <button className={"vx-btn compact " + (extraPrep ? "primary" : "")} onClick={() => setExtraPrep((v) => !v)}>
                 Extra site prep (+$250)
