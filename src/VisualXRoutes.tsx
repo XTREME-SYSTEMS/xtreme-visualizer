@@ -1,5 +1,6 @@
 import { type FC } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from './components/AppProvider';
 import { DeviceShell } from './components/visual-x/DeviceShell';
 import { HomeRoute } from './components/visual-x/routes/HomeRoute';
@@ -36,7 +37,7 @@ export function VisualXScreen() {
   const RouteComp = ROUTES[key];
   if (loading) return <DeviceShell><VisualXLoadingState label={`Loading ${screen.title}…`} /></DeviceShell>;
   if (error || !state) return <DeviceShell><VisualXErrorState error={error || 'Runtime state was unavailable.'} retry={() => void refresh()} /></DeviceShell>;
-  return <DeviceShell>{RouteComp ? <RouteComp /> : <VisualXEmptyState title={`${screen.title} — in progress`}>This route is being built in the next batch.</VisualXEmptyState>}</DeviceShell>;
+  return <DeviceShell><AnimatePresence mode="wait"><motion.div key={key} initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ duration: 0.25, ease: 'easeInOut' }} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>{RouteComp ? <RouteComp /> : <VisualXEmptyState title={`${screen.title} — in progress`}>This route is being built in the next batch.</VisualXEmptyState>}</motion.div></AnimatePresence></DeviceShell>;
 }
 
 export default function VisualXRoutes() {

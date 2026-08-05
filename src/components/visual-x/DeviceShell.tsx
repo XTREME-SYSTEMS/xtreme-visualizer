@@ -37,7 +37,7 @@ export function DeviceShell({ children }: { children: ReactNode }) {
   const { notice, notify } = useApp();
   const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   const screen = location.pathname.split('/').pop() || 'home';
-  const showBack = screen !== 'home';
+  const showBack = ['scan', 'compare', 'blends', 'metallic', 'proposal', 'lead'].includes(screen);
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
   }, [theme]);
