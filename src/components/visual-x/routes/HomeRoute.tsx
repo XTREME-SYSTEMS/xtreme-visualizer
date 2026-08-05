@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { VisualXEmptyState, VisualXProvenanceBadge } from '../VisualXPrimitives';
+import { PullToRefresh } from '../PullToRefresh';
 import { ScanLine, GitCompare, ReceiptText, Layers3, TrendingUp } from 'lucide-react';
 
 export function HomeRoute() {
-  const { state } = useApp();
+  const { state, refresh } = useApp();
   const navigate = useNavigate();
   const projects = state?.projects || [];
   const systems = state?.systems || [];
@@ -12,7 +13,7 @@ export function HomeRoute() {
   const quotes = state?.quotes || [];
 
   return (
-    <>
+    <PullToRefresh onRefresh={refresh}>
       <div className="home-hero">
         <img src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
         <div className="home-hero-content">
@@ -58,6 +59,6 @@ export function HomeRoute() {
         </div>
         <button className="vx-btn outline-accent" style={{ marginTop: 12, width: '100%' }} onClick={() => navigate('/app/quote')}>Build a quote</button>
       </div>
-    </>
+    </PullToRefresh>
   );
 }

@@ -1,5 +1,5 @@
-import { forwardRef, useEffect, useId, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
-import { AlertTriangle, Ban, CheckCircle2, CircleDashed, Info, LoaderCircle, X } from 'lucide-react';
+import { forwardRef, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
+import { AlertTriangle, Ban, Check, CheckCircle2, ChevronDown, CircleDashed, Info, LoaderCircle, X } from 'lucide-react';
 import type { VerificationStatus } from '../../contracts/runtime';
 
 export function swatchSrc(color: { image_url?: string | null; hex?: string | null }): string {
@@ -45,14 +45,27 @@ export function VisualXField({ label, hint, error, children, inputProps, textare
 interface SelectProps { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; hint?: string; error?: string; }
 export function VisualXSelect({ label, value, onChange, options, hint, error }: SelectProps) {
   const selectId = useId();
+  const [open, setOpen] = useState(false);
+  const selectedLabel = options.find(o => o.value === value)?.label || value;
   return (
-    <label className="vx-field" htmlFor={selectId}>
+    <div className="vx-field">
       <span>{label}</span>
-      <select id={selectId} value={value} onChange={e => onChange(e.target.value)}>
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
+      <button id={selectId} type="button" className="vx-select-trigger" onClick={() => setOpen(true)}>
+        <span>{selectedLabel}</span>
+        <ChevronDown className="vx-icon vx-icon-sm" />
+      </button>
+      <VisualXDrawer open={open} title={label} onClose={() => setOpen(false)}>
+        <div className="vx-select-sheet">
+          {options.map(o => (
+            <button key={o.value} type="button" className={`vx-select-option ${o.value === value ? 'active' : ''}`} onClick={() => { onChange(o.value); setOpen(false); }}>
+              <span>{o.label}</span>
+              {o.value === value && <Check className="vx-icon vx-icon-sm" />}
+            </button>
+          ))}
+        </div>
+      </VisualXDrawer>
       {error ? <span className="vx-field__error">{error}</span> : hint ? <span className="vx-help">{hint}</span> : null}
-    </label>
+    </div>
   );
 }
 

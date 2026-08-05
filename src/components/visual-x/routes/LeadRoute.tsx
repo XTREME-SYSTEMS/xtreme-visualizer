@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
 import { VisualXField, VisualXSelect, VisualXButton, VisualXEmptyState, VisualXProvenanceBadge, VisualXBlockedState } from '../VisualXPrimitives';
+import { PullToRefresh } from '../PullToRefresh';
 import { Camera, Save, User, MapPin } from 'lucide-react';
 
 export function LeadRoute() {
@@ -45,7 +46,7 @@ export function LeadRoute() {
   };
 
   return (
-    <>
+    <PullToRefresh onRefresh={refresh}>
       <div className="vx-page-header"><div><span className="vx-kicker">ONSITE LEAD CAPTURE</span><h1>New lead</h1><p>Capture verified customer details and site conditions.</p></div></div>
       <div className="vx-card">
         <div className="vx-section-title"><h2>Lead details</h2><VisualXProvenanceBadge status="VERIFIED" source="Operator-entered" /></div>
@@ -88,6 +89,6 @@ export function LeadRoute() {
       <VisualXBlockedState title="Automated follow-up disabled">
         <p>Customer email, SMS, and scheduled follow-ups remain disabled. Contact the customer manually after saving.</p>
       </VisualXBlockedState>
-    </>
+    </PullToRefresh>
   );
 }
