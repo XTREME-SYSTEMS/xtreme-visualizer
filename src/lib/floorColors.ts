@@ -49,6 +49,30 @@ for (const c of COLOR_DATA) {
   colorsBySystem[c.system].push(c);
 }
 
+// Representative swatch color per floor system — chosen for hue variety across the
+// system picker (gray, blue, orange, silver, red). Names must exist in that system's
+// COLOR_DATA chart; falls back to rank 1 if the name isn't found.
+const REPRESENTATIVE_COLOR_NAME: Record<string, string> = {
+  'Flake Epoxy': 'Orbit',          // gray
+  'Metallic Epoxy': 'Ocean Blue',  // blue
+  'Solid Color Epoxy': 'Orange',   // orange
+  'Quartz System': 'Crystal',      // silver
+  'Glitter Epoxy': 'Red Dragon',   // red
+  'Polished Concrete': 'Gray',     // gray
+  'Stained Concrete': 'Patriot Blue', // blue
+  'Joint Fill & Repair': 'Standard Gray',
+};
+
+// Returns the single representative color record for a floor system (used on the
+// system picker button so each system shows a distinct hue).
+export function getSystemRepresentative(name: string): { name: string; hex: string; code: string; image_url?: string } | null {
+  const records = getSystemColorRecords(name);
+  if (!records.length) return null;
+  const preferred = REPRESENTATIVE_COLOR_NAME[name];
+  const match = preferred ? records.find(r => r.name === preferred) : null;
+  return match || records[0];
+}
+
 // Returns the brightened actual color-chart hex values for a floor system (full chart).
 export function getSystemColors(name: string): string[] {
   const key = SYSTEM_KEY_MAP[name];

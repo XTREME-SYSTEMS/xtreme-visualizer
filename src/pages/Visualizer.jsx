@@ -4,7 +4,7 @@ import { Upload, Sparkles, Loader2, FileText, Wand2, Layers, Mail, MessageSquare
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { systemRates, money } from "@/lib/refData";
-import { getSystemColorRecords } from "@/lib/floorColors";
+import { getSystemColorRecords, getSystemRepresentative } from "@/lib/floorColors";
 import { computeRange, money as moneyFmt } from "@/lib/pricing";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 
@@ -237,8 +237,7 @@ export default function Visualizer() {
         </div>
         <div className="swatches">
           {Object.entries(systemRates).filter(([name]) => name !== "Joint Fill & Repair").map(([name]) => {
-            const records = getSystemColorRecords(name);
-            const rep = records[0];
+            const rep = getSystemRepresentative(name);
             return (
               <button
                 key={name}
