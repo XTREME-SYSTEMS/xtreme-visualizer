@@ -9,7 +9,6 @@ import ScrollToTop from './components/ScrollToTop';
 import { AppProvider } from '@/components/AppProvider';
 import { VisualXScreen } from '@/VisualXRoutes';
 import '@/styles.css';
-import '@/visual-x-shell.css';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
