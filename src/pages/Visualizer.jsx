@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, Sparkles, Loader2, FileText, Check, Wand2, Layers } from "lucide-react";
+import { Upload, Sparkles, Loader2, FileText, Check, Wand2, Layers, Mail, MessageSquare } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { systemRates, money } from "@/lib/refData";
-import { getSystemColorRecords } from "@/lib/floorColors";
+import { getSystemColorRecords, getSystemColors } from "@/lib/floorColors";
 import { computeRange, money as moneyFmt } from "@/lib/pricing";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 
@@ -31,6 +31,7 @@ export default function Visualizer() {
   const [generating, setGenerating] = useState(false);
   const [concept, setConcept] = useState("");
   const [saving, setSaving] = useState(false);
+  const [pickedTier, setPickedTier] = useState("recommended");
 
   const rates = systemRates[system];
   const colorRecords = useMemo(() => getSystemColorRecords(system), [system]);
@@ -55,6 +56,32 @@ export default function Visualizer() {
     low: Math.round((range.low * t.factor) / 25) * 25,
     high: Math.round((range.high * t.factor) / 25) * 25,
   }));
+
+  const activeBid = bids.find((b) => b.key === pickedTier) || bids[1];
+  const midPrice = Math.round((activeBid.low + activeBid.high) / 2);
+  const perSqft = sqft ? (midPrice / sqft).toFixed(2) : "—";
+
+  const prepParts = [];
+  if (needsGrinding) prepParts.push("Grinding");
+  if (needsMoisture) prepParts.push("Moisture barrier");
+  if (crackLf) prepParts.push(crackLf + " lf cracks");
+  const prepSummary = prepParts.length ? prepParts.join(", ") : "None";
+
+  const bidText =
+    "VISUAL-X PRELIMINARY BID\n" +
+    "Project: Vizualizer Project\n" +
+    "System: " + system + "\n" +
+    "Color: " + (selectedColor?.name || "Standard") + "\n" +
+    "Square feet: " + sqft + "\n" +
+    "Condition: " + condition + "\n" +
+    "Prep: " + prepSummary + "\n\n" +
+    activeBid.label + " package: " + moneyFmt(activeBid.low) + " – " + moneyFmt(activeBid.high) + "\n" +
+    "Estimated mid: " + moneyFmt(midPrice) + " (" + perSqft + "/sq ft)\n\n" +
+    "This is a preliminary, non-binding range based on the information provided. Final pricing requires an onsite verification. Valid for 30 days.";
+
+  const shareSubject = "Preliminary bid — " + system + " floor (" + sqft + " sq ft)";
+  const shareEmail = "mailto:?subject=" + encodeURIComponent(shareSubject) + "&body=" + encodeURIComponent(bidText);
+  const shareSms = "sms:?&body=" + encodeURIComponent(bidText);
 
   const onFile = async (e) => {
     const file = e.target.files?.[0];
@@ -81,7 +108,7 @@ export default function Visualizer() {
     setConcept("");
     try {
       const colorName = selectedColor?.name || "";
-      const prompt = `Photorealistic interior design rendering of the uploaded room with a newly installed ${system} floor in the color "${colorName}". Seamless, glossy, professional concrete coating finish. Same room geometry, walls, and lighting as the original photo. High-end real-estate photography, wide angle, natural light.`;
+      const prompt = 'Photorealistic interior design rendering of the uploaded room with a newly installed ' + system + ' floor in the color "' + colorName + '". Seamless, glossy, professional concrete coating finish. Same room geometry, walls, and lighting as the original photo. High-end real-estate photography, wide angle, natural light.';
       const res = await base44.integrations.Core.GenerateImage({
         prompt,
         existing_image_urls: fileUrl ? [fileUrl] : undefined,
@@ -120,7 +147,7 @@ export default function Visualizer() {
       try {
         await base44.entities.ActivityReceipt.create({
           action: "visualization_saved",
-          detail: `${system} concept saved with preliminary range ${moneyFmt(range.low)}–${moneyFmt(range.high)}`,
+          detail: system + " concept saved with preliminary range " + moneyFmt(range.low) + "–" + moneyFmt(range.high),
           category: "visualization",
         });
       } catch {}
@@ -138,7 +165,7 @@ export default function Visualizer() {
         } catch {}
       }
       toast({ title: "Visualization project saved." });
-      navigate(`/leads/${lead.id}`);
+      navigate("/leads/" + lead.id);
     } catch (err) {
       toast({ title: "Save failed", description: err.message, variant: "destructive" });
     } finally {
@@ -178,16 +205,23 @@ export default function Visualizer() {
           <h2>Choose floor system &amp; color</h2>
         </div>
         <div className="swatches">
-          {Object.entries(systemRates).map(([name, r]) => (
-            <button
-              key={name}
-              className={`swatch ${system === name ? "active" : ""}`}
-              onClick={() => { setSystem(name); setColor(""); setConcept(""); }}
-            >
-              <span className="swatch-color" style={{ background: r.gradient }} />
-              <strong>{name}</strong>
-            </button>
-          ))}
+          {Object.entries(systemRates).filter(([name]) => name !== "Joint Fill & Repair").map(([name]) => {
+            const colors = getSystemColors(name);
+            return (
+              <button
+                key={name}
+                className={"swatch " + (system === name ? "active" : "")}
+                onClick={() => { setSystem(name); setColor(""); setConcept(""); }}
+              >
+                <span className="swatch-color viz-swatch-strip">
+                  {colors.slice(0, 6).map((hex, i) => (
+                    <span key={i} style={{ background: hex }} />
+                  ))}
+                </span>
+                <strong>{name}</strong>
+              </button>
+            );
+          })}
         </div>
         <div className="vx-color-chart-preview" style={{ marginTop: 14 }}>
           <div className="vx-section-title"><h3>{system} color chart</h3></div>
@@ -195,8 +229,8 @@ export default function Visualizer() {
             {colorRecords.map((c) => (
               <button
                 key={c.code}
-                className={`vx-chart-chip ${selectedColor?.name === c.name ? "active" : ""}`}
-                title={`${c.name} (${c.code})`}
+                className={"vx-chart-chip " + (selectedColor?.name === c.name ? "active" : "")}
+                title={c.name + " (" + c.code + ")"}
                 onClick={() => setColor(c.name)}
                 style={{ border: selectedColor?.name === c.name ? "1px solid var(--vx-accent)" : undefined }}
               >
@@ -222,8 +256,8 @@ export default function Visualizer() {
             </div>
           </div>
           <div className="viz-toggle-row">
-            <button className={`vx-btn compact ${needsGrinding ? "outline-accent" : ""}`} onClick={() => setNeedsGrinding((v) => !v)}>Grinding prep</button>
-            <button className={`vx-btn compact ${needsMoisture ? "outline-accent" : ""}`} onClick={() => setNeedsMoisture((v) => !v)}>Moisture barrier</button>
+            <button className={"vx-btn compact " + (needsGrinding ? "outline-accent" : "")} onClick={() => setNeedsGrinding((v) => !v)}>Grinding prep</button>
+            <button className={"vx-btn compact " + (needsMoisture ? "outline-accent" : "")} onClick={() => setNeedsMoisture((v) => !v)}>Moisture barrier</button>
           </div>
           <label className="field">
             Linear feet of cracks
@@ -278,7 +312,7 @@ export default function Visualizer() {
         </div>
         <div className="viz-bids">
           {bids.map((b) => (
-            <div key={b.key} className={`viz-bid-card ${b.key === "recommended" ? "featured" : ""}`}>
+            <div key={b.key} className={"viz-bid-card " + (b.key === "recommended" ? "featured" : "")}>
               {b.key === "recommended" && <span className="viz-bid-badge">Best value</span>}
               <strong>{b.label}</strong>
               <span className="viz-bid-range">{moneyFmt(b.low)} – {moneyFmt(b.high)}</span>
@@ -292,6 +326,53 @@ export default function Visualizer() {
         <button className="vx-btn outline-accent" style={{ width: "100%", marginTop: 10 }} onClick={() => save(null)} disabled={saving}>
           <Layers size={18} /> {saving ? "Saving…" : "Save without tier"}
         </button>
+      </section>
+
+      {/* 5. Physical bid + share */}
+      <section className="viz-step viz-bid-document">
+        <div className="viz-step-head">
+          <span className="viz-step-num">5</span>
+          <h2>Generated bid</h2>
+        </div>
+        <div className="viz-bid-paper">
+          <div className="viz-bid-paper-head">
+            <div>
+              <span className="vx-kicker">VISUAL-X · PRELIMINARY BID</span>
+              <h3>{system} — {selectedColor?.name || "Standard"}</h3>
+            </div>
+            <div className="viz-bid-tier-pick">
+              {bids.map((b) => (
+                <button key={b.key} className={pickedTier === b.key ? "active" : ""} onClick={() => setPickedTier(b.key)}>
+                  {b.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="viz-bid-lines">
+            <div className="viz-bid-line"><span>Floor system</span><strong>{system}</strong></div>
+            <div className="viz-bid-line"><span>Color</span><strong>{selectedColor?.name || "Standard"}</strong></div>
+            <div className="viz-bid-line"><span>Square feet</span><strong>{sqft.toLocaleString()} sq ft</strong></div>
+            <div className="viz-bid-line"><span>Slab condition</span><strong style={{ textTransform: "capitalize" }}>{condition}</strong></div>
+            <div className="viz-bid-line"><span>Prep included</span><strong>{prepSummary}</strong></div>
+            <div className="viz-bid-line"><span>Package</span><strong>{activeBid.label}</strong></div>
+          </div>
+          <div className="viz-bid-total">
+            <div>
+              <small>Estimated range</small>
+              <strong>{moneyFmt(activeBid.low)} – {moneyFmt(activeBid.high)}</strong>
+              <small>{perSqft}/sq ft · mid {moneyFmt(midPrice)}</small>
+            </div>
+          </div>
+          <p className="viz-bid-fineprint">{PRICE_DISCLOSURE} Valid for 30 days. Final pricing requires onsite verification.</p>
+          <div className="viz-bid-share">
+            <a className="vx-btn primary" href={shareEmail}>
+              <Mail size={18} /> Email bid
+            </a>
+            <a className="vx-btn outline-accent" href={shareSms}>
+              <MessageSquare size={18} /> SMS bid
+            </a>
+          </div>
+        </div>
       </section>
     </div>
   );
