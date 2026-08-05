@@ -49,7 +49,7 @@ function LegacyVisualXScreen({ keyName }: { keyName: ScreenKey }) {
   </>;
 }
 
-function VisualXScreen() {
+export function VisualXScreen() {
   const params = useParams();
   const { state, loading, error, refresh } = useApp();
   const key = (params.screen || 'home') as ScreenKey;
