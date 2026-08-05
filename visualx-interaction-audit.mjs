@@ -21,8 +21,8 @@ check('official color option available',await silver.isVisible().catch(()=>false
 if(await silver.isVisible().catch(()=>false)) await silver.click();
 const sqftInput=page.getByRole('spinbutton',{name:'Project square feet'});
 await sqftInput.fill('1250');
-await page.getByRole('button',{name:'Good',exact:true}).click();
-await page.getByRole('button',{name:/Add patches/}).click();
+await page.locator('.vx-tabbar button').filter({hasText:/good/i}).click();
+await page.locator('button.viz-blemish-toggle').click();
 const patchInput=page.getByRole('spinbutton',{name:'Patch count'});
 await patchInput.fill('3');
 await page.waitForTimeout(300);
