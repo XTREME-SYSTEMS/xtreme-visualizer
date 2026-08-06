@@ -1,0 +1,103 @@
+{
+  "name": "VoiceScript",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "script_text": {
+      "type": "string",
+      "description": "Full conversational script the AI voice agent reads / uses to qualify callers"
+    },
+    "voice": {
+      "type": "string",
+      "enum": [
+        "river",
+        "honey",
+        "sunny",
+        "storm",
+        "spark"
+      ],
+      "default": "river"
+    },
+    "language_code": {
+      "type": "string",
+      "default": "en"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "followup",
+        "reminder",
+        "custom"
+      ],
+      "default": "intake"
+    },
+    "intake_fields": {
+      "type": "array",
+      "description": "Qualifying questions the agent must collect from the caller",
+      "items": {
+        "type": "string"
+      }
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "script_text"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
