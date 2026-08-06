@@ -73,7 +73,6 @@ export default function Home() {
             <div className="hx-portal-icon"><Image size={20} /></div>
             <div className="hx-portal-text">
               <strong>Gallery</strong>
-              <span>Browse finishes & colors</span>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
@@ -81,7 +80,6 @@ export default function Home() {
             <div className="hx-portal-icon"><Layers size={20} /></div>
             <div className="hx-portal-text">
               <strong>Floor Systems</strong>
-              <span>Epoxy, polished & more</span>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
@@ -89,7 +87,6 @@ export default function Home() {
             <div className="hx-portal-icon"><FileText size={20} /></div>
             <div className="hx-portal-text">
               <strong>Bid Generator</strong>
-              <span>Auto-build estimates</span>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
@@ -97,7 +94,6 @@ export default function Home() {
             <div className="hx-portal-icon"><Globe size={20} /></div>
             <div className="hx-portal-text">
               <strong>Scraper</strong>
-              <span>Pull leads from sources</span>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
@@ -105,7 +101,6 @@ export default function Home() {
             <div className="hx-portal-icon"><Calendar size={20} /></div>
             <div className="hx-portal-text">
               <strong>Appointments</strong>
-              <span>Schedule site visits</span>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
@@ -113,7 +108,6 @@ export default function Home() {
             <div className="hx-portal-icon"><CreditCard size={20} /></div>
             <div className="hx-portal-text">
               <strong>Digital Card</strong>
-              <span>Share your business</span>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>

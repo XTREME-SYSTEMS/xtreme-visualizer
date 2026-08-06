@@ -365,18 +365,18 @@
 .hx-disclosure { font-size: 9px; color: var(--vx-faint); margin: 0; line-height: 1.3; flex-shrink: 0; text-align: center; }
 
 /* ===== Home portal grid ===== */
-.hx-portal { display: grid; grid-template-rows: auto 1fr; gap: 8px; flex: 1 1 0; min-height: 0; overflow: hidden; }
-.hx-portal-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 9px; min-height: 0; }
+.hx-portal { display: grid; grid-template-rows: auto 1fr; gap: 6px; flex: 1 1 0; min-height: 0; overflow: hidden; }
+.hx-portal-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 8px; min-height: 0; overflow: hidden; }
 .hx-portal-card {
-  display: grid; grid-template-columns: 44px 1fr 16px; gap: 11px; align-items: center;
-  padding: 13px 14px; border-radius: 14px; border: 1px solid var(--vx-border-soft);
-  background: #1A1A1A; cursor: pointer; text-align: left; width: 100%;
+  display: grid; grid-template-columns: 40px 1fr 16px; gap: 10px; align-items: center;
+  padding: 10px 12px; border-radius: 14px; border: 1px solid var(--vx-border-soft);
+  background: #1A1A1A; cursor: pointer; text-align: left; width: 100%; min-height: 0;
   transition: border-color .12s, background .12s, transform .12s;
 }
 .hx-portal-card:hover { border-color: #CCFF00; background: rgba(204,255,0,.06); }
 .hx-portal-card:active { transform: scale(.98); }
 .hx-portal-icon {
-  width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center;
   border: 1px solid #4c7600; color: #CCFF00; background: rgba(204,255,0,.06); flex-shrink: 0;
 }
 .hx-portal-text { display: grid; gap: 2px; min-width: 0; }
