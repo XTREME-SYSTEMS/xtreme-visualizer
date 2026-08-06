@@ -385,29 +385,32 @@
 .hx-portal-arrow { color: #707070; }
 
 /* ===== Project Gallery ===== */
-.hx-gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hx-gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
 .hx-gallery-card {
   position: relative; border-radius: 14px; overflow: hidden;
   border: 1px solid var(--vx-border-soft); background: #1A1A1A;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 3; min-width: 0;
 }
 .hx-gallery-card .hx-gallery-img { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
 .hx-gallery-overlay {
   position: absolute; inset: 0; pointer-events: none; z-index: 1;
-  background: linear-gradient(180deg, transparent 38%, rgba(0,0,0,.88) 100%);
+  background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.92) 100%);
 }
 .hx-gallery-content {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
-  padding: 11px 12px; display: flex; align-items: flex-end; gap: 9px;
+  padding: 12px; display: flex; align-items: flex-end; gap: 9px;
 }
 .hx-gallery-icon {
   width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
   display: grid; place-items: center;
-  border: 1px solid #4c7600; color: var(--vx-accent); background: rgba(204,255,0,.1);
+  border: 1px solid rgba(204,255,0,.4); color: var(--vx-accent); background: rgba(204,255,0,.12);
 }
-.hx-gallery-label { display: grid; gap: 1px; min-width: 0; }
+.hx-gallery-label { display: grid; gap: 2px; min-width: 0; }
 .hx-gallery-label strong { font-size: 13px; font-weight: 800; color: #fff; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hx-gallery-label span { font-size: 10px; color: #A0A0A0; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hx-gallery-label span { font-size: 10px; color: #fff; opacity: .85; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hx-gallery-page .hx-page-head p { color: #fff; opacity: .85; }
+.hx-gallery-page .hx-filters button { color: #fff; opacity: .7; }
+.hx-gallery-page .hx-filters button.active { color: var(--vx-accent); opacity: 1; }
 
 /* ===== Floor Systems ===== */
 .hx-sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

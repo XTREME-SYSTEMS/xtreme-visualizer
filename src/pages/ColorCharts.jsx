@@ -94,7 +94,7 @@ export default function ColorCharts() {
     filter === "All" ? CATEGORIES : CATEGORIES.filter((c) => c.group === filter);
 
   return (
-    <div className="page hx-page">
+    <div className="page hx-page hx-gallery-page">
       <div className="hx-page-head">
         <div>
           <h1>
