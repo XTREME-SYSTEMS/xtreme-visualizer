@@ -35,7 +35,25 @@ const TAB_PATHS = ['/', '/visualizer', '/leads', '/inbox', '/more'];
 
 export function DeviceShell() {
   const [more, setMore] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const stored = localStorage.getItem('vx-theme');
+      if (stored === 'dark' || stored === 'light') return stored;
+    } catch {}
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'dark';
+  });
+  const [isNativeMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const nav = window.navigator as any;
+    return (
+      nav.standalone === true ||
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      /WebView|iPhone|iPad|iPod/i.test(window.navigator.userAgent)
+    );
+  });
   const [userToggled, setUserToggled] = useState(false);
   const [settings, setSettings] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -65,6 +83,7 @@ export function DeviceShell() {
   };
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
+    try { localStorage.setItem('vx-theme', theme); } catch {}
   }, [theme]);
 
   const toggleTheme = () => {
@@ -85,8 +104,8 @@ export function DeviceShell() {
     <div className="vx-stage">
       <div className="vx-device">
         <div className="vx-side-buttons" />
-        <div className="vx-screen">
-          <div className="vx-statusbar"><span>{time}</span><div className="vx-island" /><div className="vx-status-icons"><span>●●●</span><span>📶</span><div className="vx-battery" /></div></div>
+        <div className={"vx-screen" + (isNativeMobile ? " vx-native" : "")}>
+          {!isNativeMobile && <div className="vx-statusbar"><span>{time}</span><div className="vx-island" /><div className="vx-status-icons"><span>●●●</span><span>📶</span><div className="vx-battery" /></div></div>}
           <div className="vx-brandbar">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
