@@ -54,9 +54,10 @@ import GalleryPage from '@/pages/Gallery';
 import CustomerPortal from '@/pages/CustomerPortal';
 import VideoStudio from '@/pages/VideoStudio';
 import BusinessGenerator from '@/pages/BusinessGenerator';
+import RootRoute from '@/components/RootRoute';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
-const PUBLIC_PATHS = ['/ThankYou', '/portal'];
+const PUBLIC_PATHS = ['/ThankYou', '/portal', '/'];
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -92,13 +93,12 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      {/* Legacy /app/* redirects */}
-      <Route path="/app" element={<Navigate to="/" replace />} />
-      <Route path="/app/:screen" element={<Navigate to="/" replace />} />
+      {/* Public marketing landing */}
+      <Route path="/" element={<RootRoute />} />
 
       {/* Main app inside DeviceShell */}
       <Route element={<DeviceShell />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/app" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/leads" element={<Leads />} />
         <Route path="/leads/:id" element={<LeadDetail />} />

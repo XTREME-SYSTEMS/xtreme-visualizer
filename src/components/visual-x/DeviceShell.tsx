@@ -12,7 +12,7 @@ import { base44 } from '@/api/base44Client';
 import { ClipboardList, Camera as CameraIcon, Users as UsersIcon, MessageSquare as InboxIcon, BarChart3, Share2, Globe, Calendar, Settings as SettingsIcon } from 'lucide-react';
 
 const NAV = [
-  { to: '/', label: 'Home', icon: Home },
+  { to: '/app', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
   { to: '/inbox', label: 'Inbox', icon: MessageSquare },
@@ -44,7 +44,7 @@ const MORE = [
 
 // #23: Role-based navigation — admins see everything, crew sees field ops, sales sees CRM tools
 const CREW_NAV = [
-  { to: '/', label: 'Home', icon: Home },
+  { to: '/app', label: 'Home', icon: Home },
   { to: '/operations', label: 'Operations', icon: ClipboardList },
   { to: '/field', label: 'Field', icon: CameraIcon },
   { to: '/inbox', label: 'Inbox', icon: InboxIcon },
@@ -56,7 +56,7 @@ const CREW_MORE = [
   { to: '/settings', label: 'Settings' },
 ];
 const SALES_NAV = [
-  { to: '/', label: 'Home', icon: Home },
+  { to: '/app', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
   { to: '/inbox', label: 'Inbox', icon: MessageSquare },
@@ -72,7 +72,7 @@ const SALES_MORE = [
   { to: '/gallery', label: 'Gallery' },
   { to: '/settings', label: 'Settings' },
 ];
-const TAB_PATHS = ['/', '/visualizer', '/leads', '/inbox', '/more'];
+const TAB_PATHS = ['/app', '/visualizer', '/leads', '/inbox', '/more'];
 const MORE_TAB = '/more';
 
 export function DeviceShell() {
@@ -117,10 +117,10 @@ export function DeviceShell() {
   const { newProjectOpen, closeNewProject, searchOpen, query, setQuery, toggleSearch } = useUI();
   const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   const showBack = !TAB_PATHS.includes(location.pathname);
-  const isHome = location.pathname === '/';
+  const isHome = location.pathname === '/app';
   const pageClassName = isHome ? "vx-page vx-page-noscroll" : "vx-page vx-page-scroll";
   const homePageStyle: CSSProperties | undefined = isHome ? { overflow: 'hidden', height: '100%', position: 'absolute', inset: 0, touchAction: 'none' } : undefined;
-  const activeTab = NAV.find(n => n.to === '/' ? location.pathname === '/' : location.pathname.startsWith(n.to))?.to || null;
+  const activeTab = NAV.find(n => n.to === '/app' ? location.pathname === '/app' : location.pathname.startsWith(n.to))?.to || null;
   useEffect(() => {
     if (!activeTab) return;
     setTabHistory(prev => {
