@@ -1,0 +1,103 @@
+{
+  "name": "FollowupPlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "lead_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Which contacts to follow up with"
+    },
+    "interval_days": {
+      "type": "number",
+      "default": 3,
+      "description": "Days between follow-ups (manual timing)"
+    },
+    "max_followups": {
+      "type": "number",
+      "default": 4
+    },
+    "followups_sent": {
+      "type": "number",
+      "default": 0
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "next_send_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_sent_date": {
+      "type": "string"
+    },
+    "subject_template": {
+      "type": "string"
+    },
+    "body_template": {
+      "type": "string"
+    },
+    "use_ai": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "Follow-up Runner",
+  "description": "Daily check for active FollowupPlans that are due. Sends AI-personalized follow-up emails to each contact in the plan and advances the schedule.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "followup_runner",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_plans": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "runFollowupPlans",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run due follow-up plans",
+            "description": "Sends follow-up emails for all active plans past their next_send_date"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -8,6 +8,7 @@ import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Search, ExternalLink, Check, Loader2 } from "lucide-react";
 import { money } from "@/lib/pricing";
+import FollowupManager from "@/components/crm/FollowupManager";
 
 const HUBSPOT_CONNECTOR_ID = "69db228b2439d854c8587167";
 const STATUS_OPTIONS = ["all", "new", "qualified", "estimate_sent", "proposal_sent", "won", "lost", "follow_up"];
@@ -231,6 +232,8 @@ export default function CRM() {
       {!hubspotConnected && (
         <p className="text-[12px] text-slate-400 text-center">Connect your HubSpot account to push leads and deals automatically.</p>
       )}
+
+      <FollowupManager leads={leads} />
     </div>
   );
 }

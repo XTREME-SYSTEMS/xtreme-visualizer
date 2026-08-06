@@ -27,7 +27,7 @@ const MORE = [
   { to: '/bid-generator', label: 'Bid Generator' },
   { to: '/competitive-pricing', label: 'Market Pricing' },
   { to: '/industry', label: 'Industry Reference' },
-  { to: '/appointments', label: 'Appointments' },
+  { to: '/appointments', label: 'Schedule' },
   { to: '/receipts', label: 'Activity Receipts' },
   { to: '/guardrails', label: 'Guardrails' },
   { to: '/settings', label: 'Settings' },

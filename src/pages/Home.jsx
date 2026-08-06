@@ -100,7 +100,7 @@ export default function Home() {
           <button className="hx-portal-card" onClick={() => navigate("/appointments")}>
             <div className="hx-portal-icon"><Calendar size={20} /></div>
             <div className="hx-portal-text">
-              <strong>Appointments</strong>
+              <strong>Schedule</strong>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
