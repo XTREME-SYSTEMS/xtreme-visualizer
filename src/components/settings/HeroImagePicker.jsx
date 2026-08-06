@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Upload, RotateCcw } from "lucide-react";
+import { Loader2, Upload, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
+import { GALLERY_CATEGORIES } from "@/data/galleryImages";
 
 const STORAGE_KEY = "vx-hero-image";
 const DEFAULT_HERO =
@@ -18,6 +19,7 @@ export default function HeroImagePicker() {
   const [applied, setApplied] = useState(() => getHeroImage());
   const [textValue, setTextValue] = useState(() => getHeroImage());
   const [uploading, setUploading] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
 
   const apply = (newUrl) => {
     setApplied(newUrl);
@@ -77,6 +79,41 @@ export default function HeroImagePicker() {
       <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
         <RotateCcw className="w-3 h-3" /> Reset to default
       </button>
+
+      <div className="pt-2 border-t border-slate-200">
+        <button
+          onClick={() => setGalleryOpen((v) => !v)}
+          className="flex items-center gap-2 text-[13px] font-semibold text-slate-700 w-full"
+        >
+          {galleryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          Pick from Gallery
+        </button>
+        {galleryOpen && (
+          <div className="mt-3 space-y-4 max-h-80 overflow-y-auto pr-1">
+            {GALLERY_CATEGORIES.map((cat) => (
+              <div key={cat.id}>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">{cat.title}</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {cat.images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => apply(img)}
+                      className="aspect-square rounded-md overflow-hidden border-2 transition-transform hover:scale-105"
+                      style={{
+                        borderColor: applied === img ? "var(--vx-accent)" : "transparent",
+                        padding: 0,
+                        background: "#f1f5f9",
+                      }}
+                    >
+                      <img src={img} alt={`${cat.title} ${i + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
