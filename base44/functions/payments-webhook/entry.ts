@@ -141,27 +141,43 @@ async function handleOrderApproved(db: any, eventData: any): Promise<Response> {
   const buyerEmail: string | null = purchase.buyerEmail ?? extractBuyerEmail(order);
 
   // ===== APP-SPECIFIC =====
-  // Visual-X billing: mark the Invoice (correlated by checkoutSessionId) as paid. Idempotent —
-  // a duplicate ORDER_APPROVED finds the invoice already "paid" and the update is a no-op.
-  // On a FINAL invoice payment, also mark the linked Work Order as completed.
+  // Visual-X billing: fulfill based on product type. The purchase.productId tells us what was bought.
+  // - "deposit" | "final": mark the Invoice (correlated by checkoutSessionId) as paid. On FINAL,
+  //   also mark the linked Work Order as completed.
+  // - "maintenance": activate the MaintenanceSubscription (correlated by checkoutSessionId) and
+  //   attach the subscriptionInfo.id so future cancel/expire events can resolve it.
   try {
-    const invMatches = await db.entities.Invoice.filter({ checkout_session_id: checkoutId });
-    const invoice = invMatches?.[0];
-    if (invoice && invoice.status !== "paid") {
-      await db.entities.Invoice.update(invoice.id, {
-        status: "paid",
-        paid_at: new Date().toISOString(),
-      });
-      if (invoice.type === "final" && invoice.work_order_id) {
-        const wo = await db.entities.WorkOrder.filter({ id: invoice.work_order_id });
-        if (wo?.[0] && wo[0].status !== "completed") {
-          await db.entities.WorkOrder.update(wo[0].id, { status: "completed" });
-        }
+    if (purchase.productId === "maintenance") {
+      const subMatches = await db.entities.MaintenanceSubscription.filter({ checkout_session_id: checkoutId });
+      const sub = subMatches?.[0];
+      if (sub && sub.status !== "active") {
+        await db.entities.MaintenanceSubscription.update(sub.id, {
+          status: "active",
+          subscription_id: subscriptionId ?? null,
+          activated_at: new Date().toISOString(),
+        });
+        console.log("payments-webhook: maintenance subscription activated", { subId: sub.id, subscriptionId });
       }
-      console.log("payments-webhook: invoice marked paid", { invoiceId: invoice.id, type: invoice.type });
+    } else {
+      // Invoice payment (deposit or final)
+      const invMatches = await db.entities.Invoice.filter({ checkout_session_id: checkoutId });
+      const invoice = invMatches?.[0];
+      if (invoice && invoice.status !== "paid") {
+        await db.entities.Invoice.update(invoice.id, {
+          status: "paid",
+          paid_at: new Date().toISOString(),
+        });
+        if (invoice.type === "final" && invoice.work_order_id) {
+          const wo = await db.entities.WorkOrder.filter({ id: invoice.work_order_id });
+          if (wo?.[0] && wo[0].status !== "completed") {
+            await db.entities.WorkOrder.update(wo[0].id, { status: "completed" });
+          }
+        }
+        console.log("payments-webhook: invoice marked paid", { invoiceId: invoice.id, type: invoice.type });
+      }
     }
   } catch (err) {
-    console.error("payments-webhook: invoice grant failed", err);
+    console.error("payments-webhook: grant failed", err);
     throw err; // stay "pending" so Wix retries
   }
   // ===== END APP-SPECIFIC =====
@@ -215,6 +231,22 @@ async function handleSubscriptionEnded(db: any, eventData: any): Promise<Respons
   // mark the purchase canceled: if it throws, the status stays as-is so Wix's retry re-runs
   // the revoke rather than hitting the "already canceled" short-circuit and leaving access on.
   // Must be idempotent.
+  try {
+    if (purchase.productId === "maintenance") {
+      const subMatches = await db.entities.MaintenanceSubscription.filter({ subscription_id: subscriptionId });
+      const sub = subMatches?.[0];
+      if (sub && sub.status === "active") {
+        await db.entities.MaintenanceSubscription.update(sub.id, {
+          status: eventType === SUBSCRIPTION_CANCELED ? "canceled" : "expired",
+          canceled_at: new Date().toISOString(),
+        });
+        console.log("payments-webhook: maintenance subscription revoked", { subId: sub.id, subscriptionId });
+      }
+    }
+  } catch (err) {
+    console.error("payments-webhook: subscription revoke failed", err);
+    throw err;
+  }
   // ===== END APP-SPECIFIC =====
 
   // Mark canceled LAST, so "canceled" always implies access was actually revoked.

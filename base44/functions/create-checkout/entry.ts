@@ -69,41 +69,90 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}));
 
     // ===== APP-SPECIFIC =====
-    // Visual-X billing: the client sends an Invoice id as `productId`. We resolve the invoice
-    // SERVER-SIDE so a buyer can't tamper the amount. The invoice holds the authoritative amount,
-    // customer info, and type (deposit / final).
-    const invoiceId = String(body.productId ?? "");
-    if (!invoiceId) {
-      return new Response(JSON.stringify({ error: "Missing invoice id" }), { status: 400 });
-    }
+    // Visual-X billing: the client sends an Invoice id as `productId` (one-time charge) or
+    // a MaintenanceSubscription id with `productType: "maintenance"` (recurring subscription).
+    // We resolve SERVER-SIDE so a buyer can't tamper the amount.
     const db = base44.asServiceRole;
-    let invoice: any = null;
-    try {
-      const invoices = await db.entities.Invoice.filter({ id: invoiceId });
-      invoice = invoices?.[0] ?? null;
-    } catch (_) {
-      // Malformed id — SDK throws on invalid ObjectId format instead of returning empty.
-      return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
+    const productType = body.productType ?? "invoice";
+    let quantity = 1;
+    let productName = "";
+    let price = "0";
+    let currency = "USD";
+    let subscriptionInfo: any = null;
+    let customerEmail: string | null = null;
+    let thankYouPath = "/ThankYou";
+    let postFlowPath = "/";
+    let purchaseProductId = "";
+    let maintenanceSub: any = null;
+
+    if (productType === "maintenance") {
+      // #8: Recurring maintenance subscription via Wix Payments
+      const subId = String(body.productId ?? "");
+      if (!subId) {
+        return new Response(JSON.stringify({ error: "Missing subscription id" }), { status: 400 });
+      }
+      try {
+        const subs = await db.entities.MaintenanceSubscription.filter({ id: subId });
+        maintenanceSub = subs?.[0] ?? null;
+      } catch (_) {
+        return new Response(JSON.stringify({ error: "Unknown subscription" }), { status: 400 });
+      }
+      if (!maintenanceSub) {
+        return new Response(JSON.stringify({ error: "Unknown subscription" }), { status: 400 });
+      }
+      if (maintenanceSub.status === "active") {
+        return new Response(JSON.stringify({ error: "Subscription already active" }), { status: 400 });
+      }
+      productName = maintenanceSub.plan_name || "Maintenance Plan";
+      price = Number(maintenanceSub.price).toFixed(2);
+      if (parseFloat(price) < 0.5) {
+        return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
+      }
+      currency = "USD";
+      customerEmail = maintenanceSub.customer_email || appUser?.email || null;
+      purchaseProductId = "maintenance";
+      // Build subscriptionInfo for recurring billing
+      const freq = maintenanceSub.frequency || "YEAR";
+      subscriptionInfo = {
+        subscriptionSettings: {
+          frequency: freq,
+          autoRenewal: true,
+        },
+        title: maintenanceSub.plan_name,
+        description: `Annual maintenance and sealer coat service for ${maintenanceSub.customer_name}`,
+      };
+      thankYouPath = "/ThankYou";
+      postFlowPath = "/billing";
+    } else {
+      // Default: one-time invoice payment
+      const invoiceId = String(body.productId ?? "");
+      if (!invoiceId) {
+        return new Response(JSON.stringify({ error: "Missing invoice id" }), { status: 400 });
+      }
+      let invoice: any = null;
+      try {
+        const invoices = await db.entities.Invoice.filter({ id: invoiceId });
+        invoice = invoices?.[0] ?? null;
+      } catch (_) {
+        return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
+      }
+      if (!invoice) {
+        return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
+      }
+      if (invoice.status === "paid") {
+        return new Response(JSON.stringify({ error: "Invoice already paid" }), { status: 400 });
+      }
+      productName = `${invoice.type === "final" ? "Final Invoice" : "Deposit"} — ${invoice.customer_name}`;
+      price = Number(invoice.amount).toFixed(2);
+      if (parseFloat(price) < 0.5) {
+        return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
+      }
+      currency = invoice.currency || "USD";
+      customerEmail = invoice.customer_email || appUser?.email || null;
+      purchaseProductId = invoice.type;
+      thankYouPath = "/ThankYou";
+      postFlowPath = "/";
     }
-    if (!invoice) {
-      return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
-    }
-    if (invoice.status === "paid") {
-      return new Response(JSON.stringify({ error: "Invoice already paid" }), { status: 400 });
-    }
-    const quantity = 1; // fixed-entitlement: one invoice = one charge
-    const productName = `${invoice.type === "final" ? "Final Invoice" : "Deposit"} — ${invoice.customer_name}`;
-    const price = Number(invoice.amount).toFixed(2); // authoritative, server-resolved
-    if (parseFloat(price) < 0.5) {
-      return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
-    }
-    const currency = invoice.currency || "USD";
-    const subscriptionInfo = null;
-    // Prefill the customer's email from the invoice so they don't re-enter it on Wix.
-    const customerEmail = invoice.customer_email || appUser?.email || null;
-    // Where Wix returns the buyer. Both MUST be real, PUBLICLY reachable routes.
-    const thankYouPath = "/ThankYou";
-    const postFlowPath = "/";
     // ===== END APP-SPECIFIC =====
 
     const total = parseFloat(price) * quantity;
@@ -118,7 +167,7 @@ Deno.serve(async (req: Request) => {
         ...(customerEmail ? { customerInfo: { email: customerEmail } } : {}),
       },
       callbackUrls: {
-        thankYouPageUrl: `${appUrl}${thankYouPath}?invoice=${invoiceId}`,
+        thankYouPageUrl: `${appUrl}${thankYouPath}${productType === "maintenance" ? `?sub=${body.productId}` : `?invoice=${body.productId}`}`,
         postFlowUrl: `${appUrl}${postFlowPath}`,
       },
     };
@@ -154,19 +203,27 @@ Deno.serve(async (req: Request) => {
       status: "pending",
       appUserId: appUser?.id ?? null,
       buyerEmail: customerEmail ?? appUser?.email ?? null,
-      productId: invoice.type, // "deposit" | "final" — the webhook reads this
+      productId: purchaseProductId, // "deposit" | "final" | "maintenance" — the webhook reads this
       productName,
       quantity,
       amount: total.toFixed(2),
       currency,
     });
 
-    // Link the Invoice to this checkout session so the webhook can mark it paid.
-    await db.entities.Invoice.update(invoiceId, {
-      status: "pending",
-      checkout_session_id: checkoutSessionId,
-      purchase_id: purchase.id,
-    });
+    // Link the product to this checkout session so the webhook can fulfill it.
+    if (productType === "maintenance" && maintenanceSub) {
+      await db.entities.MaintenanceSubscription.update(maintenanceSub.id, {
+        checkout_session_id: checkoutSessionId,
+        purchase_id: purchase.id,
+        status: "pending",
+      });
+    } else {
+      await db.entities.Invoice.update(String(body.productId), {
+        status: "pending",
+        checkout_session_id: checkoutSessionId,
+        purchase_id: purchase.id,
+      });
+    }
 
     return new Response(JSON.stringify({ redirectUrl }), {
       status: 200,

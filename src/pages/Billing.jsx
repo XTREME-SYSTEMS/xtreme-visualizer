@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Plus, Trash2, CreditCard, Receipt, DollarSign, Send, X, CheckCircle2, Clock, FileText } from "lucide-react";
+import MaintenanceSubscriptions from "@/components/billing/MaintenanceSubscriptions";
 
 const TYPE_LABEL = { deposit: "Deposit", final: "Final Invoice" };
 const STATUS_STYLE = {
@@ -143,6 +144,8 @@ export default function Billing() {
            );
          })}
       </div>
+
+      <MaintenanceSubscriptions leads={leads} workOrders={workOrders} notify={notify} />
 
       {showForm && (
         <div className="overlay" onClick={() => setShowForm(false)}>

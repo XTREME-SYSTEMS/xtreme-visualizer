@@ -1,0 +1,117 @@
+{
+  "name": "MaintenanceSubscription",
+  "type": "object",
+  "properties": {
+    "customer_name": {
+      "type": "string"
+    },
+    "customer_email": {
+      "type": "string"
+    },
+    "lead_id": {
+      "type": "string"
+    },
+    "work_order_id": {
+      "type": "string"
+    },
+    "plan_name": {
+      "type": "string",
+      "description": "e.g. Annual Sealer Maintenance, Quarterly Inspection"
+    },
+    "price": {
+      "type": "number",
+      "description": "Per-cycle price in USD"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "MONTH",
+        "YEAR"
+      ],
+      "default": "YEAR"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "canceled",
+        "expired"
+      ],
+      "default": "pending"
+    },
+    "checkout_session_id": {
+      "type": "string"
+    },
+    "subscription_id": {
+      "type": "string",
+      "description": "Wix subscription contract id from order_approved webhook"
+    },
+    "purchase_id": {
+      "type": "string"
+    },
+    "activated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canceled_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "customer_name",
+    "plan_name",
+    "price"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
