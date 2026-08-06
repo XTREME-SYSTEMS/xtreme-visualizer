@@ -37,7 +37,7 @@ export function DeviceShell() {
   const [more, setMore] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     try {
-      const stored = localStorage.getItem('vx-theme');
+      const stored = localStorage.getItem('vx-theme-v2');
       if (stored === 'dark' || stored === 'light') return stored;
     } catch {}
     return 'dark';
@@ -80,7 +80,7 @@ export function DeviceShell() {
   };
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
-    try { localStorage.setItem('vx-theme', theme); } catch {}
+    try { localStorage.setItem('vx-theme-v2', theme); } catch {}
   }, [theme]);
 
   const toggleTheme = () => {

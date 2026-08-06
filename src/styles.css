@@ -199,7 +199,7 @@ img{display:block;max-width:100%}
   .vx-stage{display:block;padding:0;background:var(--vx-bg)}
   .vx-device{width:100vw;height:100vh;border:0;border-radius:0;box-shadow:none}
   .vx-device::before,.vx-device::after,.vx-side-buttons{display:none}
-  .vx-screen{inset:0;border-radius:0;grid-template-rows:76px minmax(0,1fr) 76px;padding-top:env(safe-area-inset-top)}
+  .vx-screen{inset:0;border-radius:0;grid-template-rows:96px minmax(0,1fr) 76px;padding-top:env(safe-area-inset-top)}
   .vx-statusbar,.vx-island{display:none}
   .vx-brandbar{padding:7px calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left))}.vx-brand-logo{width:300px;height:80px}.vx-avatar{width:42px;height:42px;font-size:15px}.vx-avatar::after{width:10px;height:10px;border-width:2px}
   .vx-page{padding:0 calc(12px + env(safe-area-inset-right)) 8px calc(12px + env(safe-area-inset-left));gap:8px}.vx-page-header h1{font-size:20px}.vx-page-header p{font-size:12px}.vx-kicker{font-size:12px;margin-bottom:3px}.vx-card{border-radius:12px}  .vx-btn{min-height:44px;border-radius:8px;padding:7px 10px;font-size:12px}.vx-btn.compact{min-height:44px}.vx-icon-btn{width:44px;height:44px}
