@@ -52,20 +52,13 @@ export function DeviceShell() {
     );
   });
   const [isDesktop, setIsDesktop] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const viewportDesktop = !!(window.matchMedia && window.matchMedia('(min-width: 768px)').matches);
-    const screenDesktop = !!(window.screen && window.screen.width >= 768);
-    const nativeMobile = !!window.navigator && /WebView|iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
-    return viewportDesktop || (screenDesktop && !nativeMobile);
+    if (typeof window === 'undefined' || !window.matchMedia) return false;
+    return window.matchMedia('(min-width: 768px)').matches;
   });
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
     const mql = window.matchMedia('(min-width: 768px)');
-    const handler = (e: MediaQueryListEvent) => {
-      const screenDesktop = !!(window.screen && window.screen.width >= 768);
-      const nativeMobile = !!window.navigator && /WebView|iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
-      setIsDesktop(e.matches || (screenDesktop && !nativeMobile));
-    };
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mql.addEventListener('change', handler);
     return () => mql.removeEventListener('change', handler);
   }, []);
