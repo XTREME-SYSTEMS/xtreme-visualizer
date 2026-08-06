@@ -133,7 +133,31 @@ export default function AccentColorPicker() {
           onChange={(e) => choose(e.target.value)}
           className="w-10 h-10 rounded cursor-pointer border border-slate-300 bg-transparent p-0"
         />
-        <span className="text-[12px] font-mono text-slate-400 uppercase">{color}</span>
+        <input
+          type="text"
+          value={color}
+          onChange={(e) => {
+            const v = e.target.value;
+            setColor(v);
+            if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+              localStorage.setItem(STORAGE_KEY, v);
+              applyAccent(v);
+            }
+          }}
+          onBlur={(e) => {
+            let v = e.target.value.trim();
+            if (v && !v.startsWith("#")) v = "#" + v;
+            if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+              choose(v);
+            } else {
+              const saved = localStorage.getItem(STORAGE_KEY) || "#FFD60A";
+              setColor(saved);
+              applyAccent(saved);
+            }
+          }}
+          placeholder="#FFD60A"
+          className="w-24 px-2 py-1.5 text-[12px] font-mono rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+        />
         <button
           onClick={() => choose("#FFD60A")}
           className="ml-auto text-[12px] text-slate-500 hover:text-slate-700 underline"
