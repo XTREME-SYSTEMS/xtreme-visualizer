@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Camera, Users, MessageSquare, Menu, Sun, Moon, ChevronLeft, Trash2, Settings, Search } from 'lucide-react';
+import { Home, Camera, Users, MessageSquare, Menu, Sun, Moon, ChevronLeft, Trash2, Settings, Search, LogOut } from 'lucide-react';
 import { VisualXDrawer, VisualXDialog } from './VisualXPrimitives';
 import { useApp } from '@/components/AppProvider';
 import { useUI } from '@/lib/uiContext';
@@ -93,6 +93,10 @@ export function DeviceShell() {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
     try { localStorage.setItem('vx-theme-v2', theme); } catch {}
   }, [theme]);
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+  const initials = user?.full_name ? user.full_name.split(' ').map((p: string) => p[0]).slice(0, 2).join('').toUpperCase() : 'VX';
+  const handleLogout = async () => { try { await base44.auth.logout(); window.location.href = '/login'; } catch { notify('Logout failed'); } };
 
   const toggleTheme = () => {
     setUserToggled(true);
@@ -131,7 +135,7 @@ export function DeviceShell() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <button onClick={toggleTheme} className="vx-icon-btn" aria-label="Toggle theme">{theme === 'dark' ? <Sun className="vx-icon" /> : <Moon className="vx-icon" />}</button>
-                    <div className="vx-avatar">VX</div>
+                    <button onClick={() => setSettings(true)} className="vx-avatar" aria-label="Account">{initials}</button>
                   </div>
                 </div>
                 <div className="vx-main">
@@ -150,7 +154,7 @@ export function DeviceShell() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <button onClick={toggleSearch} className="vx-icon-btn" aria-label="Search"><Search className="vx-icon" /></button>
                   <button onClick={toggleTheme} className="vx-icon-btn" aria-label="Toggle theme">{theme === 'dark' ? <Sun className="vx-icon" /> : <Moon className="vx-icon" />}</button>
-                  <div className="vx-avatar">VX</div>
+                  <button onClick={() => setSettings(true)} className="vx-avatar" aria-label="Account">{initials}</button>
                 </div>
               </div>
               <div className="vx-main">
@@ -173,10 +177,18 @@ export function DeviceShell() {
             <button className="vx-btn outline-accent" onClick={() => { setMore(false); setSettings(true); }}><Settings className="vx-icon" />Settings &amp; Account</button>
           </VisualXDrawer>
           <VisualXDrawer open={settings} title="Settings & Account" onClose={() => setSettings(false)}>
+            <div className="vx-card-soft" style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="vx-avatar" style={{ flexShrink: 0 }}>{initials}</div>
+              <div style={{ minWidth: 0 }}>
+                <strong style={{ display: 'block', fontSize: 15 }}>{user?.full_name || 'Visual-X User'}</strong>
+                <span style={{ fontSize: 12, color: 'var(--vx-muted)', wordBreak: 'break-all' }}>{user?.email || ''}</span>
+              </div>
+            </div>
             <div className="vx-grid vx-grid-2">
               <button className={`vx-btn ${theme === 'dark' ? 'primary' : ''}`} onClick={toggleTheme}><Moon className="vx-icon" />Dark</button>
               <button className={`vx-btn ${theme === 'light' ? 'primary' : ''}`} onClick={toggleTheme}><Sun className="vx-icon" />Light</button>
             </div>
+            <button className="vx-btn" onClick={handleLogout}><LogOut className="vx-icon" />Sign Out</button>
             <button className="vx-btn" style={{ borderColor: 'var(--vx-danger)', color: 'var(--vx-danger)' }} onClick={() => setConfirmDelete(true)}><Trash2 className="vx-icon" />Delete Account</button>
           </VisualXDrawer>
           <VisualXDialog open={confirmDelete} title="Delete Account" onClose={() => setConfirmDelete(false)}>
