@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 import { AI_DISCLOSURE } from "@/lib/brand";
 import { money } from "@/lib/pricing";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Share2 } from "lucide-react";
 
 export default function LeadDetail() {
   const { id } = useParams();
@@ -61,12 +61,30 @@ export default function LeadDetail() {
         title={lead.customer_name}
         description={[lead.email, lead.phone, lead.project_address].filter(Boolean).join(" · ")}
         actions={
-          <ResponsiveSelect
-            value={lead.status}
-            onValueChange={(v) => patch({ status: v }, { action: `Status set to ${v}`, category: "audit" })}
-            options={["new", "qualified", "estimate_sent", "proposal_sent", "follow_up", "won", "lost"].map((s) => ({ value: s, label: s.replace(/_/g, " ") }))}
-            className="w-[180px]"
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-[12px]"
+              onClick={() => {
+                const url = `${window.location.origin}/portal/${lead.id}`;
+                navigator.clipboard?.writeText(url);
+                const t = document.createElement("div");
+                t.textContent = "Portal link copied";
+                t.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:300;background:var(--vx-panel);border:1px solid var(--vx-accent);color:var(--vx-accent);padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700";
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 2400);
+              }}
+            >
+              <Share2 className="w-3.5 h-3.5" /> Share Portal
+            </Button>
+            <ResponsiveSelect
+              value={lead.status}
+              onValueChange={(v) => patch({ status: v }, { action: `Status set to ${v}`, category: "audit" })}
+              options={["new", "qualified", "estimate_sent", "proposal_sent", "follow_up", "won", "lost"].map((s) => ({ value: s, label: s.replace(/_/g, " ") }))}
+              className="w-[180px]"
+            />
+          </div>
         }
       />
 

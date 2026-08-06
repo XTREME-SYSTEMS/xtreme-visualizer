@@ -50,15 +50,16 @@ import ThankYou from '@/pages/ThankYou';
 import Enhancements from '@/pages/Enhancements';
 import FieldDashboard from '@/pages/FieldDashboard';
 import GalleryPage from '@/pages/Gallery';
+import CustomerPortal from '@/pages/CustomerPortal';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
-const PUBLIC_PATHS = ['/ThankYou'];
+const PUBLIC_PATHS = ['/ThankYou', '/portal'];
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
   const location = useLocation();
   const isAuthPage = AUTH_PATHS.includes(location.pathname);
-  const isPublicPage = PUBLIC_PATHS.includes(location.pathname);
+  const isPublicPage = PUBLIC_PATHS.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -126,6 +127,7 @@ const AuthenticatedApp = () => {
           <Route path="/gallery" element={<GalleryPage />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
+        <Route path="/portal/:leadId" element={<CustomerPortal />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
