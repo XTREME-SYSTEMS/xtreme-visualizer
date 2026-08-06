@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Camera, Users, MessageSquare, Menu, Sun, Moon, ChevronLeft, Trash2, Settings, Search, LogOut } from 'lucide-react';
 import { VisualXDrawer, VisualXDialog } from './VisualXPrimitives';
@@ -77,6 +77,7 @@ export function DeviceShell() {
   const showBack = !TAB_PATHS.includes(location.pathname);
   const isHome = location.pathname === '/';
   const pageClassName = isHome ? "vx-page vx-page-noscroll" : "vx-page vx-page-scroll";
+  const homePageStyle: CSSProperties | undefined = isHome ? { overflow: 'hidden', height: '100%', position: 'absolute', inset: 0, touchAction: 'none' } : undefined;
   const activeTab = NAV.find(n => n.to === '/' ? location.pathname === '/' : location.pathname.startsWith(n.to))?.to || null;
   useEffect(() => {
     if (!activeTab) return;
@@ -141,7 +142,7 @@ export function DeviceShell() {
                   </div>
                 </div>
                 <div className="vx-main">
-                  <div className={pageClassName}><Outlet /></div>
+                  <div className={pageClassName} style={homePageStyle}><Outlet /></div>
                 </div>
               </div>
             </>
@@ -165,7 +166,7 @@ export function DeviceShell() {
                     <input className="vx-input" placeholder="Search projects, locations, systems…" value={query} onChange={e => setQuery(e.target.value)} autoFocus />
                   </div>
                 )}
-                <div className={pageClassName}><Outlet /></div>
+                <div className={pageClassName} style={homePageStyle}><Outlet /></div>
               </div>
               <nav className="vx-nav">
                 {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
