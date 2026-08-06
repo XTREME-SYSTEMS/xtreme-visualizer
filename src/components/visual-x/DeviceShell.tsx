@@ -33,6 +33,7 @@ const MORE = [
   { to: '/competitive-pricing', label: 'Market Pricing' },
   { to: '/industry', label: 'Industry Reference' },
   { to: '/appointments', label: 'Schedule' },
+  { to: '/billing', label: 'Billing & Invoices' },
   { to: '/receipts', label: 'Activity Receipts' },
   { to: '/guardrails', label: 'Guardrails' },
   { to: '/settings', label: 'Settings' },

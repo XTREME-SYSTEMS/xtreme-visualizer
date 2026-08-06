@@ -141,29 +141,29 @@ async function handleOrderApproved(db: any, eventData: any): Promise<Response> {
   const buyerEmail: string | null = purchase.buyerEmail ?? extractBuyerEmail(order);
 
   // ===== APP-SPECIFIC =====
-  // Grant whatever the buyer paid for. This runs BEFORE we mark the purchase paid: if it
-  // throws or times out, the status stays "pending", so Wix's retry re-runs the grant
-  // rather than hitting the "already paid" short-circuit above and skipping it forever.
-  //
-  // It MUST therefore be idempotent — Wix can also deliver duplicates CONCURRENTLY, so the
-  // "pending" check above is NOT a lock: two invocations can both reach this block. Make every
-  // effect safe to run twice by keying it on a stable id (purchase.id / checkoutId), never
-  // blind-create/blind-send:
-  //   - unlock a feature:   await db.entities.User.update(purchase.appUserId, { plan: purchase.productId });  // update is naturally idempotent
-  //   - create entitlement: const existing = await db.entities.Entitlement.filter({ purchaseId: purchase.id });
-  //                         if (!existing.length) await db.entities.Entitlement.create({ purchaseId: purchase.id, ... });
-  //   - one-time side effects (email/webhook): guard them the same way — record a marker keyed
-  //     on purchase.id and skip if it already exists, so a duplicate delivery can't send twice.
-  //   - QUANTITY: for a multi-unit purchase grant `purchase.quantity` (seats/credits/items), not a
-  //     single unit — it's the validated count create-checkout charged for. Fixed-entitlement = 1.
-  //   - subscriptions:      subscriptionId is persisted automatically below, for later revoke.
-  //   - GRANT TARGET: use purchase.appUserId when set (the built-in `User` entity — there is no
-  //     `AppUser`). For an anonymous buyer (appUserId null) match `buyerEmail` (resolved above)
-  //     against User; User records CANNOT be created here (invite-only), so when no user matches,
-  //     grant to an Entitlement row keyed on the email and claim it when they sign up.
-  //   - Gate paid access on a WRITABLE field you set here (e.g. plan / has_paid on the user or an
-  //     Entitlement row) — NEVER on is_verified: it is platform-protected and cannot be set here,
-  //     even as service role, so gating access on it locks the paying buyer out.
+  // Visual-X billing: mark the Invoice (correlated by checkoutSessionId) as paid. Idempotent —
+  // a duplicate ORDER_APPROVED finds the invoice already "paid" and the update is a no-op.
+  // On a FINAL invoice payment, also mark the linked Work Order as completed.
+  try {
+    const invMatches = await db.entities.Invoice.filter({ checkout_session_id: checkoutId });
+    const invoice = invMatches?.[0];
+    if (invoice && invoice.status !== "paid") {
+      await db.entities.Invoice.update(invoice.id, {
+        status: "paid",
+        paid_at: new Date().toISOString(),
+      });
+      if (invoice.type === "final" && invoice.work_order_id) {
+        const wo = await db.entities.WorkOrder.filter({ id: invoice.work_order_id });
+        if (wo?.[0] && wo[0].status !== "completed") {
+          await db.entities.WorkOrder.update(wo[0].id, { status: "completed" });
+        }
+      }
+      console.log("payments-webhook: invoice marked paid", { invoiceId: invoice.id, type: invoice.type });
+    }
+  } catch (err) {
+    console.error("payments-webhook: invoice grant failed", err);
+    throw err; // stay "pending" so Wix retries
+  }
   // ===== END APP-SPECIFIC =====
 
   // Mark paid LAST, so "paid" always implies the grant above completed. The idempotency

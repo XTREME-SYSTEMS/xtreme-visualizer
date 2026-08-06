@@ -69,31 +69,39 @@ Deno.serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}));
 
     // ===== APP-SPECIFIC =====
-    // Resolve what is being bought AND its price SERVER-SIDE. NEVER trust a price sent by the
-    // client — a buyer can tamper the request body and pay any amount. The client sends only a
-    // product identifier; look up the authoritative price here (a Product entity, a config map,
-    // etc.). For a subscription, set `subscriptionInfo` (frequency/interval/billingCycles).
-    const productId = String(body.productId ?? "");
-    // Quantity is buyer-controlled, so VALIDATE it server-side. Check the RAW value is a positive
-    // integer BEFORE using it — do NOT Math.trunc first, or a fractional POST (e.g. 1.9) silently
-    // passes as 1 and charges a quantity the UI never allowed. For a plan / fixed-entitlement product,
-    // hard-code `1` and ignore the body; for a genuine multi-unit product, also enforce YOUR own max.
-    const quantity = Number(body.quantity ?? 1);
-    if (!Number.isInteger(quantity) || quantity < 1) {
-      return new Response(JSON.stringify({ error: "Invalid quantity" }), { status: 400 });
+    // Visual-X billing: the client sends an Invoice id as `productId`. We resolve the invoice
+    // SERVER-SIDE so a buyer can't tamper the amount. The invoice holds the authoritative amount,
+    // customer info, and type (deposit / final).
+    const invoiceId = String(body.productId ?? "");
+    if (!invoiceId) {
+      return new Response(JSON.stringify({ error: "Missing invoice id" }), { status: 400 });
     }
-    // Example — replace with your real trusted product source:
-    //   const product = (await base44.asServiceRole.entities.Product.filter({ id: productId }))[0];
-    //   if (!product) return new Response(JSON.stringify({ error: "Unknown product" }), { status: 400 });
-    //   const productName = product.name; const price = String(product.price); const currency = product.currency ?? "USD";
-    const productName = "Purchase"; // TODO: from your trusted product source
-    const price = "0.00";           // TODO: authoritative per-unit price (major units), resolved server-side
-    const currency = "USD";
-    // For a SUBSCRIPTION set this to Wix's subscriptionInfo; leave null for a one-time payment.
+    const db = base44.asServiceRole;
+    let invoice: any = null;
+    try {
+      const invoices = await db.entities.Invoice.filter({ id: invoiceId });
+      invoice = invoices?.[0] ?? null;
+    } catch (_) {
+      // Malformed id — SDK throws on invalid ObjectId format instead of returning empty.
+      return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
+    }
+    if (!invoice) {
+      return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
+    }
+    if (invoice.status === "paid") {
+      return new Response(JSON.stringify({ error: "Invoice already paid" }), { status: 400 });
+    }
+    const quantity = 1; // fixed-entitlement: one invoice = one charge
+    const productName = `${invoice.type === "final" ? "Final Invoice" : "Deposit"} — ${invoice.customer_name}`;
+    const price = Number(invoice.amount).toFixed(2); // authoritative, server-resolved
+    if (parseFloat(price) < 0.5) {
+      return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
+    }
+    const currency = invoice.currency || "USD";
     const subscriptionInfo = null;
-    // Where Wix returns the buyer. Both MUST be real, PUBLICLY reachable routes in this app: the
-    // returning buyer is often anonymous, so a missing or login-gated route strands a paid customer.
-    // Match your router exactly — `/ThankYou`, not `/thank-you`.
+    // Prefill the customer's email from the invoice so they don't re-enter it on Wix.
+    const customerEmail = invoice.customer_email || appUser?.email || null;
+    // Where Wix returns the buyer. Both MUST be real, PUBLICLY reachable routes.
     const thankYouPath = "/ThankYou";
     const postFlowPath = "/";
     // ===== END APP-SPECIFIC =====
@@ -107,11 +115,10 @@ Deno.serve(async (req: Request) => {
     const constructBody = {
       cart: {
         items: [{ name: productName, quantity, price, ...(subscriptionInfo ? { subscriptionInfo } : {}) }],
-        // Prefill the signed-in buyer's email if we have one; anonymous buyers enter it on Wix.
-        ...(appUser?.email ? { customerInfo: { email: appUser.email } } : {}),
+        ...(customerEmail ? { customerInfo: { email: customerEmail } } : {}),
       },
       callbackUrls: {
-        thankYouPageUrl: `${appUrl}${thankYouPath}`,
+        thankYouPageUrl: `${appUrl}${thankYouPath}?invoice=${invoiceId}`,
         postFlowUrl: `${appUrl}${postFlowPath}`,
       },
     };
@@ -142,24 +149,23 @@ Deno.serve(async (req: Request) => {
     }
 
     // PERSIST THE JOIN KEY (the whole point). Pending until the webhook flips it to "paid".
-    // asServiceRole so the row is trustworthy — Base44Purchase RLS blocks client writes, so a buyer
-    // can't forge a paid purchase. appUserId is the fulfillment target when known; null for an
-    // anonymous buyer (the webhook then grants by buyerEmail).
-    await base44.asServiceRole.entities.Base44Purchase.create({
+    const purchase = await base44.asServiceRole.entities.Base44Purchase.create({
       checkoutSessionId,
       status: "pending",
       appUserId: appUser?.id ?? null,
-      buyerEmail: appUser?.email ?? null,
-      // The server-resolved product key — the webhook grant reads this to decide what to unlock.
-      productId,
+      buyerEmail: customerEmail ?? appUser?.email ?? null,
+      productId: invoice.type, // "deposit" | "final" — the webhook reads this
       productName,
-      // Persist the validated quantity so the webhook's grant can award the RIGHT count
-      // (seats/credits/items) for a multi-unit purchase — the grant runs later from this row and has
-      // no other authoritative count. (Fixed-entitlement plans keep quantity 1.)
       quantity,
-      // Charged total (unit price × quantity), so the record matches what Wix charged.
       amount: total.toFixed(2),
       currency,
+    });
+
+    // Link the Invoice to this checkout session so the webhook can mark it paid.
+    await db.entities.Invoice.update(invoiceId, {
+      status: "pending",
+      checkout_session_id: checkoutSessionId,
+      purchase_id: purchase.id,
     });
 
     return new Response(JSON.stringify({ redirectUrl }), {
