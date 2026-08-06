@@ -5,6 +5,7 @@ import EmptyState from "@/components/vq/EmptyState";
 import { systemRates } from "@/lib/refData";
 import { computeRange, money } from "@/lib/pricing";
 import { Loader2, Calculator, Plus, Search, MapPin, TrendingUp, Check } from "lucide-react";
+import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const RATE_FIELDS = [
   ["mobilization_fee", "Mobilization fee ($)", "number"],
@@ -139,9 +140,12 @@ export default function Pricing() {
               <input className="vx-input" type="text" maxLength={5} inputMode="numeric" placeholder="33101" value={zip} onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))} />
             </label>
             <label className="field">Floor system
-              <select className="vx-input" value={lookupSystem} onChange={(e) => setLookupSystem(e.target.value)}>
-                {SYSTEM_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <ResponsiveSelect
+                className="vx-input"
+                value={lookupSystem}
+                onValueChange={setLookupSystem}
+                options={SYSTEM_OPTIONS.map((s) => ({ value: s, label: s }))}
+              />
             </label>
           </div>
           <button className="vx-btn primary" style={{ marginTop: 14 }} onClick={runLookup} disabled={looking}>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink, Calendar, DollarSign, CheckCircle2, AlertTriangle, Camera, Package, Mail } from "lucide-react";
+import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const STATUSES = ["draft", "assigned", "in_progress", "completed", "cancelled"];
 const STATUS_COLORS = { draft: "#707070", assigned: "#43a9ff", in_progress: "#ffd000", completed: "#9cff00", cancelled: "#ff5258" };
@@ -269,9 +270,12 @@ export default function WorkOrderManager({ notify }) {
 
               {/* Status changer */}
               <div style={{ marginTop: 8 }}>
-                <select className="hx-scraper-input" style={{ fontSize: 12, padding: "6px 10px" }} value={o.status} onChange={(e) => changeStatus(o, e.target.value)}>
-                  {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <ResponsiveSelect
+                  className="hx-scraper-input"
+                  value={o.status}
+                  onValueChange={(v) => changeStatus(o, v)}
+                  options={STATUSES.map((s) => ({ value: s, label: s }))}
+                />
               </div>
 
               <div className="hx-bid-controls" style={{ marginTop: 8 }}>
@@ -315,10 +319,11 @@ export default function WorkOrderManager({ notify }) {
             </div>
             <div className="form-grid" style={{ maxHeight: "70vh", overflowY: "auto" }}>
               <div className="field"><label>Project / Lead</label>
-                <select value={form.project_id} onChange={(e) => pickLead(e.target.value)}>
-                  <option value="">Select a lead…</option>
-                  {leads.map((l) => <option key={l.id} value={l.id}>{l.customer_name || "Unknown"}{l.project_address ? ` — ${l.project_address}` : ""}</option>)}
-                </select>
+                <ResponsiveSelect
+                  value={form.project_id}
+                  onValueChange={pickLead}
+                  options={[{ value: "", label: "Select a lead…" }, ...leads.map((l) => ({ value: l.id, label: `${l.customer_name || "Unknown"}${l.project_address ? ` — ${l.project_address}` : ""}` }))]}
+                />
               </div>
               <div className="form-grid two">
                 <div className="field"><label>Customer name</label><input value={form.customer_name} onChange={(e) => set("customer_name", e.target.value)} /></div>

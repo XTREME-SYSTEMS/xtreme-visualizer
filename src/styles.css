@@ -220,6 +220,8 @@ img{display:block;max-width:100%}
   .proposal-cover{height:195px}.proposal-cover-content{left:14px;top:13px;bottom:13px}.proposal-cover h1{font-size:19px}.proposal-cover p{font-size:12px}.proposal-price{font-size:20px}.proposal-section{padding:8px}.proposal-section h3{font-size:12px}.proposal-section p{font-size:12px}.proposal-action{min-height:65px;font-size:12px}
   .lead-card{grid-template-columns:1fr 126px;padding:8px}.lead-card img{height:105px}.lead-card h2{font-size:14px}.lead-card p{font-size:12px}.lead-photo{height:82px}.lead-task{padding:5px 0;font-size:12px}.lead-task input{width:14px;height:14px}.ai-card{grid-template-columns:54px 1fr 82px;padding:8px}.ai-score{width:47px;height:47px;border-width:4px;font-size:13px}.ai-card h3{font-size:12px}.ai-card p{font-size:12px}
   .vx-drawer{padding:14px 14px 22px}.vx-drawer h2{font-size:18px}.vx-toast{bottom:90px;font-size:12px}
+  /* Mobile accessibility: floor descriptive & metadata text at 14px */
+  .vx-muted,.vx-faint,.vx-help,.vx-kicker,.vx-page-header p,.vx-notice,.vx-chip,.vx-range,.vx-photo-label,.vx-field label,.vx-field__error{font-size:14px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 

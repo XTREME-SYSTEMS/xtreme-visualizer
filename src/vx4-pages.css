@@ -801,6 +801,8 @@
   .viz-upload-hero, .viz-upload-hero img, .viz-ba-panel, .viz-ba-panel img { min-height: 180px; }
   .viz-blemish-grid { grid-template-columns: 1fr; }
   .vx-chart-strip { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); }
+  /* Mobile accessibility: floor descriptive & metadata text at 14px */
+  .content-header p,.project-row p,.project-side time,.feature-card p,.empty,.field,.status-line,.status-line code,.message h4,.message p,.hx-hero-content p,.hx-project-info strong,.hx-project-info small,.hx-project-side time,.hx-empty,.hx-disclosure,.hx-portal-text span,.hx-sys-desc,.hx-sys-rate small,.hx-sys-edit,.hx-page-head p,.hx-mini-btn,.hx-search input,.hx-filters button,.hx-sync-btn,.hx-notice,.hx-mail-info strong,.hx-mail-info p,.hx-mail-row time,.hx-mail-body,.hx-mail-textarea,.viz-disclosure,.viz-bid-card small,.viz-bid-card .vx-btn,.viz-bid-tier-pick button,.viz-bid-line,.viz-bid-total small,.viz-finish-label,.viz-blemish-toggle,.hx-depth strong,.hx-scraper-info strong,.hx-scraper-meta,.hx-cal-num{font-size:14px}
 }
 
 /* ===== Brand override: map light Tailwind utilities → vx dark theme ===== */
