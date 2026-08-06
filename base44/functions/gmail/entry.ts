@@ -37,7 +37,7 @@ export default async function (req: Request): Promise<Response> {
         const subject = headers.find((h: any) => h.name === 'Subject')?.value || '';
         const date = headers.find((h: any) => h.name === 'Date')?.value || '';
         const snippet = msg.snippet || '';
-        items.push({ id: m.id, from, subject, snippet, date });
+        items.push({ id: m.id, from, subject, snippet, date, unread: (msg.labelIds || []).includes('UNREAD') });
       }
       return Response.json({ items });
     }
@@ -69,6 +69,19 @@ export default async function (req: Request): Promise<Response> {
       }
       textBody = extractBody(msg.payload);
       return Response.json({ from, subject, body: textBody, snippet: msg.snippet });
+    }
+
+    // ---- MARK READ ----
+    if (action === 'markRead') {
+      const { id } = body;
+      if (!id) return Response.json({ error: 'id is required' }, { status: 400 });
+      const modRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}/modify`, {
+        method: 'POST',
+        headers: authHeader,
+        body: JSON.stringify({ removeLabelIds: ['UNREAD'] }),
+      });
+      if (!modRes.ok) { const d = await modRes.json(); return Response.json({ error: 'markRead failed', detail: d }, { status: 502 }); }
+      return Response.json({ ok: true });
     }
 
     // ---- SEND ----
