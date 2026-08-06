@@ -131,7 +131,6 @@ export default function Visualizer() {
       /* preview only */
     }
     setConcept("");
-    toast({ title: "Photo loaded for concept preview." });
   };
 
   const generate = async (finishOverride) => {
@@ -151,7 +150,6 @@ export default function Visualizer() {
         existing_image_urls: fileUrl ? [fileUrl] : undefined,
       });
       setConcept(res.url);
-      toast({ title: "Visualization concept generated." });
     } catch (err) {
       toast({ title: "Generation failed", description: err.message, variant: "destructive" });
     } finally {
