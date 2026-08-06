@@ -17,6 +17,7 @@ import {
 import { Loader2, Mail, Check, Unlink, Trash2, AlertTriangle } from "lucide-react";
 import PricingProfileEditor from "@/components/pricing/PricingProfileEditor";
 import CostOfBusinessCalculator from "@/components/pricing/CostOfBusinessCalculator";
+import AccentColorPicker from "@/components/settings/AccentColorPicker";
 
 const CONNECTOR_ID = "69db200274332486fd28dd7e";
 
@@ -132,17 +133,21 @@ export default function Settings() {
         )}
       </SectionCard>
 
-      <SectionCard index="02" title="Standard pricing" tag="Your rates">
+      <SectionCard index="02" title="Accent color" tag="Appearance">
+        <AccentColorPicker />
+      </SectionCard>
+
+      <SectionCard index="03" title="Standard pricing" tag="Your rates">
         <p className="text-[12px] text-slate-500 mb-4">Set your standard rates once — the competitive pricing builder uses these to pre-fill fuel, labor, and material costs.</p>
         <PricingProfileEditor />
       </SectionCard>
 
-      <SectionCard index="03" title="Cost of doing business" tag="Overhead">
+      <SectionCard index="04" title="Cost of doing business" tag="Overhead">
         <p className="text-[12px] text-slate-500 mb-4">Account for labor burden, insurance, fuel, vehicle, equipment, software/AI, IT, and more — the calculator outputs your burdened hourly rate and overhead to apply to every quote.</p>
         <CostOfBusinessCalculator />
       </SectionCard>
 
-      <SectionCard index="04" title="Account management" tag="Danger zone">
+      <SectionCard index="05" title="Account management" tag="Danger zone">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <span className="w-8 h-8 rounded-full bg-red-50 grid place-items-center shrink-0">
