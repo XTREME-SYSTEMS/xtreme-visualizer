@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink, Calendar, DollarSign, CheckCircle2, AlertTriangle, Camera, Package } from "lucide-react";
+import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink, Calendar, DollarSign, CheckCircle2, AlertTriangle, Camera, Package, Mail } from "lucide-react";
 
 const STATUSES = ["draft", "assigned", "in_progress", "completed", "cancelled"];
 const STATUS_COLORS = { draft: "#707070", assigned: "#43a9ff", in_progress: "#ffd000", completed: "#9cff00", cancelled: "#ff5258" };
@@ -98,6 +98,46 @@ export default function WorkOrderManager({ notify }) {
     try {
       await base44.entities.WorkOrder.update(o.id, { status: newStatus });
       notify("Status updated");
+
+      // #10: Auto-sync calendar when assigned + has scheduled date
+      if (newStatus === "assigned" && o.scheduled_date && !o.calendar_event_id) {
+        try {
+          const start = new Date(o.scheduled_date);
+          const end = new Date(start.getTime() + 8 * 3600000);
+          const res = await base44.functions.invoke("createCalendarAppointment", {
+            summary: `Job — ${o.customer_name || "Work Order"}`,
+            description: o.notes || `Crew: ${o.crew_leader_name || "TBD"}`,
+            startDateTime: start.toISOString(),
+            endDateTime: end.toISOString(),
+            location: o.project_address || "",
+            leadId: o.lead_id,
+          });
+          const calData = res.data || res;
+          if (calData.eventId || calData.calendar_event_id) {
+            await base44.entities.WorkOrder.update(o.id, {
+              calendar_event_id: calData.eventId || calData.calendar_event_id,
+              calendar_link: calData.htmlLink || calData.calendar_link,
+            });
+            notify("Calendar event auto-created");
+          }
+        } catch (e) { /* connector not connected — silent */ }
+      }
+
+      // #13: Prompt subcontractor rating on completion
+      if (newStatus === "completed" && o.subcontractor_id) {
+        try {
+          const subs = await base44.entities.Subcontractor.filter({ id: o.subcontractor_id });
+          const sub = subs?.[0];
+          if (sub && confirm(`Rate ${sub.name} for this job?\n\nClick OK for 5 stars, Cancel for 3 stars.`)) {
+            const newRating = prompt(`Rate ${sub.name} (1-5):`, "5");
+            const rating = Math.max(1, Math.min(5, Number(newRating) || 5));
+            const avgRating = Math.round(((sub.rating * 5 + rating) / 6) * 10) / 10;
+            await base44.entities.Subcontractor.update(sub.id, { rating: avgRating });
+            notify(`${sub.name} rated ${rating}★ (avg: ${avgRating})`);
+          }
+        } catch (e) { /* silent */ }
+      }
+
       load();
     } catch (e) { notify("Update failed: " + e.message); }
   };
@@ -138,6 +178,22 @@ export default function WorkOrderManager({ notify }) {
       load();
     } catch (e) { notify("Drive failed: " + (e?.response?.data?.error || e.message)); }
     finally { setDriveBusy(null); }
+  };
+
+  // --- Material order email (#11) ---
+  const [matBusy, setMatBusy] = useState(null);
+  const orderMaterials = async (o) => {
+    if (!o.materials_list?.length) { notify("No materials on this work order"); return; }
+    const supplier = prompt("Supplier email (leave blank to generate list only):", "");
+    if (supplier === null) return;
+    setMatBusy(o.id);
+    try {
+      const res = await base44.functions.invoke("sendMaterialOrder", { work_order_id: o.id, supplier_email: supplier });
+      const d = res.data || res;
+      if (d.ok) notify(d.message || "Material order sent");
+      else notify(d.error || "Failed");
+    } catch (e) { notify("Material order failed: " + (e?.response?.data?.error || e.message)); }
+    finally { setMatBusy(null); }
   };
 
   // --- Calendar sync ---
@@ -230,6 +286,11 @@ export default function WorkOrderManager({ notify }) {
                 <button className="hx-sys-edit" style={{ color: "var(--vx-accent)", borderColor: "var(--vx-accent)" }} onClick={() => generateInvoice(o, "final")} disabled={invBusy === o.id + "final"}>
                   {invBusy === o.id + "final" ? <Loader2 size={13} className="spin" /> : <DollarSign size={13} />} Final
                 </button>
+                {o.materials_list?.length > 0 && (
+                  <button className="hx-sys-edit" onClick={() => orderMaterials(o)} disabled={matBusy === o.id}>
+                    {matBusy === o.id ? <Loader2 size={13} className="spin" /> : <Mail size={13} />} Order Materials
+                  </button>
+                )}
               </div>
             </div>
           );

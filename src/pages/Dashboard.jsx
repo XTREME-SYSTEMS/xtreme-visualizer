@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Loader2, Users, CalendarClock, FileText, DollarSign, TrendingUp, Target, CreditCard, BarChart3 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid } from "recharts";
 import AiChat from "@/components/dashboard/AiChat";
+import ProposalInsights from "@/components/dashboard/ProposalInsights";
 
 const STATUS_COLORS = { new: "#ffd200", qualified: "#43a9ff", estimate_sent: "#9cff00", proposal_sent: "#c4ff3f", won: "#9cff00", lost: "#ff5258", follow_up: "#ffd000" };
 
@@ -318,6 +319,8 @@ export default function Dashboard() {
           ))}
         </div>
       )}
+
+      <ProposalInsights leads={data.leads} />
 
       <div style={{ flex: 1, minHeight: 280, display: "flex", flexDirection: "column" }}>
         <AiChat contextSummary={contextSummary} />
