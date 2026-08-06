@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Plus,
@@ -7,40 +7,20 @@ import {
   GitCompare,
   Calculator,
   Share2,
-  Image as ImageIcon,
+  Image,
+  Layers,
+  FileText,
+  Globe,
+  Calendar,
+  CreditCard,
 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 
 const HERO_IMG =
   "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png";
 
-const STATUS_MAP = {
-  new: { label: "New", cls: "ready" },
-  qualified: { label: "Ready to Quote", cls: "ready" },
-  estimate_sent: { label: "Estimate Sent", cls: "progress" },
-  proposal_sent: { label: "Proposal Sent", cls: "progress" },
-  won: { label: "Won", cls: "ready" },
-  lost: { label: "Lost", cls: "blocked" },
-  follow_up: { label: "Draft", cls: "draft" },
-};
-
 export default function Home() {
   const navigate = useNavigate();
-  const [leads, setLeads] = useState([]);
-
-  useEffect(() => {
-    base44.entities.Lead.list("-created_date", 50)
-      .then((l) => setLeads(l))
-      .catch(() => setLeads([]));
-  }, []);
-
-  const recent = leads.slice(0, 5);
-
-  const fmtDate = (d) =>
-    d
-      ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-      : "";
 
   return (
     <div className="home-full hx-home">
@@ -83,54 +63,60 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Recent Projects */}
-      <section className="hx-section">
+      {/* Tools */}
+      <section className="hx-portal">
         <div className="hx-section-head">
-          <h2>Recent Projects</h2>
-          <button onClick={() => navigate("/leads")}>
-            View All <ChevronRight size={14} />
-          </button>
+          <h2>Tools</h2>
         </div>
-        <div className="hx-project-list">
-          {recent.length === 0 ? (
-            <div className="hx-empty">
-              <div>
-                <span>0</span>
-                No recent bids yet. Start a new visualization to see them here.
-              </div>
+        <div className="hx-portal-grid">
+          <button className="hx-portal-card" onClick={() => navigate("/colors")}>
+            <div className="hx-portal-icon"><Image size={20} /></div>
+            <div className="hx-portal-text">
+              <strong>Gallery</strong>
+              <span>Browse finishes & colors</span>
             </div>
-          ) : (
-            recent.map((l) => {
-              const badge = STATUS_MAP[l.status] || { label: l.status, cls: "ready" };
-              return (
-                <button
-                  key={l.id}
-                  className="hx-project-row"
-                  onClick={() => navigate(`/leads/${l.id}`)}
-                >
-                  <div className="hx-project-thumb">
-                    {l.photo_url ? (
-                      <img src={l.photo_url} alt="" />
-                    ) : (
-                      <ImageIcon size={18} />
-                    )}
-                  </div>
-                  <div className="hx-project-info">
-                    <strong>{l.customer_name || "Untitled Project"}</strong>
-                    <small>{l.project_address || "No address"}</small>
-                    <small className="hx-sqft">
-                      {l.square_feet ? `${l.square_feet.toLocaleString()} sq ft` : "—"}
-                    </small>
-                  </div>
-                  <div className="hx-project-side">
-                    <span className={`vx-chip ${badge.cls}`}>{badge.label}</span>
-                    <time>{fmtDate(l.created_date)}</time>
-                  </div>
-                  <ChevronRight size={16} className="hx-project-arrow" />
-                </button>
-              );
-            })
-          )}
+            <ChevronRight size={16} className="hx-portal-arrow" />
+          </button>
+          <button className="hx-portal-card" onClick={() => navigate("/systems")}>
+            <div className="hx-portal-icon"><Layers size={20} /></div>
+            <div className="hx-portal-text">
+              <strong>Floor Systems</strong>
+              <span>Epoxy, polished & more</span>
+            </div>
+            <ChevronRight size={16} className="hx-portal-arrow" />
+          </button>
+          <button className="hx-portal-card" onClick={() => navigate("/bid-generator")}>
+            <div className="hx-portal-icon"><FileText size={20} /></div>
+            <div className="hx-portal-text">
+              <strong>Bid Generator</strong>
+              <span>Auto-build estimates</span>
+            </div>
+            <ChevronRight size={16} className="hx-portal-arrow" />
+          </button>
+          <button className="hx-portal-card" onClick={() => navigate("/lead-generator")}>
+            <div className="hx-portal-icon"><Globe size={20} /></div>
+            <div className="hx-portal-text">
+              <strong>Scraper</strong>
+              <span>Pull leads from sources</span>
+            </div>
+            <ChevronRight size={16} className="hx-portal-arrow" />
+          </button>
+          <button className="hx-portal-card" onClick={() => navigate("/appointments")}>
+            <div className="hx-portal-icon"><Calendar size={20} /></div>
+            <div className="hx-portal-text">
+              <strong>Appointments</strong>
+              <span>Schedule site visits</span>
+            </div>
+            <ChevronRight size={16} className="hx-portal-arrow" />
+          </button>
+          <button className="hx-portal-card" onClick={() => navigate("/crm")}>
+            <div className="hx-portal-icon"><CreditCard size={20} /></div>
+            <div className="hx-portal-text">
+              <strong>Digital Card</strong>
+              <span>Share your business</span>
+            </div>
+            <ChevronRight size={16} className="hx-portal-arrow" />
+          </button>
         </div>
       </section>
 
