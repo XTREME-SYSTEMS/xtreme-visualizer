@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Upload, RotateCcw, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Upload, RotateCcw, ChevronDown, ChevronUp, Save, Check } from "lucide-react";
 import { GALLERY_CATEGORIES } from "@/data/galleryImages";
 
 const STORAGE_KEY = "vx-hero-image";
@@ -60,28 +60,38 @@ function Slider({ label, value, min, max, step, unit, onChange }) {
 }
 
 export default function HeroImagePicker() {
-  const [applied, setApplied] = useState(() => getHeroImage());
+  const [draftImg, setDraftImg] = useState(() => getHeroImage());
   const [textValue, setTextValue] = useState(() => getHeroImage());
+  const [savedImg, setSavedImg] = useState(() => getHeroImage());
+  const [draftFilters, setDraftFilters] = useState(() => getHeroFilters());
+  const [savedFilters, setSavedFilters] = useState(() => getHeroFilters());
   const [uploading, setUploading] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [filters, setFilters] = useState(() => getHeroFilters());
+  const [savedFlash, setSavedFlash] = useState(false);
 
-  const apply = (newUrl) => {
-    setApplied(newUrl);
-    setTextValue(newUrl);
-    try { localStorage.setItem(STORAGE_KEY, newUrl); } catch {}
+  const stageImg = (url) => {
+    setDraftImg(url);
+    setTextValue(url);
   };
 
   const updateFilter = (key, val) => {
-    const next = { ...filters, [key]: val };
-    setFilters(next);
-    try { localStorage.setItem(FILTERS_KEY, JSON.stringify(next)); } catch {}
+    setDraftFilters((prev) => ({ ...prev, [key]: val }));
   };
 
-  const resetFilters = () => {
-    setFilters(DEFAULT_FILTERS);
-    try { localStorage.setItem(FILTERS_KEY, JSON.stringify(DEFAULT_FILTERS)); } catch {}
+  const isDirty = draftImg !== savedImg || JSON.stringify(draftFilters) !== JSON.stringify(savedFilters);
+
+  const save = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, draftImg);
+      localStorage.setItem(FILTERS_KEY, JSON.stringify(draftFilters));
+    } catch {}
+    setSavedImg(draftImg);
+    setSavedFilters(draftFilters);
+    setSavedFlash(true);
+    setTimeout(() => setSavedFlash(false), 2000);
   };
+
+  const resetFilters = () => setDraftFilters(DEFAULT_FILTERS);
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -89,7 +99,7 @@ export default function HeroImagePicker() {
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      apply(file_url);
+      stageImg(file_url);
     } catch (err) {
       console.error("Hero image upload failed", err);
     } finally {
@@ -99,22 +109,22 @@ export default function HeroImagePicker() {
 
   const handleBlur = () => {
     const v = textValue.trim();
-    if (v && v !== applied) apply(v);
-    else setTextValue(applied);
+    if (v) stageImg(v);
+    else setTextValue(draftImg);
   };
 
   const reset = () => {
-    try { localStorage.removeItem(STORAGE_KEY); } catch {}
-    setApplied(DEFAULT_HERO);
-    setTextValue(DEFAULT_HERO);
+    stageImg(DEFAULT_HERO);
+    setDraftFilters(DEFAULT_FILTERS);
   };
 
   return (
     <div className="space-y-4">
-      <p className="text-[12px] text-slate-500">Upload or paste a URL for the hero image shown on the Home screen.</p>
+      <p className="text-[12px] text-slate-500">Upload or paste a URL for the hero image shown on the Home screen. Click <strong>Save</strong> to keep your changes.</p>
       <div className="flex gap-3 items-start">
-        <div className="w-32 h-20 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 shrink-0">
-          <img src={applied} alt="Hero preview" className="w-full h-full object-cover" />
+        <div className="w-32 h-20 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 shrink-0 relative">
+          <img src={draftImg} alt="Hero preview" className="w-full h-full object-cover" style={{ filter: heroFilterString(draftFilters) }} />
+          <div style={{ position: "absolute", inset: 0, background: "#000", opacity: draftFilters.darken / 100, pointerEvents: "none" }} />
         </div>
         <div className="flex-1 space-y-2 min-w-0">
           <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900 text-white text-[12px] font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
@@ -132,17 +142,34 @@ export default function HeroImagePicker() {
           />
         </div>
       </div>
-      <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
-        <RotateCcw className="w-3 h-3" /> Reset to default
-      </button>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={save}
+          disabled={!isDirty && !savedFlash}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-bold transition-colors"
+          style={{
+            background: isDirty || savedFlash ? "var(--vx-accent)" : "var(--vx-panel-3)",
+            color: isDirty || savedFlash ? "#0A0A0A" : "var(--vx-faint)",
+            border: "1px solid var(--vx-accent)",
+            cursor: isDirty ? "pointer" : "default",
+          }}
+        >
+          {savedFlash ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
+          {savedFlash ? "Saved!" : "Save"}
+        </button>
+        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+          <RotateCcw className="w-3 h-3" /> Reset to default
+        </button>
+      </div>
 
       <div className="pt-3 border-t border-slate-200 space-y-3">
         <p className="text-[13px] font-semibold text-slate-700">Image adjustments</p>
-        <Slider label="Brightness" value={filters.brightness} min={20} max={180} step={5} unit="%" onChange={(v) => updateFilter("brightness", v)} />
-        <Slider label="Contrast" value={filters.contrast} min={20} max={180} step={5} unit="%" onChange={(v) => updateFilter("contrast", v)} />
-        <Slider label="Saturation" value={filters.saturate} min={0} max={200} step={5} unit="%" onChange={(v) => updateFilter("saturate", v)} />
-        <Slider label="Blur" value={filters.blur} min={0} max={12} step={0.5} unit="px" onChange={(v) => updateFilter("blur", v)} />
-        <Slider label="Darken overlay" value={filters.darken} min={0} max={80} step={5} unit="%" onChange={(v) => updateFilter("darken", v)} />
+        <Slider label="Brightness" value={draftFilters.brightness} min={20} max={180} step={5} unit="%" onChange={(v) => updateFilter("brightness", v)} />
+        <Slider label="Contrast" value={draftFilters.contrast} min={20} max={180} step={5} unit="%" onChange={(v) => updateFilter("contrast", v)} />
+        <Slider label="Saturation" value={draftFilters.saturate} min={0} max={200} step={5} unit="%" onChange={(v) => updateFilter("saturate", v)} />
+        <Slider label="Blur" value={draftFilters.blur} min={0} max={12} step={0.5} unit="px" onChange={(v) => updateFilter("blur", v)} />
+        <Slider label="Darken overlay" value={draftFilters.darken} min={0} max={80} step={5} unit="%" onChange={(v) => updateFilter("darken", v)} />
         <button onClick={resetFilters} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
           <RotateCcw className="w-3 h-3" /> Reset adjustments
         </button>
@@ -165,10 +192,10 @@ export default function HeroImagePicker() {
                   {cat.images.map((img, i) => (
                     <button
                       key={i}
-                      onClick={() => apply(img)}
+                      onClick={() => stageImg(img)}
                       className="aspect-square rounded-md overflow-hidden border-2 transition-transform hover:scale-105"
                       style={{
-                        borderColor: applied === img ? "var(--vx-accent)" : "transparent",
+                        borderColor: draftImg === img ? "var(--vx-accent)" : "transparent",
                         padding: 0,
                         background: "#f1f5f9",
                       }}
