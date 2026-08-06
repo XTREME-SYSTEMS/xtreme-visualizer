@@ -2,24 +2,20 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Upload, RotateCcw, Save, Check } from "lucide-react";
 import { getPWAButtonConfig } from "@/components/settings/PWAButtonCustomizer";
+import { getHeroTextConfig } from "@/components/settings/HeroTextCustomizer";
 
 const LOGO_KEY = "vx-loading-logo";
-const HOME_BTN_KEY = "vx-home-button";
 
 const DEFAULTS = {
   logo: "/logo.png",
-  homeButton: { label: "New Visualization" },
 };
 
 export function getLoadingLogo() {
   try { return localStorage.getItem(LOGO_KEY) || DEFAULTS.logo; } catch { return DEFAULTS.logo; }
 }
+// Kept for backward compatibility — the hero button label now lives in the Hero text customizer
 export function getHomeButtonConfig() {
-  try {
-    const raw = localStorage.getItem(HOME_BTN_KEY);
-    if (!raw) return DEFAULTS.homeButton;
-    return { ...DEFAULTS.homeButton, ...JSON.parse(raw) };
-  } catch { return DEFAULTS.homeButton; }
+  return { label: getHeroTextConfig().buttonLabel };
 }
 // Kept for backward compatibility — delegates to the dedicated PWA button customizer
 export function getDownloadButtonConfig() {
@@ -30,8 +26,6 @@ export default function BrandingCustomizer() {
   const [draftLogo, setDraftLogo] = useState(() => getLoadingLogo());
   const [savedLogo, setSavedLogo] = useState(() => getLoadingLogo());
   const [logoText, setLogoText] = useState(() => getLoadingLogo());
-  const [draftHome, setDraftHome] = useState(() => getHomeButtonConfig());
-  const [savedHome, setSavedHome] = useState(() => getHomeButtonConfig());
   const [uploading, setUploading] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
 
@@ -57,17 +51,13 @@ export default function BrandingCustomizer() {
     else setLogoText(draftLogo);
   };
 
-  const isDirty =
-    draftLogo !== savedLogo ||
-    JSON.stringify(draftHome) !== JSON.stringify(savedHome);
+  const isDirty = draftLogo !== savedLogo;
 
   const save = () => {
     try {
       localStorage.setItem(LOGO_KEY, draftLogo);
-      localStorage.setItem(HOME_BTN_KEY, JSON.stringify(draftHome));
     } catch {}
     setSavedLogo(draftLogo);
-    setSavedHome(draftHome);
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2000);
   };
@@ -75,7 +65,6 @@ export default function BrandingCustomizer() {
   const reset = () => {
     setDraftLogo(DEFAULTS.logo);
     setLogoText(DEFAULTS.logo);
-    setDraftHome(DEFAULTS.homeButton);
   };
 
   return (
@@ -104,19 +93,6 @@ export default function BrandingCustomizer() {
             />
           </div>
         </div>
-      </div>
-
-      {/* Home screen button */}
-      <div className="space-y-2 pt-3 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Home screen button</p>
-        <p className="text-[12px] text-slate-500">The primary call-to-action on the Home hero.</p>
-        <input
-          type="text"
-          value={draftHome.label}
-          placeholder="Button label"
-          onChange={(e) => setDraftHome((p) => ({ ...p, label: e.target.value }))}
-          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
-        />
       </div>
 
       <div className="flex items-center gap-2 pt-2 border-t border-slate-200">

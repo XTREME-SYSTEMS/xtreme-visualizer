@@ -16,13 +16,14 @@ import {
 } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 import { getHeroImage, getHeroFilters, heroFilterString } from "@/components/settings/HeroImagePicker";
-import { getHomeButtonConfig } from "@/components/settings/BrandingCustomizer";
+import { getHeroTextConfig, fontStack } from "@/components/settings/HeroTextCustomizer";
 
 export default function Home() {
   const navigate = useNavigate();
   const HERO_IMG = getHeroImage();
   const heroFilters = getHeroFilters();
-  const homeBtn = getHomeButtonConfig();
+  const heroText = getHeroTextConfig();
+  const heroFont = fontStack(heroText.fontFamily);
 
   return (
     <div className="home-full hx-home">
@@ -31,17 +32,17 @@ export default function Home() {
         <img src={HERO_IMG} alt="" className="hx-hero-img" style={{ filter: heroFilterString(heroFilters) }} />
         <div className="hx-hero-sweep" />
         <div style={{ position: "absolute", inset: 0, background: "#000", opacity: heroFilters.darken / 100, pointerEvents: "none" }} />
-        <div className="hx-hero-content">
-          <h1>
-            Visualize Floors.
+        <div className="hx-hero-content" style={{ fontFamily: heroFont }}>
+          <h1 style={{ fontFamily: heroFont, color: heroText.headingColor || undefined }}>
+            {heroText.headingLine1}
             <br />
-            <span>Close Jobs Faster.</span>
+            <span style={{ color: heroText.headingColor || undefined }}>{heroText.headingLine2}</span>
           </h1>
-          <p>Stunning floor previews. Accurate quotes. More wins.</p>
+          <p style={{ fontFamily: heroFont, color: heroText.subheadingColor || undefined }}>{heroText.subheading}</p>
         </div>
-        <button className="hx-hero-btn" onClick={() => navigate("/visualizer")}>
+        <button className="hx-hero-btn" onClick={() => navigate("/visualizer")} style={{ fontFamily: heroFont, color: heroText.buttonColor || undefined }}>
           <Plus size={18} />
-          <span>{homeBtn.label}</span>
+          <span>{heroText.buttonLabel}</span>
           <ChevronRight size={18} />
         </button>
       </div>
