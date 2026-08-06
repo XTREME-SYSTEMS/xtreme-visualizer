@@ -14,7 +14,8 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { Loader2, Mail, Check, Unlink, Trash2, AlertTriangle } from "lucide-react";
+import { Loader2, Mail, Calendar, Trash2, AlertTriangle } from "lucide-react";
+import AppUserConnector from "@/components/settings/AppUserConnector";
 import PricingProfileEditor from "@/components/pricing/PricingProfileEditor";
 import CostOfBusinessCalculator from "@/components/pricing/CostOfBusinessCalculator";
 import AccentColorPicker from "@/components/settings/AccentColorPicker";
@@ -23,23 +24,13 @@ import BrandingCustomizer from "@/components/settings/BrandingCustomizer";
 import PWAButtonCustomizer from "@/components/settings/PWAButtonCustomizer";
 import HeroTextCustomizer from "@/components/settings/HeroTextCustomizer";
 
-const CONNECTOR_ID = "69db200274332486fd28dd7e";
+const GMAIL_CONNECTOR_ID = "69db200274332486fd28dd7e";
+const CALENDAR_CONNECTOR_ID = "69ddcb305a599e0b4a1b3cff";
 
 export default function Settings() {
   const [user, setUser] = useState(null);
-  const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  const check = async () => {
-    try {
-      await base44.functions.invoke("gmail", { action: "list" });
-      setConnected(true);
-    } catch {
-      setConnected(false);
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -47,38 +38,10 @@ export default function Settings() {
       if (authed) {
         const me = await base44.auth.me();
         setUser(me);
-        await check();
       }
       setLoading(false);
     })();
   }, []);
-
-  const connect = async () => {
-    setBusy(true);
-    try {
-      const url = await base44.connectors.connectAppUser(CONNECTOR_ID);
-      const popup = window.open(url, "_blank");
-      const timer = setInterval(() => {
-        if (!popup || popup.closed) {
-          clearInterval(timer);
-          check();
-          setBusy(false);
-        }
-      }, 500);
-    } catch {
-      setBusy(false);
-    }
-  };
-
-  const disconnect = async () => {
-    setBusy(true);
-    try {
-      await base44.connectors.disconnectAppUser(CONNECTOR_ID);
-      setConnected(false);
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const deleteAccount = async () => {
     setDeleting(true);
@@ -102,39 +65,25 @@ export default function Settings() {
         title="Settings"
         description="Connect your Gmail to email customers proposals, concept images, and AI-drafted replies — all from your own inbox."
       />
-      <SectionCard index="01" title="Email connection" tag="Gmail">
-        {!user ? (
-          <div className="space-y-3">
-            <p className="text-[13px] text-[var(--vx-muted)]">Sign in to connect your email.</p>
-            <Button onClick={() => base44.auth.redirectToLogin()}>Sign in</Button>
-          </div>
-        ) : connected ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-full bg-emerald-50 grid place-items-center">
-                <Check className="w-4 h-4 text-emerald-600" />
-              </span>
-              <div>
-                <p className="text-[13px] font-medium text-[var(--vx-text)]">Gmail connected</p>
-                <p className="text-[12px] text-[var(--vx-muted)]">{user.email}</p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" disabled={busy} onClick={disconnect}>
-              {busy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5 mr-1.5" />}
-              Disconnect
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-[13px] text-[var(--vx-muted)]">
-              Connect your Gmail account to send proposals and images, and let AI draft replies to customer emails.
-            </p>
-            <Button disabled={busy} onClick={connect}>
-              {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Mail className="w-4 h-4 mr-2" />}
-              Connect Gmail
-            </Button>
-          </div>
-        )}
+      <SectionCard index="01" title="Google connections" tag="Integrations">
+        <p className="text-[12px] text-[var(--vx-muted)] mb-4">Connect your own Google accounts so the app can email customers proposals and sync appointments to your calendar.</p>
+        <AppUserConnector
+          connectorId={GMAIL_CONNECTOR_ID}
+          icon={Mail}
+          label="Gmail"
+          description="Send proposals, concept images, and AI-drafted replies — all from your own inbox."
+          checkFn={() => base44.functions.invoke("gmail", { action: "list" })}
+          user={user}
+        />
+        <div className="my-4 h-px bg-[var(--vx-border-soft)]" />
+        <AppUserConnector
+          connectorId={CALENDAR_CONNECTOR_ID}
+          icon={Calendar}
+          label="Google Calendar"
+          description="Sync site visits and consultations straight to your own Google Calendar."
+          checkFn={() => base44.functions.invoke("createCalendarAppointment", { ping: true })}
+          user={user}
+        />
       </SectionCard>
 
       <SectionCard index="02" title="Accent color" tag="Appearance">
