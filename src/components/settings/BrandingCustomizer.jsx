@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Upload, RotateCcw, Save, Check } from "lucide-react";
+import { getPWAButtonConfig } from "@/components/settings/PWAButtonCustomizer";
 
 const LOGO_KEY = "vx-loading-logo";
 const HOME_BTN_KEY = "vx-home-button";
-const DL_BTN_KEY = "vx-download-button";
 
 const DEFAULTS = {
   logo: "/logo.png",
   homeButton: { label: "New Visualization" },
-  downloadButton: { label: "Install Xtreme" },
 };
 
 export function getLoadingLogo() {
@@ -22,12 +21,9 @@ export function getHomeButtonConfig() {
     return { ...DEFAULTS.homeButton, ...JSON.parse(raw) };
   } catch { return DEFAULTS.homeButton; }
 }
+// Kept for backward compatibility — delegates to the dedicated PWA button customizer
 export function getDownloadButtonConfig() {
-  try {
-    const raw = localStorage.getItem(DL_BTN_KEY);
-    if (!raw) return DEFAULTS.downloadButton;
-    return { ...DEFAULTS.downloadButton, ...JSON.parse(raw) };
-  } catch { return DEFAULTS.downloadButton; }
+  return getPWAButtonConfig();
 }
 
 export default function BrandingCustomizer() {
@@ -36,8 +32,6 @@ export default function BrandingCustomizer() {
   const [logoText, setLogoText] = useState(() => getLoadingLogo());
   const [draftHome, setDraftHome] = useState(() => getHomeButtonConfig());
   const [savedHome, setSavedHome] = useState(() => getHomeButtonConfig());
-  const [draftDl, setDraftDl] = useState(() => getDownloadButtonConfig());
-  const [savedDl, setSavedDl] = useState(() => getDownloadButtonConfig());
   const [uploading, setUploading] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
 
@@ -65,18 +59,15 @@ export default function BrandingCustomizer() {
 
   const isDirty =
     draftLogo !== savedLogo ||
-    JSON.stringify(draftHome) !== JSON.stringify(savedHome) ||
-    JSON.stringify(draftDl) !== JSON.stringify(savedDl);
+    JSON.stringify(draftHome) !== JSON.stringify(savedHome);
 
   const save = () => {
     try {
       localStorage.setItem(LOGO_KEY, draftLogo);
       localStorage.setItem(HOME_BTN_KEY, JSON.stringify(draftHome));
-      localStorage.setItem(DL_BTN_KEY, JSON.stringify(draftDl));
     } catch {}
     setSavedLogo(draftLogo);
     setSavedHome(draftHome);
-    setSavedDl(draftDl);
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2000);
   };
@@ -85,7 +76,6 @@ export default function BrandingCustomizer() {
     setDraftLogo(DEFAULTS.logo);
     setLogoText(DEFAULTS.logo);
     setDraftHome(DEFAULTS.homeButton);
-    setDraftDl(DEFAULTS.downloadButton);
   };
 
   return (
@@ -125,19 +115,6 @@ export default function BrandingCustomizer() {
           value={draftHome.label}
           placeholder="Button label"
           onChange={(e) => setDraftHome((p) => ({ ...p, label: e.target.value }))}
-          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
-        />
-      </div>
-
-      {/* Download button */}
-      <div className="space-y-2 pt-3 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Download / install button</p>
-        <p className="text-[12px] text-slate-500">The install prompt banner shown to mobile users.</p>
-        <input
-          type="text"
-          value={draftDl.label}
-          placeholder="Button label"
-          onChange={(e) => setDraftDl((p) => ({ ...p, label: e.target.value }))}
           className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
         />
       </div>
