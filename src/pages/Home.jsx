@@ -15,12 +15,11 @@ import {
   CreditCard,
 } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
-
-const HERO_IMG =
-  "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png";
+import { getHeroImage } from "@/components/settings/HeroImagePicker";
 
 export default function Home() {
   const navigate = useNavigate();
+  const HERO_IMG = getHeroImage();
 
   return (
     <div className="home-full hx-home">
