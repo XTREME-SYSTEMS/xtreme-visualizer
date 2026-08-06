@@ -1,88 +1,143 @@
-import React, { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/vq/PageHeader";
-import EmptyState from "@/components/vq/EmptyState";
-import { Loader2, Palette } from "lucide-react";
-import ColorSwatch from "@/components/vq/ColorSwatch";
+import React, { useState } from "react";
+import { Image } from "@/components/ui/image";
+import {
+  Sparkles,
+  Droplets,
+  Square,
+  Gem,
+  Star,
+  Palette,
+  Disc,
+  Layers,
+  SquareStack,
+  Box,
+} from "lucide-react";
 
-const SYSTEMS = [
-  { key: "all", label: "All" },
-  { key: "metallic", label: "Metallic" },
-  { key: "flake", label: "Flake" },
-  { key: "quartz", label: "Quartz" },
-  { key: "solid", label: "Solid" },
-  { key: "glitter", label: "Glitter" },
-  { key: "dye_stain", label: "Dye & Stain" },
-  { key: "joint_filler", label: "Joint Filler" },
+const CATEGORIES = [
+  {
+    name: "Flake Epoxy",
+    tagline: "Decorative chip broadcast",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/49909fcd6_generated_image.png",
+    Icon: Sparkles,
+    group: "Epoxy",
+  },
+  {
+    name: "Metallic Epoxy",
+    tagline: "Pearlescent swirl finish",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/4600b61ba_generated_image.png",
+    Icon: Droplets,
+    group: "Epoxy",
+  },
+  {
+    name: "Solid Color Epoxy",
+    tagline: "Uniform seamless coat",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/9f6be3372_generated_image.png",
+    Icon: Square,
+    group: "Epoxy",
+  },
+  {
+    name: "Quartz Epoxy",
+    tagline: "Textured anti-slip surface",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/3eebf2269_generated_image.png",
+    Icon: Gem,
+    group: "Epoxy",
+  },
+  {
+    name: "Glitter Epoxy",
+    tagline: "Sparkling holographic flake",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/2e7969dd7_generated_image.png",
+    Icon: Star,
+    group: "Epoxy",
+  },
+  {
+    name: "Stained Concrete",
+    tagline: "Acid-stained mottled tones",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/db755d81b_generated_image.png",
+    Icon: Palette,
+    group: "Concrete",
+  },
+  {
+    name: "Polished Concrete",
+    tagline: "Mechanically polished gloss",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/327369c05_generated_image.png",
+    Icon: Disc,
+    group: "Concrete",
+  },
+  {
+    name: "Grind & Seal",
+    tagline: "Exposed aggregate clear seal",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/148c4f7fa_generated_image.png",
+    Icon: Layers,
+    group: "Concrete",
+  },
+  {
+    name: "Epoxy Countertops",
+    tagline: "Seamless marble-look surface",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/38fd7663c_generated_image.png",
+    Icon: SquareStack,
+    group: "Countertops",
+  },
+  {
+    name: "Concrete Countertops",
+    tagline: "Cast concrete minimalist",
+    img: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/310444c8f_generated_image.png",
+    Icon: Box,
+    group: "Countertops",
+  },
 ];
 
+const FILTERS = ["All", "Epoxy", "Concrete", "Countertops"];
+
 export default function ColorCharts() {
-  const [items, setItems] = useState(null);
-  const [sys, setSys] = useState("all");
-
-  useEffect(() => { base44.entities.ColorChart.list("-created_date", 300).then(setItems); }, []);
-
-  if (!items) {
-    return (
-      <div className="py-24 grid place-items-center" style={{ color: "var(--vx-muted)" }}>
-        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--vx-accent)" }} />
-      </div>
-    );
-  }
-
-  const shown = sys === "all" ? items : items.filter((c) => c.system === sys);
-  const grouped = shown.reduce((acc, c) => {
-    const k = c.collection || "Other";
-    (acc[k] = acc[k] || []).push(c);
-    return acc;
-  }, {});
+  const [filter, setFilter] = useState("All");
+  const shown =
+    filter === "All" ? CATEGORIES : CATEGORIES.filter((c) => c.group === filter);
 
   return (
-    <div className="page">
-      <PageHeader
-        eyebrow="Color base · Xtreme Polishing Systems"
-        title="Color charts"
-        description="Live manufacturer product photos pulled from xtremepolishingsystems.com and ameripolish.com — exact metallic, flake, quartz, solid, glitter, and dye colors with their official codes. These feed the visualizer and image generator."
-      />
+    <div className="page hx-page">
+      <div className="hx-page-head">
+        <div>
+          <h1>
+            Project <span style={{ color: "var(--vx-accent)" }}>Gallery</span>
+          </h1>
+          <p>Explore our floor and surface applications by category.</p>
+        </div>
+      </div>
 
-      <div className="vx-tabbar" style={{ overflowX: "auto" }}>
-        {SYSTEMS.map((s) => (
+      <div className="hx-filters">
+        {FILTERS.map((f) => (
           <button
-            key={s.key}
-            onClick={() => setSys(s.key)}
-            className={sys === s.key ? "active" : ""}
+            key={f}
+            className={filter === f ? "active" : ""}
+            onClick={() => setFilter(f)}
           >
-            {s.label}
+            {f}
           </button>
         ))}
       </div>
 
-      {!shown.length ? (
-        <EmptyState icon={Palette} title="No colors in this system" />
-      ) : (
-        <div className="section">
-          {Object.entries(grouped).map(([collection, colors]) => (
-            <div key={collection} className="section">
-              <span className="vx-kicker">{collection} · {colors.length}</span>
-              <div className="swatches" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))" }}>
-                {colors.map((c) => (
-                  <div key={c.id} className="content-card" style={{ padding: 0, overflow: "hidden" }}>
-                    <ColorSwatch color={c} system={c.system} className="h-24" />
-                    <div style={{ padding: 10 }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--vx-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.color_name}</p>
-                      <p style={{ fontFamily: "monospace", fontSize: 11, color: "var(--vx-faint)" }}>{c.code}</p>
-                      <p style={{ fontFamily: "monospace", fontSize: 10, color: "var(--vx-faint)", marginTop: 2 }}>{c.hex}</p>
-                      {c.sheen && (
-                        <span style={{ display: "inline-block", marginTop: 6, padding: "2px 6px", borderRadius: 6, fontSize: 9, background: "var(--vx-panel-3)", color: "var(--vx-muted)" }}>{c.sheen}</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+      <div className="hx-gallery-grid">
+        {shown.map((c) => (
+          <div key={c.name} className="hx-gallery-card">
+            <Image
+              src={c.img}
+              alt={c.name}
+              fittingType="fill"
+              className="hx-gallery-img"
+            />
+            <div className="hx-gallery-overlay" />
+            <div className="hx-gallery-content">
+              <div className="hx-gallery-icon">
+                <c.Icon size={16} />
+              </div>
+              <div className="hx-gallery-label">
+                <strong>{c.name}</strong>
+                <span>{c.tagline}</span>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
