@@ -5,6 +5,7 @@ import { VisualXDrawer, VisualXDialog } from './VisualXPrimitives';
 import { useApp } from '@/components/AppProvider';
 import { useUI } from '@/lib/uiContext';
 import NewProjectSheet from '@/components/vq/NewProjectSheet';
+import PWAInstallButton from '@/components/PWAInstallButton';
 import { base44 } from '@/api/base44Client';
 
 const NAV = [
@@ -204,6 +205,7 @@ export function DeviceShell() {
           </VisualXDialog>
           {notice && <div className="vx-toast" role="status" aria-live="polite">{notice}</div>}
           {newProjectOpen && <NewProjectSheet onClose={closeNewProject} />}
+          <PWAInstallButton />
         </div>
       </div>
     </div>

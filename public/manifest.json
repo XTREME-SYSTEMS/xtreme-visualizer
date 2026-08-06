@@ -7,10 +7,16 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#030303",
-  "theme_color": "#9cff00",
+  "theme_color": "#030303",
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/f61bb04ab_generated_image.png",
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/20bfc02ce_generated_image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
