@@ -132,23 +132,23 @@ export default function PWAButtonCustomizer() {
 
   return (
     <div className="space-y-4">
-      <p className="text-[12px] text-slate-500">Design the install prompt shown to mobile users. Choose <strong>Accent</strong> to match your brand color automatically, or pick custom colors. Press <strong>Save</strong> to apply.</p>
+      <p className="text-[12px] text-[var(--vx-muted)]">Design the install prompt shown to mobile users. Choose <strong>Accent</strong> to match your brand color automatically, or pick custom colors. Press <strong>Save</strong> to apply.</p>
 
       <PreviewBar cfg={draft} />
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Button label</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Button label</p>
         <input
           type="text"
           value={draft.label}
           placeholder="Install Xtreme"
           onChange={(e) => update({ label: e.target.value })}
-          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
         />
       </div>
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Style</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Style</p>
         <div className="grid grid-cols-2 gap-2">
           {STYLE_PRESETS.map((s) => (
             <button
@@ -160,15 +160,15 @@ export default function PWAButtonCustomizer() {
                 background: draft.style === s.key ? "var(--vx-accent-soft)" : "transparent",
               }}
             >
-              <strong className="text-slate-200">{s.label}</strong>
-              <span className="block text-[11px] text-slate-500">{s.blurb}</span>
+              <strong className="text-[var(--vx-text)]">{s.label}</strong>
+              <span className="block text-[11px] text-[var(--vx-muted)]">{s.blurb}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Color</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Color</p>
         <div className="flex gap-2">
           <button
             onClick={() => update({ colorMode: "accent" })}
@@ -195,16 +195,16 @@ export default function PWAButtonCustomizer() {
         </div>
         {draft.colorMode === "custom" && (
           <div className="flex items-center gap-3 pt-1">
-            <label className="text-[12px] text-slate-500">From</label>
-            <input type="color" value={draft.customFrom} onChange={(e) => update({ customFrom: e.target.value })} className="w-9 h-9 rounded cursor-pointer border border-slate-300 bg-transparent p-0" />
-            <label className="text-[12px] text-slate-500">To</label>
-            <input type="color" value={draft.customTo} onChange={(e) => update({ customTo: e.target.value })} className="w-9 h-9 rounded cursor-pointer border border-slate-300 bg-transparent p-0" />
-            {draft.style === "solid" && <span className="text-[11px] text-slate-500">(Solid uses the From color)</span>}
+            <label className="text-[12px] text-[var(--vx-muted)]">From</label>
+            <input type="color" value={draft.customFrom} onChange={(e) => update({ customFrom: e.target.value })} className="w-9 h-9 rounded cursor-pointer border border-[var(--vx-border-soft)] bg-transparent p-0" />
+            <label className="text-[12px] text-[var(--vx-muted)]">To</label>
+            <input type="color" value={draft.customTo} onChange={(e) => update({ customTo: e.target.value })} className="w-9 h-9 rounded cursor-pointer border border-[var(--vx-border-soft)] bg-transparent p-0" />
+            {draft.style === "solid" && <span className="text-[11px] text-[var(--vx-muted)]">(Solid uses the From color)</span>}
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+      <div className="flex items-center gap-2 pt-2 border-t border-[var(--vx-border-soft)]">
         <button
           onClick={save}
           disabled={!isDirty && !savedFlash}
@@ -219,7 +219,7 @@ export default function PWAButtonCustomizer() {
           {savedFlash ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
           {savedFlash ? "Saved!" : "Save"}
         </button>
-        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline">
           <RotateCcw className="w-3 h-3" /> Reset to default
         </button>
       </div>

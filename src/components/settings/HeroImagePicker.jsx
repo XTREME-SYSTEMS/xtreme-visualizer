@@ -41,7 +41,7 @@ export function heroFilterString(f) {
 function Slider({ label, value, min, max, step, unit, onChange }) {
   return (
     <div>
-      <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+      <div className="flex justify-between text-[11px] text-[var(--vx-muted)] mb-1">
         <span>{label}</span>
         <span className="font-mono">{value}{unit}</span>
       </div>
@@ -120,14 +120,14 @@ export default function HeroImagePicker() {
 
   return (
     <div className="space-y-4">
-      <p className="text-[12px] text-slate-500">Upload or paste a URL for the hero image shown on the Home screen. Click <strong>Save</strong> to keep your changes.</p>
+      <p className="text-[12px] text-[var(--vx-muted)]">Upload or paste a URL for the hero image shown on the Home screen. Click <strong>Save</strong> to keep your changes.</p>
       <div className="flex gap-3 items-start">
-        <div className="w-32 h-20 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 shrink-0 relative">
+        <div className="w-32 h-20 rounded-lg overflow-hidden border border-[var(--vx-border-soft)] bg-[var(--vx-panel-2)] shrink-0 relative">
           <img src={draftImg} alt="Hero preview" className="w-full h-full object-cover" style={{ filter: heroFilterString(draftFilters) }} />
           <div style={{ position: "absolute", inset: 0, background: "#000", opacity: draftFilters.darken / 100, pointerEvents: "none" }} />
         </div>
         <div className="flex-1 space-y-2 min-w-0">
-          <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900 text-white text-[12px] font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
+          <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--vx-accent)] text-[#0A0A0A] text-[12px] font-semibold cursor-pointer hover:opacity-90 transition-colors">
             {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
             Upload image
             <input type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
@@ -138,7 +138,7 @@ export default function HeroImagePicker() {
             placeholder="Paste image URL…"
             onChange={(e) => setTextValue(e.target.value)}
             onBlur={handleBlur}
-            className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+            className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
           />
         </div>
       </div>
@@ -158,27 +158,27 @@ export default function HeroImagePicker() {
           {savedFlash ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
           {savedFlash ? "Saved!" : "Save"}
         </button>
-        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline">
           <RotateCcw className="w-3 h-3" /> Reset to default
         </button>
       </div>
 
-      <div className="pt-3 border-t border-slate-200 space-y-3">
-        <p className="text-[13px] font-semibold text-slate-700">Image adjustments</p>
+      <div className="pt-3 border-t border-[var(--vx-border-soft)] space-y-3">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Image adjustments</p>
         <Slider label="Brightness" value={draftFilters.brightness} min={20} max={180} step={5} unit="%" onChange={(v) => updateFilter("brightness", v)} />
         <Slider label="Contrast" value={draftFilters.contrast} min={20} max={180} step={5} unit="%" onChange={(v) => updateFilter("contrast", v)} />
         <Slider label="Saturation" value={draftFilters.saturate} min={0} max={200} step={5} unit="%" onChange={(v) => updateFilter("saturate", v)} />
         <Slider label="Blur" value={draftFilters.blur} min={0} max={12} step={0.5} unit="px" onChange={(v) => updateFilter("blur", v)} />
         <Slider label="Darken overlay" value={draftFilters.darken} min={0} max={80} step={5} unit="%" onChange={(v) => updateFilter("darken", v)} />
-        <button onClick={resetFilters} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+        <button onClick={resetFilters} className="inline-flex items-center gap-1.5 text-[12px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline">
           <RotateCcw className="w-3 h-3" /> Reset adjustments
         </button>
       </div>
 
-      <div className="pt-2 border-t border-slate-200">
+      <div className="pt-2 border-t border-[var(--vx-border-soft)]">
         <button
           onClick={() => setGalleryOpen((v) => !v)}
-          className="flex items-center gap-2 text-[13px] font-semibold text-slate-700 w-full"
+          className="flex items-center gap-2 text-[13px] font-semibold text-[var(--vx-text)] w-full"
         >
           {galleryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           Pick from Gallery
@@ -187,7 +187,7 @@ export default function HeroImagePicker() {
           <div className="mt-3 space-y-4 max-h-80 overflow-y-auto pr-1">
             {GALLERY_CATEGORIES.map((cat) => (
               <div key={cat.id}>
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">{cat.title}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--vx-faint)] mb-2">{cat.title}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {cat.images.map((img, i) => (
                     <button
@@ -197,7 +197,7 @@ export default function HeroImagePicker() {
                       style={{
                         borderColor: draftImg === img ? "var(--vx-accent)" : "transparent",
                         padding: 0,
-                        background: "#f1f5f9",
+                        background: "var(--vx-panel-2)",
                       }}
                     >
                       <img src={img} alt={`${cat.title} ${i + 1}`} className="w-full h-full object-cover" />

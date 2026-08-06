@@ -131,7 +131,7 @@ export default function AccentColorPicker() {
 
   return (
     <div className="space-y-4">
-      <p className="text-[12px] text-slate-500">Pick the accent color used across the app — buttons, highlights, and active states. Press <strong>Save</strong> to keep your choice.</p>
+      <p className="text-[12px] text-[var(--vx-muted)]">Pick the accent color used across the app — buttons, highlights, and active states. Press <strong>Save</strong> to keep your choice.</p>
       <div className="flex flex-wrap gap-2.5">
         {PRESETS.map((p) => (
           <button
@@ -148,12 +148,12 @@ export default function AccentColorPicker() {
         ))}
       </div>
       <div className="flex items-center gap-3 pt-2">
-        <label className="text-[12px] text-slate-500">Custom</label>
+        <label className="text-[12px] text-[var(--vx-muted)]">Custom</label>
         <input
           type="color"
           value={draft}
           onChange={(e) => choose(e.target.value)}
-          className="w-10 h-10 rounded cursor-pointer border border-slate-300 bg-transparent p-0"
+          className="w-10 h-10 rounded cursor-pointer border border-[var(--vx-border-soft)] bg-transparent p-0"
         />
         <input
           type="text"
@@ -172,10 +172,10 @@ export default function AccentColorPicker() {
             }
           }}
           placeholder="#FFD60A"
-          className="w-24 px-2 py-1.5 text-[12px] font-mono rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+          className="w-24 px-2 py-1.5 text-[12px] font-mono rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
         />
       </div>
-      <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+      <div className="flex items-center gap-2 pt-2 border-t border-[var(--vx-border-soft)]">
         <button
           onClick={save}
           disabled={!isDirty && !savedFlash}
@@ -190,7 +190,7 @@ export default function AccentColorPicker() {
           {savedFlash ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
           {savedFlash ? "Saved!" : "Save"}
         </button>
-        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline">
           <RotateCcw className="w-3 h-3" /> Reset to default
         </button>
       </div>

@@ -71,14 +71,14 @@ export default function BrandingCustomizer() {
     <div className="space-y-5">
       {/* Loading screen icon */}
       <div className="space-y-2">
-        <p className="text-[13px] font-semibold text-slate-700">Loading screen icon</p>
-        <p className="text-[12px] text-slate-500">Shown on the startup loading screen.</p>
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Loading screen icon</p>
+        <p className="text-[12px] text-[var(--vx-muted)]">Shown on the startup loading screen.</p>
         <div className="flex gap-3 items-start">
-          <div className="w-20 h-20 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 shrink-0 grid place-items-center p-2">
+          <div className="w-20 h-20 rounded-lg overflow-hidden border border-[var(--vx-border-soft)] bg-[var(--vx-panel-2)] shrink-0 grid place-items-center p-2">
             <img src={draftLogo} alt="Loading logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex-1 space-y-2 min-w-0">
-            <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900 text-white text-[12px] font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
+            <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--vx-accent)] text-[#0A0A0A] text-[12px] font-semibold cursor-pointer hover:opacity-90 transition-colors">
               {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
               Upload icon
               <input type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
@@ -89,13 +89,13 @@ export default function BrandingCustomizer() {
               placeholder="Paste image URL…"
               onChange={(e) => setLogoText(e.target.value)}
               onBlur={handleLogoBlur}
-              className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+              className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
             />
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+      <div className="flex items-center gap-2 pt-2 border-t border-[var(--vx-border-soft)]">
         <button
           onClick={save}
           disabled={!isDirty && !savedFlash}
@@ -110,7 +110,7 @@ export default function BrandingCustomizer() {
           {savedFlash ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
           {savedFlash ? "Saved!" : "Save"}
         </button>
-        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline">
           <RotateCcw className="w-3 h-3" /> Reset to default
         </button>
       </div>

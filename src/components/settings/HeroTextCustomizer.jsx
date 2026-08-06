@@ -84,22 +84,22 @@ function Preview({ cfg }) {
 function ColorField({ label, value, onChange }) {
   return (
     <div className="flex items-center gap-2">
-      <label className="text-[12px] text-slate-500 w-20 shrink-0">{label}</label>
+      <label className="text-[12px] text-[var(--vx-muted)] w-20 shrink-0">{label}</label>
       <input
         type="color"
         value={value || "#ffffff"}
         onChange={(e) => onChange(e.target.value)}
-        className="w-8 h-8 rounded cursor-pointer border border-slate-300 bg-transparent p-0"
+        className="w-8 h-8 rounded cursor-pointer border border-[var(--vx-border-soft)] bg-transparent p-0"
       />
       <input
         type="text"
         value={value}
         placeholder="Default"
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1 px-2 py-1.5 text-[12px] font-mono rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+        className="flex-1 px-2 py-1.5 text-[12px] font-mono rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
       />
       {value && (
-        <button onClick={() => onChange("")} className="text-[11px] text-slate-500 hover:text-slate-700 underline shrink-0">
+        <button onClick={() => onChange("")} className="text-[11px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline shrink-0">
           Clear
         </button>
       )}
@@ -126,54 +126,54 @@ export default function HeroTextCustomizer() {
 
   return (
     <div className="space-y-4">
-      <p className="text-[12px] text-slate-500">Edit the Home hero copy, fonts, and colors. Leave a color field empty to use the default. Press <strong>Save</strong> to apply.</p>
+      <p className="text-[12px] text-[var(--vx-muted)]">Edit the Home hero copy, fonts, and colors. Leave a color field empty to use the default. Press <strong>Save</strong> to apply.</p>
 
       <Preview cfg={draft} />
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Heading</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Heading</p>
         <div className="grid grid-cols-2 gap-2">
           <input
             type="text"
             value={draft.headingLine1}
             placeholder="Line 1"
             onChange={(e) => update({ headingLine1: e.target.value })}
-            className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+            className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
           />
           <input
             type="text"
             value={draft.headingLine2}
             placeholder="Line 2 (accent)"
             onChange={(e) => update({ headingLine2: e.target.value })}
-            className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+            className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
           />
         </div>
       </div>
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Subheading</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Subheading</p>
         <textarea
           value={draft.subheading}
           placeholder="Subheading text"
           onChange={(e) => update({ subheading: e.target.value })}
           rows={2}
-          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)] resize-none"
+          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)] resize-none"
         />
       </div>
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Hero button label</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Hero button label</p>
         <input
           type="text"
           value={draft.buttonLabel}
           placeholder="Button label"
           onChange={(e) => update({ buttonLabel: e.target.value })}
-          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-slate-300 bg-transparent text-slate-200 outline-none focus:border-[var(--vx-accent)]"
+          className="w-full px-2.5 py-1.5 text-[12px] rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
         />
       </div>
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Font style</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Font style</p>
         <div className="grid grid-cols-3 gap-2">
           {FONT_PRESETS.map((f) => (
             <button
@@ -193,14 +193,14 @@ export default function HeroTextCustomizer() {
         </div>
       </div>
 
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <p className="text-[13px] font-semibold text-slate-700">Colors</p>
+      <div className="space-y-2 pt-2 border-t border-[var(--vx-border-soft)]">
+        <p className="text-[13px] font-semibold text-[var(--vx-text)]">Colors</p>
         <ColorField label="Heading" value={draft.headingColor} onChange={(v) => update({ headingColor: v })} />
         <ColorField label="Subheading" value={draft.subheadingColor} onChange={(v) => update({ subheadingColor: v })} />
         <ColorField label="Button text" value={draft.buttonColor} onChange={(v) => update({ buttonColor: v })} />
       </div>
 
-      <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+      <div className="flex items-center gap-2 pt-2 border-t border-[var(--vx-border-soft)]">
         <button
           onClick={save}
           disabled={!isDirty && !savedFlash}
@@ -215,7 +215,7 @@ export default function HeroTextCustomizer() {
           {savedFlash ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
           {savedFlash ? "Saved!" : "Save"}
         </button>
-        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-slate-700 underline">
+        <button onClick={reset} className="inline-flex items-center gap-1.5 text-[12px] text-[var(--vx-muted)] hover:text-[var(--vx-text)] underline">
           <RotateCcw className="w-3 h-3" /> Reset to default
         </button>
       </div>

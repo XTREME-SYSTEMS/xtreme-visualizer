@@ -92,7 +92,7 @@ export default function Settings() {
   };
 
   if (loading) {
-    return <div className="py-24 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-slate-400" /></div>;
+    return <div className="py-24 grid place-items-center"><Loader2 className="w-6 h-6 animate-spin text-[var(--vx-faint)]" /></div>;
   }
 
   return (
@@ -105,7 +105,7 @@ export default function Settings() {
       <SectionCard index="01" title="Email connection" tag="Gmail">
         {!user ? (
           <div className="space-y-3">
-            <p className="text-[13px] text-slate-500">Sign in to connect your email.</p>
+            <p className="text-[13px] text-[var(--vx-muted)]">Sign in to connect your email.</p>
             <Button onClick={() => base44.auth.redirectToLogin()}>Sign in</Button>
           </div>
         ) : connected ? (
@@ -115,8 +115,8 @@ export default function Settings() {
                 <Check className="w-4 h-4 text-emerald-600" />
               </span>
               <div>
-                <p className="text-[13px] font-medium text-slate-900">Gmail connected</p>
-                <p className="text-[12px] text-slate-500">{user.email}</p>
+                <p className="text-[13px] font-medium text-[var(--vx-text)]">Gmail connected</p>
+                <p className="text-[12px] text-[var(--vx-muted)]">{user.email}</p>
               </div>
             </div>
             <Button variant="outline" size="sm" disabled={busy} onClick={disconnect}>
@@ -126,7 +126,7 @@ export default function Settings() {
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-[13px] text-slate-500">
+            <p className="text-[13px] text-[var(--vx-muted)]">
               Connect your Gmail account to send proposals and images, and let AI draft replies to customer emails.
             </p>
             <Button disabled={busy} onClick={connect}>
@@ -158,12 +158,12 @@ export default function Settings() {
       </SectionCard>
 
       <SectionCard index="07" title="Standard pricing" tag="Your rates">
-        <p className="text-[12px] text-slate-500 mb-4">Set your standard rates once — the competitive pricing builder uses these to pre-fill fuel, labor, and material costs.</p>
+        <p className="text-[12px] text-[var(--vx-muted)] mb-4">Set your standard rates once — the competitive pricing builder uses these to pre-fill fuel, labor, and material costs.</p>
         <PricingProfileEditor />
       </SectionCard>
 
       <SectionCard index="08" title="Cost of doing business" tag="Overhead">
-        <p className="text-[12px] text-slate-500 mb-4">Account for labor burden, insurance, fuel, vehicle, equipment, software/AI, IT, and more — the calculator outputs your burdened hourly rate and overhead to apply to every quote.</p>
+        <p className="text-[12px] text-[var(--vx-muted)] mb-4">Account for labor burden, insurance, fuel, vehicle, equipment, software/AI, IT, and more — the calculator outputs your burdened hourly rate and overhead to apply to every quote.</p>
         <CostOfBusinessCalculator />
       </SectionCard>
 
@@ -174,8 +174,8 @@ export default function Settings() {
               <AlertTriangle className="w-4 h-4 text-red-600" />
             </span>
             <div>
-              <p className="text-[13px] font-medium text-slate-900">Delete account</p>
-              <p className="text-[12px] text-slate-500">Permanently remove your account and all associated data. This action cannot be undone.</p>
+              <p className="text-[13px] font-medium text-[var(--vx-text)]">Delete account</p>
+              <p className="text-[12px] text-[var(--vx-muted)]">Permanently remove your account and all associated data. This action cannot be undone.</p>
             </div>
           </div>
           <AlertDialog>
