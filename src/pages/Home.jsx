@@ -67,7 +67,7 @@ export default function Home() {
       <div className="hx-quick-grid">
         <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
           <ScanLine size={22} />
-          <span>Scan Space</span>
+          <span>Visualizer</span>
         </button>
         <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
           <GitCompare size={22} />
