@@ -46,15 +46,18 @@ export default function VoiceAssistant() {
         <div className="hx-bid-input-label"><Phone size={15} /> Twilio Phone Integration</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(255,210,0,.06)", border: "1px solid #9a7b00" }}>
           <AlertTriangle size={16} style={{ color: "#ffd200", flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: "#ffd200" }}>Not configured yet — add your Twilio Account SID, Auth Token, phone number, and business SIC code in App Settings → Secrets to activate live calls.</span>
+          <span style={{ fontSize: 12, color: "#ffd200" }}>Configure your Twilio credentials in the <strong style={{ color: "var(--vx-accent)" }}>Admin console</strong> (bookmark <code>/admin</code>). Then point your Twilio number's voice webhook to the URL below.</span>
         </div>
-        <div className="form-grid two">
-          <div className="field"><label>Account SID</label><input disabled placeholder="Set in App Secrets" /></div>
-          <div className="field"><label>Auth Token</label><input disabled placeholder="Set in App Secrets" type="password" /></div>
-          <div className="field"><label>Twilio Phone Number</label><input disabled placeholder="+1XXXXXXXXXX" /></div>
-          <div className="field"><label>Business SIC Code</label><input disabled placeholder="e.g. 1750" /></div>
+        <div className="hx-notice" style={{ borderColor: "var(--vx-border-soft)", background: "var(--vx-panel)" }}>
+          <strong style={{ color: "var(--vx-accent)", fontSize: 11 }}>Voice Webhook URL</strong>
+          <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--vx-muted)", wordBreak: "break-all" }}>
+            <code style={{ color: "var(--vx-accent)" }}>https://visualx.base44.app/api/functions/twilio-voice</code>
+          </p>
         </div>
-        <button className="hx-mini-btn dark" disabled style={{ opacity: 0.5 }}><Settings size={14} /> Test Connection</button>
+        <button className="hx-mini-btn dark" onClick={async () => {
+          try { const r = await base44.functions.invoke("twilio-voice", { ping: true }); const d = r.data || r; if (d.ok) notify("Voice endpoint is live ✓"); else notify("Voice endpoint error"); }
+          catch (e) { notify("Voice endpoint unreachable"); }
+        }}><Settings size={14} /> Test Voice Endpoint</button>
       </div>
 
       {/* Voice selector */}

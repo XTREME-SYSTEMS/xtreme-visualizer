@@ -15,18 +15,21 @@ export default function Billing() {
   const [leads, setLeads] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [busy, setBusy] = useState(null);
-  const [form, setForm] = useState({ lead_id: "", type: "deposit", amount: "", description: "", due_date: "" });
+  const [workOrders, setWorkOrders] = useState([]);
+  const [form, setForm] = useState({ lead_id: "", work_order_id: "", type: "deposit", amount: "", description: "", due_date: "" });
 
   const notify = (msg) => { const t = document.createElement("div"); t.className = "vx-toast"; t.textContent = msg; t.style.cssText = "position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:200"; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); };
 
   const load = async () => {
     try {
-      const [inv, ld] = await Promise.all([
+      const [inv, ld, wos] = await Promise.all([
         base44.entities.Invoice.list("-created_date", 100),
         base44.entities.Lead.list("-created_date", 50),
+        base44.entities.WorkOrder.list("-created_date", 50),
       ]);
       setInvoices(inv);
       setLeads(ld);
+      setWorkOrders(wos || []);
     } catch { setInvoices([]); }
   };
   useEffect(() => { load(); }, []);
@@ -37,10 +40,11 @@ export default function Billing() {
     if (!form.amount || parseFloat(form.amount) < 0.5) { notify("Amount must be at least $0.50"); return; }
     const lead = leads.find((l) => l.id === form.lead_id);
     try {
+      const wo = workOrders.find((w) => w.id === form.work_order_id);
       await base44.entities.Invoice.create({
-        lead_id: form.lead_id || null,
-        work_order_id: null,
-        customer_name: lead?.customer_name || "Customer",
+        lead_id: form.lead_id || wo?.lead_id || null,
+        work_order_id: form.work_order_id || null,
+        customer_name: wo?.customer_name || lead?.customer_name || "Customer",
         customer_email: lead?.email || "",
         type: form.type,
         description: form.description || (form.type === "deposit" ? "Project deposit" : "Final payment"),
@@ -51,7 +55,7 @@ export default function Billing() {
       });
       notify("Invoice created");
       setShowForm(false);
-      setForm({ lead_id: "", type: "deposit", amount: "", description: "", due_date: "" });
+      setForm({ lead_id: "", work_order_id: "", type: "deposit", amount: "", description: "", due_date: "" });
       load();
     } catch (e) { notify("Create failed: " + e.message); }
   };
@@ -148,6 +152,12 @@ export default function Billing() {
               <button className="close-button" onClick={() => setShowForm(false)}><X size={18} /></button>
             </div>
             <div className="form-grid">
+              <div className="field"><label>Linked Work Order (optional)</label>
+                <select value={form.work_order_id} onChange={(e) => set("work_order_id", e.target.value)}>
+                  <option value="">— None —</option>
+                  {workOrders.map((w) => <option key={w.id} value={w.id}>{w.customer_name || "Untitled"}{w.project_address ? ` · ${w.project_address}` : ""}</option>)}
+                </select>
+              </div>
               <div className="field"><label>Linked Lead (optional)</label>
                 <select value={form.lead_id} onChange={(e) => set("lead_id", e.target.value)}>
                   <option value="">— None —</option>

@@ -29,24 +29,28 @@ export default function Admin() {
     setTimeout(() => t.remove(), 2400);
   };
 
-  // Check each connector by trying its backend function
+  const [testing, setTesting] = useState(false);
+  // Check each connector by trying its backend function (ping mode where available)
   const checkAll = async () => {
+    setTesting(true);
     const checks = {
       "69db200274332486fd28dd7e": () => base44.functions.invoke("gmail", { action: "list", max: 1 }).then(() => true).catch(() => false),
       "69ddcb305a599e0b4a1b3cff": () => base44.functions.invoke("createCalendarAppointment", { ping: true }).then(() => true).catch(() => false),
       "69db1e5e75a5f8c15c80cf34": () => base44.functions.invoke("createDriveFolder", { ping: true }).then(() => true).catch(() => false),
       "69db1fad3c50db37ad0ce8dd": () => base44.functions.invoke("syncLeadsToGoogleSheet", { ping: true }).then(() => true).catch(() => false),
       "69db228b2439d854c8587167": () => base44.functions.invoke("pushLeadToHubSpot", { ping: true }).then(() => true).catch(() => false),
+      // No ping function for these — mark as "manual" (connect to verify)
+      "69ddcb7e5d965b5605cd24b4": () => Promise.resolve("manual"),
+      "69db201897e4e8f9ae073be7": () => Promise.resolve("manual"),
+      "69e521c8418f5cecefb2567c": () => Promise.resolve("manual"),
     };
     const next = { ...status };
     await Promise.all(CONNECTORS.map(async (c) => {
-      if (checks[c.id]) {
-        next[c.id] = (await checks[c.id]()) ? "connected" : "disconnected";
-      } else {
-        next[c.id] = "unknown";
-      }
+      const result = checks[c.id] ? await checks[c.id]() : "manual";
+      next[c.id] = result === true ? "connected" : result === false ? "disconnected" : "manual";
     }));
     setStatus(next);
+    setTesting(false);
   };
 
   const loadTwilio = async () => {
@@ -115,6 +119,7 @@ export default function Admin() {
   const statusDot = (s) => {
     if (s === "connected") return <span style={{ color: "var(--vx-accent)", fontSize: 11, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}><Check size={12} /> Connected</span>;
     if (s === "disconnected") return <span style={{ color: "var(--vx-danger)", fontSize: 11, fontWeight: 700 }}>Not connected</span>;
+    if (s === "manual") return <span style={{ color: "var(--vx-warning)", fontSize: 11, fontWeight: 700 }}>Connect to verify</span>;
     return <span style={{ color: "var(--vx-faint)", fontSize: 11 }}>Unknown</span>;
   };
 
@@ -125,7 +130,9 @@ export default function Admin() {
           <h1 style={{ display: "flex", alignItems: "center", gap: 8 }}><ShieldCheck size={22} style={{ color: "var(--vx-accent)" }} /> Admin · Integrations</h1>
           <p>Hidden admin console. Connect OAuth services and configure Twilio voice.</p>
         </div>
-        <button className="hx-mini-btn dark" onClick={checkAll}>Refresh</button>
+        <button className="hx-mini-btn dark" onClick={checkAll} disabled={testing}>
+          {testing ? <Loader2 size={14} className="spin" /> : null} Test All
+        </button>
       </div>
 
       <div className="hx-notice" style={{ borderColor: "#9a7b00", background: "rgba(255,210,0,.06)" }}>
@@ -166,6 +173,17 @@ export default function Admin() {
       <div className="hx-scraper-form">
         <div className="hx-bid-input-label"><Phone size={15} /> Twilio Voice Agent</div>
         <p style={{ fontSize: 12, color: "var(--vx-muted)", margin: "0 0 4px" }}>Enter your Twilio credentials to enable the AI voice assistant. Saved to the admin-only IntegrationConfig store.</p>
+        <div className="hx-notice" style={{ borderColor: "var(--vx-border-soft)", background: "var(--vx-panel)", marginBottom: 8 }}>
+          <strong style={{ color: "var(--vx-accent)", fontSize: 11 }}>Voice Webhook URL</strong>
+          <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--vx-muted)", wordBreak: "break-all" }}>
+            Point your Twilio phone number's voice webhook to:<br />
+            <code style={{ color: "var(--vx-accent)" }}>https://visualx.base44.app/api/functions/twilio-voice</code>
+          </p>
+          <button className="hx-mini-btn" style={{ marginTop: 8, fontSize: 11 }} onClick={async () => {
+            try { const r = await base44.functions.invoke("twilio-voice", { ping: true }); const d = r.data || r; if (d.ok) notify("Voice endpoint is live ✓"); else notify("Voice endpoint error"); }
+            catch (e) { notify("Voice endpoint unreachable"); }
+          }}><Phone size={12} /> Test Voice Endpoint</button>
+        </div>
         <div className="form-grid two">
           <div className="field"><label>Account SID</label><input value={twilio.twilio_sid} onChange={(e) => setTwilio({ ...twilio, twilio_sid: e.target.value })} placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" /></div>
           <div className="field"><label>Auth Token</label><input type="password" value={twilio.twilio_auth_token} onChange={(e) => setTwilio({ ...twilio, twilio_auth_token: e.target.value })} placeholder="••••••••••••••••" /></div>
