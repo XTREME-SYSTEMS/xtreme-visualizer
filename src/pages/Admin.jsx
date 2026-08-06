@@ -34,6 +34,7 @@ export default function Admin() {
     const checks = {
       "69db200274332486fd28dd7e": () => base44.functions.invoke("gmail", { action: "list", max: 1 }).then(() => true).catch(() => false),
       "69ddcb305a599e0b4a1b3cff": () => base44.functions.invoke("createCalendarAppointment", { ping: true }).then(() => true).catch(() => false),
+      "69db1e5e75a5f8c15c80cf34": () => base44.functions.invoke("createDriveFolder", { ping: true }).then(() => true).catch(() => false),
       "69db1fad3c50db37ad0ce8dd": () => base44.functions.invoke("syncLeadsToGoogleSheet", { ping: true }).then(() => true).catch(() => false),
       "69db228b2439d854c8587167": () => base44.functions.invoke("pushLeadToHubSpot", { ping: true }).then(() => true).catch(() => false),
     };

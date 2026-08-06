@@ -14,7 +14,12 @@ export default async function(req) {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
-    const { customerName, address, template, workOrderId } = body;
+    const { customerName, address, template, workOrderId, ping } = body;
+    // Ping mode: just test the connector connection without creating a folder
+    if (ping) {
+      await base44.asServiceRole.connectors.getCurrentAppUserConnection(DRIVE_CONNECTOR_ID);
+      return Response.json({ ok: true });
+    }
     if (!customerName) return Response.json({ error: 'customerName required' }, { status: 400 });
 
     const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(DRIVE_CONNECTOR_ID);

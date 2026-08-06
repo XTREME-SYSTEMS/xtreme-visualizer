@@ -49,11 +49,13 @@ import Billing from '@/pages/Billing';
 import ThankYou from '@/pages/ThankYou';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
+const PUBLIC_PATHS = ['/ThankYou'];
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
   const location = useLocation();
   const isAuthPage = AUTH_PATHS.includes(location.pathname);
+  const isPublicPage = PUBLIC_PATHS.includes(location.pathname);
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -64,8 +66,8 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors — skip redirect when already on an auth page
-  if (authError && !isAuthPage) {
+  // Handle authentication errors — skip redirect when already on an auth page or public page
+  if (authError && !isAuthPage && !isPublicPage) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {

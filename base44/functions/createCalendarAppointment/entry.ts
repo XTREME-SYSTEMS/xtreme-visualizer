@@ -8,7 +8,12 @@ export default async function (req: Request): Promise<Response> {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
-    const { summary, description, startDateTime, endDateTime, location, leadId } = body;
+    const { summary, description, startDateTime, endDateTime, location, leadId, ping } = body;
+    // Ping mode: test the connector connection without creating an event
+    if (ping) {
+      await base44.asServiceRole.connectors.getCurrentAppUserConnection(CALENDAR_CONNECTOR_ID);
+      return Response.json({ ok: true });
+    }
     if (!startDateTime || !endDateTime) return Response.json({ error: 'startDateTime and endDateTime are required' }, { status: 400 });
 
     const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(CALENDAR_CONNECTOR_ID);

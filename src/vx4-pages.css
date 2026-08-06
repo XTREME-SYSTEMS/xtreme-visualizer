@@ -415,6 +415,7 @@
 
 /* ===== Floor Systems ===== */
 .hx-sys-grid { display: grid; grid-template-columns: 1fr; gap: 10px; min-width: 0; }
+@media (min-width: 640px) { .hx-sys-grid { grid-template-columns: 1fr 1fr; } }
 .hx-sys-card { padding: 14px; border-radius: 14px; border: 1px solid var(--vx-border-soft); background: #1A1A1A; display: grid; gap: 10px; min-width: 0; transition: border-color .12s, box-shadow .12s; }
 .hx-sys-card:hover { border-color: var(--vx-accent); box-shadow: var(--vx-glow); }
 .hx-sys-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
