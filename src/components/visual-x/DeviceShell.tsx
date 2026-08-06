@@ -75,6 +75,8 @@ export function DeviceShell() {
   const { newProjectOpen, closeNewProject, searchOpen, query, setQuery, toggleSearch } = useUI();
   const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   const showBack = !TAB_PATHS.includes(location.pathname);
+  const isHome = location.pathname === '/';
+  const pageClassName = isHome ? "vx-page vx-page-noscroll" : "vx-page vx-page-scroll";
   const activeTab = NAV.find(n => n.to === '/' ? location.pathname === '/' : location.pathname.startsWith(n.to))?.to || null;
   useEffect(() => {
     if (!activeTab) return;
@@ -139,7 +141,7 @@ export function DeviceShell() {
                   </div>
                 </div>
                 <div className="vx-main">
-                  <div className="vx-page vx-page-scroll"><Outlet /></div>
+                  <div className={pageClassName}><Outlet /></div>
                 </div>
               </div>
             </>
@@ -163,7 +165,7 @@ export function DeviceShell() {
                     <input className="vx-input" placeholder="Search projects, locations, systems…" value={query} onChange={e => setQuery(e.target.value)} autoFocus />
                   </div>
                 )}
-                <div className="vx-page vx-page-scroll"><Outlet /></div>
+                <div className={pageClassName}><Outlet /></div>
               </div>
               <nav className="vx-nav">
                 {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
