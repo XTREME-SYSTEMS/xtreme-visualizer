@@ -134,6 +134,12 @@ export function DeviceShell() {
     if (activeTab === root) navigate(root);
     else navigate(tabHistory[root] || root);
   };
+  const goBack = () => {
+    const state = window.history.state as { idx?: number } | null;
+    const idx = state && typeof state.idx === 'number' ? state.idx : 0;
+    if (idx > 0) navigate(-1);
+    else navigate(activeTab || '/more');
+  };
   useEffect(() => {
     document.documentElement.dataset.theme = theme === 'light' ? 'light' : '';
     try { localStorage.setItem('vx-theme-v2', theme); } catch {}
@@ -176,7 +182,7 @@ export function DeviceShell() {
               </aside>
               <div className="vx-content">
                 <div className="vx-topbar">
-                  {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
+                  {showBack && <button onClick={goBack} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
                   <div className="vx-search-bar">
                     <Search className="vx-icon" />
                     <input className="vx-search-input" placeholder="Search projects, locations, systems…" value={query} onChange={e => setQuery(e.target.value)} />
@@ -197,7 +203,7 @@ export function DeviceShell() {
               {!isNativeMobile && <div className="vx-statusbar"><span>{time}</span><div className="vx-island" /><div className="vx-status-icons"><span>●●●</span><span>📶</span><div className="vx-battery" /></div></div>}
               <div className="vx-brandbar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
+                  {showBack && <button onClick={goBack} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
                   <img src="/logo.png" alt="Xtreme Floor Visualizer" style={{ height: 120, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,214,10,.25))', marginTop: 8, marginLeft: -12 }} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
