@@ -267,9 +267,9 @@
 /* ===== Full-page home navigation ===== */
 .vx-page-scroll:has(.home-full) { overflow: hidden !important; }
 .home-full { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
-.home-hero { min-height: 56px; flex-shrink: 0; }
-.home-hero-content { padding: 8px 14px; }
-.home-hero h1 { font-size: 15px; margin: 0; line-height: 1.1; }
+.home-hero { min-height: 48px; flex-shrink: 0; }
+.home-hero-content { padding: 6px 14px; }
+.home-hero h1 { font-size: 14px; margin: 0; line-height: 1.1; }
 .home-hero h1 span { display: inline; }
 .home-hero p { display: none; }
 .home-hero .vx-kicker { font-size: 9px; margin-bottom: 1px; }

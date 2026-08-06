@@ -29,6 +29,15 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const scroller = document.querySelector(".vx-page-scroll");
+    if (scroller) {
+      const prev = scroller.style.overflow;
+      scroller.style.overflow = "hidden";
+      return () => { scroller.style.overflow = prev; };
+    }
+  }, []);
+
   const q = query.trim().toLowerCase();
 
   const recentBids = useMemo(() => {
@@ -41,7 +50,7 @@ export default function Home() {
             .includes(q)
         )
       : leads;
-    return filtered.slice(0, 5);
+    return filtered.slice(0, 4);
   }, [leads, q]);
 
   const stats = useMemo(() => {
