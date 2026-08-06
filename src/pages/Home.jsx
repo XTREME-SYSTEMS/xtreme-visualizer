@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Plus,
@@ -7,9 +7,6 @@ import {
   GitCompare,
   Calculator,
   Share2,
-  Box,
-  FileText,
-  Send,
   Image as ImageIcon,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -38,18 +35,7 @@ export default function Home() {
       .catch(() => setLeads([]));
   }, []);
 
-  const stats = useMemo(() => {
-    const activeVisuals = leads.filter((l) => l.photo_url).length;
-    const draftQuotes = leads.filter(
-      (l) => l.status === "new" || l.status === "qualified" || l.status === "follow_up"
-    ).length;
-    const sharesSent = leads.filter(
-      (l) => l.status === "estimate_sent" || l.status === "proposal_sent" || l.status === "won"
-    ).length;
-    return { activeVisuals, draftQuotes, sharesSent };
-  }, [leads]);
-
-  const recent = leads.slice(0, 3);
+  const recent = leads.slice(0, 5);
 
   const fmtDate = (d) =>
     d
@@ -147,28 +133,6 @@ export default function Home() {
           )}
         </div>
       </section>
-
-      {/* Stats Bar */}
-      <div className="hx-stats">
-        <div className="hx-stat">
-          <Box size={18} />
-          <strong>{stats.activeVisuals}</strong>
-          <span>Active Visuals</span>
-          <small>↑ 12% this month</small>
-        </div>
-        <div className="hx-stat">
-          <FileText size={18} />
-          <strong>{stats.draftQuotes}</strong>
-          <span>Draft Quotes</span>
-          <small>↑ 18% this month</small>
-        </div>
-        <div className="hx-stat">
-          <Send size={18} />
-          <strong>{stats.sharesSent}</strong>
-          <span>Shares Sent</span>
-          <small>↑ 22% this month</small>
-        </div>
-      </div>
 
       <p className="hx-disclosure">{PRICE_DISCLOSURE}</p>
     </div>
