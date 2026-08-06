@@ -55,13 +55,13 @@ export default function Home() {
       {/* Primary CTA */}
       <button className="home-cta-card" onClick={() => navigate("/visualizer")}>
         <span className="home-cta-icon">
-          <Camera size={15} />
+          <Camera size={22} />
         </span>
         <span className="home-cta-text">
           <strong>Start New Bid</strong>
           <small>Take a photo, pick a color, adjust for blemishes, and share an instant estimate.</small>
         </span>
-        <ChevronRight size={14} className="home-cta-arrow" />
+        <ChevronRight size={20} className="home-cta-arrow" />
       </button>
 
       {/* Pipeline stats */}
@@ -92,28 +92,28 @@ export default function Home() {
         <div className="home-ref-grid">
           <button className="home-ref-card" onClick={() => navigate("/colors")}>
             <span className="home-ref-icon">
-              <Palette size={12} />
+              <Palette size={18} />
             </span>
             <strong>Color Charts</strong>
             <small>Manufacturer swatches</small>
           </button>
           <button className="home-ref-card" onClick={() => navigate("/systems")}>
             <span className="home-ref-icon">
-              <Layers size={12} />
+              <Layers size={18} />
             </span>
             <strong>Floor Systems</strong>
             <small>System catalog & rates</small>
           </button>
           <button className="home-ref-card" onClick={() => navigate("/pricing")}>
             <span className="home-ref-icon">
-              <Calculator size={12} />
+              <Calculator size={18} />
             </span>
             <strong>Pricing</strong>
             <small>Rate profiles</small>
           </button>
           <button className="home-ref-card" onClick={() => navigate("/competitive-pricing")}>
             <span className="home-ref-icon">
-              <TrendingUp size={12} />
+              <TrendingUp size={18} />
             </span>
             <strong>Market Intel</strong>
             <small>Competitive rates</small>
