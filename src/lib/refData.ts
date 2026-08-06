@@ -34,13 +34,16 @@ export function projectsFromLeads(leads: any[]) {
   return (leads || []).map(leadToProject);
 }
 
+// 2025 national averages — sourced from HomeAdvisor, Angi, Fixr, Homewyse,
+// Craftsman Concrete Floors, Intermountain Coatings, and contractor pricing
+// aggregators. Installed $/sqft (materials + labor, standard prep included).
 export const systemRates: Record<string, { low: number; high: number; gradient: string }> = {
-  "Flake Epoxy": { low: 6.0, high: 9.0, gradient: getSystemGradient("Flake Epoxy") },
-  "Metallic Epoxy": { low: 8.5, high: 12.0, gradient: getSystemGradient("Metallic Epoxy") },
-  "Solid Color Epoxy": { low: 4.5, high: 7.5, gradient: getSystemGradient("Solid Color Epoxy") },
-  "Quartz System": { low: 9.0, high: 14.0, gradient: getSystemGradient("Quartz System") },
-  "Glitter Epoxy": { low: 7.0, high: 11.0, gradient: getSystemGradient("Glitter Epoxy") },
-  "Polished Concrete": { low: 5.0, high: 8.5, gradient: getSystemGradient("Polished Concrete") },
-  "Stained Concrete": { low: 3.5, high: 6.0, gradient: getSystemGradient("Stained Concrete") },
-  "Joint Fill & Repair": { low: 12.0, high: 18.0, gradient: getSystemGradient("Joint Fill & Repair") },
+  "Flake Epoxy": { low: 5.0, high: 10.0, gradient: getSystemGradient("Flake Epoxy") },
+  "Metallic Epoxy": { low: 8.0, high: 15.0, gradient: getSystemGradient("Metallic Epoxy") },
+  "Solid Color Epoxy": { low: 4.0, high: 8.0, gradient: getSystemGradient("Solid Color Epoxy") },
+  "Quartz System": { low: 9.0, high: 15.0, gradient: getSystemGradient("Quartz System") },
+  "Glitter Epoxy": { low: 7.0, high: 12.0, gradient: getSystemGradient("Glitter Epoxy") },
+  "Polished Concrete": { low: 3.0, high: 8.0, gradient: getSystemGradient("Polished Concrete") },
+  "Stained Concrete": { low: 3.5, high: 7.0, gradient: getSystemGradient("Stained Concrete") },
+  "Joint Fill & Repair": { low: 6.0, high: 10.0, gradient: getSystemGradient("Joint Fill & Repair") },
 };

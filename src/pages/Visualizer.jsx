@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, Sparkles, Loader2, FileText, Wand2, Layers, Mail, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -43,6 +43,13 @@ export default function Visualizer() {
   const [saving, setSaving] = useState(false);
   const [pickedTier, setPickedTier] = useState("recommended");
   const [finish, setFinish] = useState("High Gloss");
+  const [activeRules, setActiveRules] = useState(null);
+
+  useEffect(() => {
+    base44.entities.PricingRule.filter({ status: "active" }, "-created_date", 1)
+      .then((rows) => setActiveRules(rows[0] || null))
+      .catch(() => setActiveRules(null));
+  }, []);
 
   const rates = systemRates[system];
   const colorRecords = useMemo(() => getSystemColorRecords(system), [system]);
@@ -65,8 +72,8 @@ export default function Visualizer() {
         large_patch_count: largePatch,
         demolition_sqft: demoSqft,
         extra_prep: extraPrep,
-      }),
-    [sqft, condition, rates, needsGrinding, needsMoisture, crackLf, covingLf, jointLf, patchCount, excessivePatch, largePatch, demoSqft, extraPrep]
+      }, activeRules || undefined),
+    [sqft, condition, rates, needsGrinding, needsMoisture, crackLf, covingLf, jointLf, patchCount, excessivePatch, largePatch, demoSqft, extraPrep, activeRules]
   );
 
   const bids = BID_TIERS.map((t) => ({

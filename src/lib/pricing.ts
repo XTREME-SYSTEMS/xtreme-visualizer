@@ -1,21 +1,23 @@
 // Pricing engine — preliminary, non-binding range calculation.
-// Ported from visual-x2. Factors in condition, grinding, moisture, cracks,
-// patches, joints, coving, demolition, extra prep, mobilization.
+// v2.0 recalibrated to 2025 national averages from HomeAdvisor, Angi, Fixr,
+// Homewyse, Craftsman Concrete Floors, and contractor aggregators.
+// Field names align with the PricingRule entity so an active rule record
+// can be passed straight in as the `rules` argument.
 
 export const DEFAULT_RULES = {
-  version: "v1.1",
+  version: "v2.0",
   mobilization_fee: 0,
   min_job_price: 0,
-  prep_grinding_rate: 0.75,
+  prep_grinding_rate: 1.0,
   moisture_mitigation_rate: 1.5,
-  crack_repair_rate: 12,
-  coving_rate: 18,
-  joint_fill_rate: 3,
+  crack_repair_rate: 8,
+  coving_rate: 12,
+  joint_filler_rate: 3,
   patch_rate: 35,
-  excessive_patch_rate: 85,
+  excess_patch_rate: 85,
   large_patch_rate: 150,
   demolition_rate: 2.5,
-  extra_prep_flat: 250,
+  extra_prep_rate: 250,
   range_spread_pct: 0.15,
 };
 
@@ -64,12 +66,12 @@ export function computeRange(input: RangeInput, rules: Partial<typeof DEFAULT_RU
 
   const cracks = (Number(input.linear_feet_cracks) || 0) * r.crack_repair_rate;
   const coving = (Number(input.linear_feet_coving) || 0) * r.coving_rate;
-  const joints = (Number(input.linear_feet_joints) || 0) * r.joint_fill_rate;
+  const joints = (Number(input.linear_feet_joints) || 0) * r.joint_filler_rate;
   const patches = (Number(input.patch_count) || 0) * r.patch_rate
-    + (Number(input.excessive_patch_count) || 0) * r.excessive_patch_rate
+    + (Number(input.excessive_patch_count) || 0) * r.excess_patch_rate
     + (Number(input.large_patch_count) || 0) * r.large_patch_rate;
   const demo = (Number(input.demolition_sqft) || 0) * r.demolition_rate;
-  const extraPrep = input.extra_prep ? r.extra_prep_flat : 0;
+  const extraPrep = input.extra_prep ? r.extra_prep_rate : 0;
 
   const addOns = cracks + coving + joints + patches + demo + extraPrep;
 
