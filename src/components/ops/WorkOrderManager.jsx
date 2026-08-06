@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Plus, Trash2, X, ClipboardList, Send } from "lucide-react";
+import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink, Calendar } from "lucide-react";
 
 const STATUSES = ["draft", "assigned", "in_progress", "completed", "cancelled"];
 const STATUS_COLORS = { draft: "#707070", assigned: "#43a9ff", in_progress: "#ffd000", completed: "#9cff00", cancelled: "#ff5258" };
@@ -52,6 +52,42 @@ export default function WorkOrderManager({ notify }) {
 
   const remove = async (o) => { await base44.entities.WorkOrder.delete(o.id); load(); };
 
+  const [driveBusy, setDriveBusy] = useState(null);
+  const createFolder = async (o) => {
+    setDriveBusy(o.id);
+    try {
+      const res = await base44.functions.invoke("createDriveFolder", { customerName: o.customer_name, address: o.project_address, template: "res", workOrderId: o.id });
+      notify("Drive folder created");
+      load();
+    } catch (e) { notify("Drive failed: " + (e?.response?.data?.error || e.message)); }
+    finally { setDriveBusy(null); }
+  };
+
+  const [calBusy, setCalBusy] = useState(null);
+  const syncCalendar = async (o) => {
+    if (!o.scheduled_date) { notify("Set a scheduled date first"); return; }
+    setCalBusy(o.id);
+    try {
+      const start = new Date(o.scheduled_date);
+      const end = new Date(start.getTime() + 8 * 3600000);
+      const res = await base44.functions.invoke("createCalendarAppointment", {
+        summary: `Job — ${o.customer_name || "Work Order"}`,
+        description: o.notes || `Crew: ${o.crew_leader_name || "TBD"}`,
+        startDateTime: start.toISOString(),
+        endDateTime: end.toISOString(),
+        location: o.project_address || "",
+        leadId: o.lead_id,
+      });
+      const data = res.data || res;
+      if (data.eventId) {
+        await base44.entities.WorkOrder.update(o.id, { calendar_event_id: data.eventId, calendar_link: data.htmlLink });
+        notify("Synced to Google Calendar");
+        load();
+      } else { notify("Calendar sync failed: " + (data.error || "connect Google Calendar")); }
+    } catch (e) { notify("Calendar failed: " + (e?.response?.data?.error || e.message)); }
+    finally { setCalBusy(null); }
+  };
+
   return (
     <div style={{ display: "grid", gap: 10 }}>
       <div className="hx-scraper-actionbar">
@@ -76,8 +112,24 @@ export default function WorkOrderManager({ notify }) {
                </div>
              </div>
              {o.scheduled_date && <p style={{ margin: "6px 0 0", fontSize: 11, color: "#A0A0A0" }}>Scheduled: {new Date(o.scheduled_date).toLocaleString()}</p>}
-           </div>
-         ))}
+             <div className="hx-bid-controls" style={{ marginTop: 8 }}>
+               {o.drive_folder_url ? (
+                 <a href={o.drive_folder_url} target="_blank" rel="noreferrer" className="hx-sys-edit" style={{ color: "var(--vx-accent)", borderColor: "var(--vx-accent)", textDecoration: "none", justifyContent: "center" }}><ExternalLink size={13} /> Open Drive Folder</a>
+               ) : (
+                 <button className="hx-sys-edit" onClick={() => createFolder(o)} disabled={driveBusy === o.id}>
+                   {driveBusy === o.id ? <Loader2 size={13} className="spin" /> : <FolderTree size={13} />} Create Drive Folder
+                 </button>
+               )}
+               {o.calendar_link ? (
+                 <a href={o.calendar_link} target="_blank" rel="noreferrer" className="hx-sys-edit" style={{ textDecoration: "none", justifyContent: "center" }}><ExternalLink size={13} /> Calendar Event</a>
+               ) : (
+                 <button className="hx-sys-edit" onClick={() => syncCalendar(o)} disabled={calBusy === o.id}>
+                   {calBusy === o.id ? <Loader2 size={13} className="spin" /> : <Calendar size={13} />} Sync Calendar
+                 </button>
+               )}
+             </div>
+             </div>
+             ))}
       </div>
 
       {editing && (
