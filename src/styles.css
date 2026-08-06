@@ -190,8 +190,8 @@ img{display:block;max-width:100%}
 
 /* desktop: scale device shell to fit viewport height */
 @media(min-width:901px){
-  .vx-stage{padding:16px;min-height:100vh;overflow:hidden}
-  .vx-device{zoom:min(1,calc((100vh - 32px) / 1664px))}
+  .vx-stage{padding:8px;min-height:100vh;overflow:hidden}
+  .vx-device{zoom:min(calc((100vh - 16px) / 1664px),calc((100vw - 16px) / 806px))}
   .vx-screen.vx-native{grid-template-rows:124px minmax(0,1fr) 128px}
 }
 /* responsive runtime */
