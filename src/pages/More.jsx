@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
   Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
-  Camera, Sparkles,
+  Camera, Sparkles, ChevronRight,
 } from "lucide-react";
 
 const SURFACES = [
@@ -35,11 +35,12 @@ export default function More() {
           <p>Every tool and surface in your workspace.</p>
         </div>
       </div>
-      <div className="hx-more-grid">
+      <div className="hx-more-list">
         {SURFACES.map(({ to, label, icon: Icon }) => (
-          <button key={to} className="hx-more-card" onClick={() => navigate(to)}>
-            <Icon size={20} />
-            <span>{label}</span>
+          <button key={to} className="hx-more-row" onClick={() => navigate(to)}>
+            <span className="hx-more-icon"><Icon size={20} /></span>
+            <span className="hx-more-label">{label}</span>
+            <ChevronRight size={18} className="hx-more-arrow" />
           </button>
         ))}
       </div>
