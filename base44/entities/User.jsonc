@@ -7,6 +7,18 @@
         "admin",
         "user"
       ]
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Company name used on bids, proposals, and branding"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Uploaded company logo URL \u2014 reused across bids, email templates, digital cards, and brochures"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone for bids and digital cards"
     }
   },
   "required": [

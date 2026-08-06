@@ -1,112 +1,311 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/vq/PageHeader";
-import SectionCard from "@/components/vq/SectionCard";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, FileText, Sparkles } from "lucide-react";
-import SharePanel from "@/components/visualizer/SharePanel";
+import { Sparkles, Loader2, Image as ImageIcon, Check, Tag } from "lucide-react";
+import {
+  parseBidSentence,
+  buildBid,
+  applyDiscount,
+  bidToText,
+  money,
+  TERMS_TEXT,
+  WARRANTY_TEXT,
+} from "@/lib/bidEngine";
+import JobSitePhotos from "@/components/bid/JobSitePhotos";
+import BidShareBar from "@/components/bid/BidShareBar";
+
+const EXAMPLES = [
+  "Metallic epoxy floor for a 2-car garage, 500 sq ft, fair condition, with some cracks and a few spalls",
+  "Flake epoxy for a 1200 sq ft showroom, silver gray, high gloss, with expansion joints",
+  "Polished concrete for a 3000 sq ft warehouse, good condition, lots of joint fill",
+];
 
 export default function BidGenerator() {
-  const [bidPackage, setBidPackage] = useState("");
+  const [sentence, setSentence] = useState("");
   const [generating, setGenerating] = useState(false);
+  const [bid, setBid] = useState(null);
+  const [discountPct, setDiscountPct] = useState(0);
   const [err, setErr] = useState("");
+  const [floorSystems, setFloorSystems] = useState([]);
+  const [colorCharts, setColorCharts] = useState([]);
+  const [user, setUser] = useState(null);
+  const [photos, setPhotos] = useState([]);
+  const [savedToCrm, setSavedToCrm] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoRef = useRef(null);
+
+  useEffect(() => {
+    base44.entities.FloorSystem.list("-created_date", 100).then(setFloorSystems).catch(() => {});
+    base44.entities.ColorChart.list("-created_date", 200).then(setColorCharts).catch(() => {});
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const logoUrl = user?.logo_url || "";
 
   const generate = async () => {
+    if (!sentence.trim()) return;
     setGenerating(true);
     setErr("");
+    setSavedToCrm(false);
     try {
-      const prompt = `Scan the following company websites and generate a comprehensive, professional bid package / company overview document that a salesperson can send to a potential client.
-
-Websites to scan:
-1. xtremepolishingsystems.com — Xtreme Polishing Systems (parent company, manufacturer and distributor of concrete polishing and epoxy flooring products)
-2. nationalconcretepolishing.net — National Concrete Polishing (a division of Xtreme Polishing Systems with 70+ nationwide locations)
-3. polishedconcreteuniversity.com — Polished Concrete University (training and certification arm)
-
-Generate a professional bid package with these sections as Markdown headings:
-
-# Xtreme Polishing Systems — Company Overview
-Brief history, national reach, scale of operations, manufacturer-direct advantage.
-
-# Our Divisions
-Xtreme Polishing Systems (products), National Concrete Polishing (installation, 70+ locations), Polished Concrete University (training & certification).
-
-# Services We Offer
-Polished concrete, epoxy flooring (metallic, flake, quartz, solid, glitter), stained concrete, sealed concrete, overlays/micro-toppings, joint filler, concrete countertops, and more.
-
-# Insurance & Compliance
-Fully licensed and insured contractor. General liability insurance and workers' compensation insurance coverage. Certificates of insurance available upon request. OSHA-compliant operations.
-
-# Safety & Certifications
-Trained and certified crews through Polished Concrete University. OSHA safety compliance. Manufacturer-trained installers.
-
-# Why Choose Us
-70+ nationwide locations, manufacturer-direct products, certified installers, workmanship warranty, national reach with local service, decades of experience.
-
-# Warranty
-Workmanship warranty on installations. Manufacturer warranties on products.
-
-# Contact
-Your salesperson's contact information is included with your proposal. Visit xtremepolishingsystems.com or nationalconcretepolishing.net for more information.
-
-Format as a clean, professional document with Markdown headings. Keep it under 800 words. This is a marketing document to help close deals — make it compelling but honest.`;
-
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        add_context_from_internet: true,
-        model: "gemini_3_flash",
-      });
-      setBidPackage(typeof result === "string" ? result : String(result));
+      const parsed = await parseBidSentence(sentence, floorSystems, colorCharts);
+      const built = buildBid(parsed, floorSystems, colorCharts);
+      const withDiscount = applyDiscount(built, discountPct);
+      setBid(withDiscount);
+      saveToCrm(withDiscount, parsed);
     } catch (e) {
-      setErr("Could not generate bid package. " + (e.message || ""));
+      setErr("Could not generate bid. " + (e.message || ""));
     } finally {
       setGenerating(false);
     }
   };
 
+  const saveToCrm = async (built, parsed) => {
+    try {
+      await base44.entities.Lead.create({
+        customer_name: built.customer_name || "Bid Generator lead",
+        email: "",
+        phone: "",
+        project_address: built.project_address,
+        space_type: "garage",
+        floor_type: built.floor_type,
+        system_name: built.floor_type,
+        color_name: built.color_name,
+        color_hex: built.color_hex,
+        finish: built.finish,
+        square_feet: built.square_feet,
+        condition: built.condition,
+        needs_grinding: parsed.needs_grinding,
+        needs_moisture_mitigation: parsed.needs_moisture_mitigation,
+        linear_feet_cracks: parsed.linear_feet_cracks || 0,
+        linear_feet_joints: parsed.linear_feet_joints || 0,
+        linear_feet_coving: parsed.linear_feet_coving || 0,
+        patch_count: parsed.patch_count || 0,
+        excessive_patch_count: parsed.excessive_patch_count || 0,
+        large_patch_count: parsed.large_patch_count || 0,
+        demolition_sqft: parsed.demolition_sqft || 0,
+        extra_prep: parsed.extra_prep || false,
+        estimate_low: built.subtotal,
+        estimate_high: built.subtotal,
+        proposal_total: built.total,
+        discount_amount: built.discount_amount || 0,
+        discount_pct: built.discount_pct || 0,
+        floor_logo_description: built.logo_description,
+        source: "manual",
+        status: "new",
+        notes: `Generated by AI Bid Generator.${photos.length ? ` Photos: ${photos.join(", ")}` : ""}`,
+      });
+      setSavedToCrm(true);
+    } catch (e) {
+      // bid still shown
+    }
+  };
+
+  const onDiscount = (pct) => {
+    setDiscountPct(pct);
+    if (bid) setBid(applyDiscount(bid, pct));
+  };
+
+  const uploadLogo = async (file) => {
+    if (!file) return;
+    setLogoUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      if (file_url) {
+        await base44.auth.updateMe({ logo_url: file_url });
+        setUser({ ...user, logo_url: file_url });
+      }
+    } catch (e) {}
+    setLogoUploading(false);
+  };
+
+  const bidText = bid ? bidToText(bid) : "";
+
   return (
-    <div className="space-y-5">
-      <PageHeader
-        eyebrow="Company bid package"
-        title="Bid package generator"
-        description="AI scans your company websites and generates a professional bid package with company highlights, insurance, and certifications — ready to send to any client."
-        action={
-          <Button onClick={generate} disabled={generating} className="bg-slate-900 hover:bg-slate-800">
-            {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-            {generating ? "Scanning..." : "Generate bid package"}
-          </Button>
-        }
-      />
-
-      {!bidPackage && !generating && (
-        <div className="py-16 text-center">
-          <FileText className="w-10 h-10 mx-auto text-slate-300" />
-          <p className="mt-3 text-[13px] text-slate-500">Click "Generate bid package" to scan your company websites and create a professional bid package.</p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2 text-[11px] text-slate-400">
-            <span className="px-2 py-1 rounded-full bg-slate-100">xtremepolishingsystems.com</span>
-            <span className="px-2 py-1 rounded-full bg-slate-100">nationalconcretepolishing.net</span>
-            <span className="px-2 py-1 rounded-full bg-slate-100">polishedconcreteuniversity.com</span>
-          </div>
+    <div className="page hx-page">
+      <div className="hx-page-head">
+        <div>
+          <h1>
+            AI <span style={{ color: "var(--vx-accent)" }}>Bid Generator</span>
+          </h1>
+          <p>Describe the job in one sentence. We'll build a complete bid — scope, pricing, terms, and warranty — in seconds.</p>
         </div>
-      )}
+      </div>
 
-      {generating && (
-        <div className="py-16 grid place-items-center">
-          <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-          <p className="mt-3 text-[12px] text-slate-500">Scanning company websites and generating bid package...</p>
+      <div className="hx-bid-input-card">
+        <textarea
+          className="hx-bid-textarea"
+          rows={3}
+          placeholder="e.g. Metallic epoxy floor for a 2-car garage, 500 sq ft, fair condition, with some cracks and a few spalls"
+          value={sentence}
+          onChange={(e) => setSentence(e.target.value)}
+        />
+        <div className="hx-bid-examples">
+          {EXAMPLES.map((ex, i) => (
+            <button key={i} className="hx-bid-example-chip" onClick={() => setSentence(ex)}>
+              {ex.length > 46 ? ex.slice(0, 46) + "…" : ex}
+            </button>
+          ))}
         </div>
-      )}
+        <button
+          className="hx-mini-btn"
+          onClick={generate}
+          disabled={generating || !sentence.trim()}
+          style={{ width: "100%", justifyContent: "center", minHeight: 48 }}
+        >
+          {generating ? <Loader2 size={18} className="spin" /> : <Sparkles size={18} />}
+          <span>{generating ? "Generating bid..." : "Generate Bid"}</span>
+        </button>
+      </div>
 
-      {err && <p className="text-[12px] text-red-600">{err}</p>}
+      {err && <p style={{ color: "var(--vx-danger)", fontSize: 12 }}>{err}</p>}
 
-      {bidPackage && !generating && (
+      {bid && (
         <>
-          <SectionCard index="01" title="Bid package preview" tag="Editable" tagTone="gold">
-            <Textarea rows={24} value={bidPackage} onChange={(e) => setBidPackage(e.target.value)} className="font-mono text-[12px]" />
-          </SectionCard>
-          <SectionCard index="02" title="Send / share the bid package" tag="Deliver" tagTone="green">
-            <SharePanel proposalText={bidPackage} customerEmail="" />
-          </SectionCard>
+          {savedToCrm && (
+            <div className="hx-bid-saved">
+              <Check size={14} /> Saved to CRM automatically
+            </div>
+          )}
+
+          <div className="hx-bid-controls">
+            <div className="hx-bid-discount">
+              <Tag size={16} />
+              <span style={{ fontSize: 12, color: "#A0A0A0" }}>Discount %</span>
+              <input
+                type="number"
+                min="0"
+                max="50"
+                value={discountPct}
+                onChange={(e) => onDiscount(e.target.value)}
+              />
+              <span style={{ fontSize: 12, color: "var(--vx-accent)", fontWeight: 700 }}>
+                {money(bid.discount_amount)}
+              </span>
+            </div>
+            <div className="hx-bid-logo-row">
+              {logoUrl && <img src={logoUrl} alt="Logo" style={{ height: 36, maxWidth: 120, objectFit: "contain" }} />}
+              <input
+                ref={logoRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => uploadLogo(e.target.files?.[0])}
+                className="hidden"
+              />
+              <button
+                className="hx-bid-logo-btn"
+                onClick={() => logoRef.current?.click()}
+                disabled={logoUploading}
+              >
+                {logoUploading ? <Loader2 size={14} className="spin" /> : <ImageIcon size={14} />}
+                <span>{logoUrl ? "Change logo" : "Add logo"}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="hx-bid-doc">
+            <div className="hx-bid-doc-head">
+              <div className="hx-bid-meta">
+                <span className="hx-bid-title">Proposal</span>
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo" className="hx-bid-logo" />
+                ) : (
+                  <strong className="hx-bid-company">Xtreme Polishing Systems</strong>
+                )}
+              </div>
+              <span style={{ fontSize: 11, color: "#A0A0A0" }}>
+                {new Date(bid.created_date).toLocaleDateString()}
+              </span>
+            </div>
+
+            <div className="hx-bid-meta">
+              <strong>{bid.customer_name || "Valued Customer"}</strong>
+              {bid.project_address && <span>{bid.project_address}</span>}
+            </div>
+
+            <div className="hx-bid-section">
+              <h3>Project</h3>
+              <p style={{ margin: 0, fontSize: 12, color: "#fff" }}>
+                {bid.floor_type} — {bid.square_feet.toLocaleString()} sq ft ({bid.condition} condition)
+              </p>
+              {(bid.color_name || bid.finish) && (
+                <p style={{ margin: "2px 0 0", fontSize: 11, color: "#A0A0A0" }}>
+                  {[bid.color_name, bid.finish].filter(Boolean).join(" • ")}
+                </p>
+              )}
+              {bid.logo_description && (
+                <p style={{ margin: "2px 0 0", fontSize: 11, color: "#A0A0A0" }}>
+                  Floor logo: {bid.logo_description}
+                </p>
+              )}
+            </div>
+
+            <div className="hx-bid-section">
+              <h3>Scope of Work</h3>
+              <div className="hx-bid-scope">
+                {bid.scope_items.map((s, i) => (
+                  <div key={i} className="hx-bid-scope-item">
+                    <strong>{s.label}</strong>
+                    <span>{s.detail}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hx-bid-section">
+              <h3>Investment</h3>
+              <div className="hx-bid-lines">
+                {bid.line_items.map((li, i) => (
+                  <div key={i} className="hx-bid-line">
+                    <div>
+                      <div className="hx-bid-line-name">{li.name}</div>
+                      <div className="hx-bid-line-detail">{li.detail}</div>
+                    </div>
+                    <div className="hx-bid-line-amt">{money(li.amount)}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="hx-bid-totals" style={{ marginTop: 10 }}>
+                <div className="hx-bid-totals-row">
+                  <span>Subtotal</span>
+                  <span>{money(bid.subtotal)}</span>
+                </div>
+                {bid.discount_amount > 0 && (
+                  <div className="hx-bid-totals-row">
+                    <span>Discount ({bid.discount_pct}%)</span>
+                    <span>-{money(bid.discount_amount)}</span>
+                  </div>
+                )}
+                <div className="hx-bid-totals-row total">
+                  <span>Total</span>
+                  <span>{money(bid.total)}</span>
+                </div>
+              </div>
+            </div>
+
+            {photos.length > 0 && (
+              <div className="hx-bid-section">
+                <h3>Job Site Photos</h3>
+                <div className="hx-bid-photo-grid">
+                  {photos.map((url, i) => (
+                    <div key={i} className="hx-bid-photo-tile">
+                      <img src={url} alt={`Site ${i + 1}`} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="hx-bid-terms">
+              <h4>Terms &amp; Conditions</h4>
+              <p>{TERMS_TEXT}</p>
+              <h4>Warranty</h4>
+              <p>{WARRANTY_TEXT}</p>
+            </div>
+          </div>
+
+          <JobSitePhotos photos={photos} setPhotos={setPhotos} />
+
+          <BidShareBar bidText={bidText} />
         </>
       )}
     </div>
