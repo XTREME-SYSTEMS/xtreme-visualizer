@@ -32,6 +32,7 @@ const MORE = [
   { to: '/settings', label: 'Settings' },
 ];
 const TAB_PATHS = ['/', '/visualizer', '/leads', '/inbox', '/more'];
+const MORE_TAB = '/more';
 
 export function DeviceShell() {
   const [more, setMore] = useState(false);
@@ -126,7 +127,7 @@ export function DeviceShell() {
                 <div className="vx-sidebar-logo">VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
                 <nav className="vx-sidebar-nav">
                   {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
-                  <button onClick={() => setMore(true)}><Menu className="vx-icon" /><span>More</span></button>
+                  <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
                 </nav>
               </aside>
               <div className="vx-content">
@@ -170,7 +171,7 @@ export function DeviceShell() {
               </div>
               <nav className="vx-nav">
                 {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
-                <button onClick={() => setMore(true)}><Menu className="vx-icon" /><span>More</span></button>
+                <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
               </nav>
             </>
           )}
