@@ -220,8 +220,19 @@ img{display:block;max-width:100%}
 /* Desktop: center the mobile app in a polished, branded frame.
    Mobile (<768px) is untouched — this only adds presentation on larger screens. */
 @media(min-width:768px){
-  .vx-stage{padding:24px 20px;height:100vh;background:radial-gradient(ellipse 60% 50% at 50% 20%, rgba(156,255,0,.09), transparent 60%), radial-gradient(ellipse 50% 40% at 50% 95%, rgba(67,169,255,.05), transparent 55%), var(--vx-bg)}
-  .vx-device{width:100%;max-width:420px;height:100%;max-height:860px;border:1px solid var(--vx-border-soft);border-radius:38px;box-shadow:0 40px 90px rgba(0,0,0,.65), 0 0 0 9px rgba(255,255,255,.018), inset 0 1px 0 rgba(255,255,255,.04)}
-  .vx-screen{border-radius:38px}
-  .vx-page{padding:0 22px 14px}
+  .vx-stage{padding:0;height:100vh;background:var(--vx-bg)}
+  .vx-device{width:100%;max-width:none;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}
+  .vx-device::before,.vx-device::after,.vx-side-buttons{display:none}
+  .vx-screen{border-radius:0;grid-template-rows:64px minmax(0,1fr) 72px}
+  .vx-brandbar{padding:12px calc(32px + env(safe-area-inset-right)) 12px calc(32px + env(safe-area-inset-left));max-width:1280px;margin:0 auto;width:100%}
+  .vx-brand-logo{font-size:28px}
+  .vx-avatar{width:42px;height:42px;font-size:15px}
+  .vx-avatar::after{width:10px;height:10px}
+  .vx-main{max-width:1280px;margin:0 auto;width:100%}
+  .vx-page{padding:0 32px 20px;gap:18px}
+  .vx-page-header h1{font-size:32px}
+  .vx-page-header p{font-size:15px}
+  .vx-nav{padding:12px calc(32px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(32px + env(safe-area-inset-left));max-width:1280px;margin:0 auto;width:100%}
+  .vx-nav button{height:56px;font-size:13px;gap:6px}
+  .vx-nav .vx-icon{width:24px;height:24px}
 }
