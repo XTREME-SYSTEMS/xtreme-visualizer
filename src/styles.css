@@ -17,6 +17,9 @@
   --vx-warning:#ffd000;
   --vx-info:#43a9ff;
   --vx-radius:18px;
+  --vx-touch-target:44px;
+  --vx-radius-control:10px;
+  --vx-radius-card:16px;
   --vx-shadow:0 16px 44px rgba(0,0,0,.42);
   --vx-glow:0 0 24px rgba(255,214,10,.28);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;
@@ -35,6 +38,9 @@
   --vx-border-soft:#d8ddd2;
   --vx-shadow:0 14px 34px rgba(32,45,18,.12);
   --vx-glow:0 0 18px rgba(255,214,10,.18);
+  --vx-touch-target:44px;
+  --vx-radius-control:10px;
+  --vx-radius-card:16px;
 }
 [data-theme="light"] .vx-stage{background:radial-gradient(circle at 50% 42%,#e8ece2 0,#f3f5f0 45%,#fff 78%)}
 [data-theme="light"] .vx-device{background:var(--vx-bg-2)}
@@ -201,7 +207,7 @@ img{display:block;max-width:100%}
   .vx-screen{inset:0;border-radius:0;grid-template-rows:56px minmax(0,1fr) 64px;padding-top:env(safe-area-inset-top)}
   .vx-statusbar,.vx-island{display:none}
   .vx-brandbar{padding:7px calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left))}  .vx-brand-logo{font-size:22px}  .vx-avatar{width:32px;height:32px;font-size:12px}.vx-avatar::after{width:8px;height:8px;border-width:2px}
-  .vx-page{padding:0 calc(12px + env(safe-area-inset-right)) 8px calc(12px + env(safe-area-inset-left));gap:8px}.vx-page-header h1{font-size:20px}.vx-page-header p{font-size:12px}.vx-kicker{font-size:12px;margin-bottom:3px}.vx-card{border-radius:12px}  .vx-btn{min-height:44px;border-radius:8px;padding:7px 10px;font-size:12px}.vx-btn.compact{min-height:44px}  .vx-icon-btn{width:36px;height:36px}.vx-back-btn{width:36px;height:36px}
+  .vx-page{padding:0 calc(12px + env(safe-area-inset-right)) 8px calc(12px + env(safe-area-inset-left));gap:8px}.vx-page-header h1{font-size:20px}.vx-page-header p{font-size:12px}.vx-kicker{font-size:12px;margin-bottom:3px}.vx-card{border-radius:12px}  .vx-btn{min-height:44px;border-radius:8px;padding:7px 10px;font-size:12px}.vx-btn.compact{min-height:44px}  .vx-icon-btn{width:36px;height:36px;min-width:44px;min-height:44px}.vx-back-btn{width:36px;height:36px;min-width:44px;min-height:44px}
   .vx-nav{padding:5px calc(8px + env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left))}.vx-nav button{height:44px;font-size:11px;gap:2px}.vx-nav .vx-icon{width:20px;height:20px}
   .home-hero{min-height:140px}.home-hero-content{padding:14px 12px;width:72%}.home-hero h1{font-size:20px;margin-bottom:6px}.home-hero p{font-size:11px;line-height:1.35;margin-bottom:4px}.home-actions{gap:6px}.home-action{height:72px;border-radius:10px;font-size:11px;gap:6px}.home-action svg{width:22px;height:22px}.project-row{grid-template-columns:72px 1fr auto;gap:9px;padding:7px 0}.project-thumb{width:72px;height:54px}.project-row h3{font-size:13px}.project-row p,.project-side time{font-size:12px}.project-side{gap:8px}.vx-chip{min-height:22px;padding:2px 8px;font-size:12px}.vx-stat-row{padding:10px 4px}.vx-stat{padding:0 8px;gap:4px}.vx-stat strong{font-size:18px}.vx-stat small,.vx-stat em{font-size:12px}
   .scan-photo{height:315px}.scan-tool{height:62px;font-size:12px;gap:4px}.confidence-card{grid-template-columns:82px 1fr;padding:10px}.confidence-ring{width:75px;height:75px}.confidence-ring span{font-size:15px}.confidence-details h3{font-size:12px}.confidence-details strong{font-size:17px}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { Sparkles, CalendarCheck, X, Loader2, Clock, MapPin, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const TYPES = [
   { value: "consultation", label: "Consultation" },
@@ -171,19 +172,19 @@ export default function AppointmentEditor({ appointment, existingAppts, onClose,
           <div className="form-grid two">
             <div className="field">
               <label>Duration (min)</label>
-              <select value={duration} onChange={(e) => setDuration(Number(e.target.value))}>
-                {[30, 45, 60, 90, 120].map((d) => (
-                  <option key={d} value={d}>{d} min</option>
-                ))}
-              </select>
+              <ResponsiveSelect
+                value={duration}
+                onValueChange={(v) => setDuration(Number(v))}
+                options={[30, 45, 60, 90, 120].map((d) => ({ value: d, label: `${d} min` }))}
+              />
             </div>
             <div className="field">
               <label>Preferred window</label>
-              <select value={windowPref} onChange={(e) => setWindowPref(e.target.value)}>
-                {WINDOWS.map((w) => (
-                  <option key={w.value} value={w.value}>{w.label}</option>
-                ))}
-              </select>
+              <ResponsiveSelect
+                value={windowPref}
+                onValueChange={setWindowPref}
+                options={WINDOWS}
+              />
             </div>
           </div>
 

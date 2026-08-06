@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Plus, Trash2, CreditCard, Receipt, DollarSign, Send, X, CheckCircle2, Clock, FileText } from "lucide-react";
 import MaintenanceSubscriptions from "@/components/billing/MaintenanceSubscriptions";
+import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const TYPE_LABEL = { deposit: "Deposit", final: "Final Invoice" };
 const STATUS_STYLE = {
@@ -156,22 +157,25 @@ export default function Billing() {
             </div>
             <div className="form-grid">
               <div className="field"><label>Linked Work Order (optional)</label>
-                <select value={form.work_order_id} onChange={(e) => set("work_order_id", e.target.value)}>
-                  <option value="">— None —</option>
-                  {workOrders.map((w) => <option key={w.id} value={w.id}>{w.customer_name || "Untitled"}{w.project_address ? ` · ${w.project_address}` : ""}</option>)}
-                </select>
+                <ResponsiveSelect
+                  value={form.work_order_id}
+                  onValueChange={(v) => set("work_order_id", v)}
+                  options={[{ value: "", label: "— None —" }, ...workOrders.map((w) => ({ value: w.id, label: `${w.customer_name || "Untitled"}${w.project_address ? ` · ${w.project_address}` : ""}` }))]}
+                />
               </div>
               <div className="field"><label>Linked Lead (optional)</label>
-                <select value={form.lead_id} onChange={(e) => set("lead_id", e.target.value)}>
-                  <option value="">— None —</option>
-                  {leads.map((l) => <option key={l.id} value={l.id}>{l.customer_name}{l.project_address ? ` · ${l.project_address}` : ""}</option>)}
-                </select>
+                <ResponsiveSelect
+                  value={form.lead_id}
+                  onValueChange={(v) => set("lead_id", v)}
+                  options={[{ value: "", label: "— None —" }, ...leads.map((l) => ({ value: l.id, label: `${l.customer_name}${l.project_address ? ` · ${l.project_address}` : ""}` }))]}
+                />
               </div>
               <div className="field"><label>Type</label>
-                <select value={form.type} onChange={(e) => set("type", e.target.value)}>
-                  <option value="deposit">Deposit</option>
-                  <option value="final">Final Invoice</option>
-                </select>
+                <ResponsiveSelect
+                  value={form.type}
+                  onValueChange={(v) => set("type", v)}
+                  options={[{ value: "deposit", label: "Deposit" }, { value: "final", label: "Final Invoice" }]}
+                />
               </div>
               <div className="field"><label>Amount (USD)</label><input type="number" min="0.5" step="0.01" value={form.amount} onChange={(e) => set("amount", e.target.value)} placeholder="0.00" /></div>
               <div className="field"><label>Due Date (optional)</label><input type="date" value={form.due_date} onChange={(e) => set("due_date", e.target.value)} /></div>

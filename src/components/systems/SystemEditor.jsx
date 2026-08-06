@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
+import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const CATEGORIES = ["epoxy", "polished_concrete", "decorative_concrete", "coating", "specialty"];
 
@@ -23,9 +24,12 @@ export default function SystemEditor({ draft, onClose, onSave }) {
             <input className="vx-input" value={form.name || ""} onChange={set("name")} placeholder="e.g. Metallic Epoxy Premium" />
           </label>
           <label className="field">Category
-            <select className="vx-input" value={form.category || "epoxy"} onChange={set("category")}>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c.replace(/_/g, " ")}</option>)}
-            </select>
+            <ResponsiveSelect
+              className="vx-input"
+              value={form.category || "epoxy"}
+              onValueChange={(v) => setForm({ ...form, category: v })}
+              options={CATEGORIES.map((c) => ({ value: c, label: c.replace(/_/g, " ") }))}
+            />
           </label>
           <label className="field">Base rate low ($/sqft)
             <input className="vx-input" type="number" value={form.base_rate_low || ""} onChange={set("base_rate_low")} />
