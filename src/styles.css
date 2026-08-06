@@ -64,10 +64,10 @@ img{display:block;max-width:100%}
 .vx-statusbar{display:none}
 .vx-island{display:none}
 .vx-status-icons{display:flex;align-items:center;gap:10px;font-size:17px}.vx-battery{width:36px;height:17px;border:2px solid currentColor;border-radius:5px;position:relative}.vx-battery::before{content:"";position:absolute;inset:2px;background:currentColor;border-radius:2px}.vx-battery::after{content:"";position:absolute;right:-6px;top:4px;width:3px;height:7px;border-radius:0 2px 2px 0;background:currentColor}
-.vx-brandbar{display:flex;align-items:center;justify-content:space-between;padding:10px 42px 17px;background:var(--vx-bg);z-index:18}
-.vx-brand-logo{width:390px;height:80px;object-fit:contain;object-position:left center;filter:none}
+.vx-brandbar{display:flex;align-items:center;justify-content:space-between;padding:7px calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left));background:var(--vx-bg);z-index:18}
+.vx-brand-logo{font-size:28px;font-weight:900;letter-spacing:-.04em;color:var(--vx-text)}
 [data-theme="light"] .vx-brand-logo{filter:drop-shadow(0 0 0 transparent)}
-.vx-avatar{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--vx-accent);background:radial-gradient(circle at 38% 30%,var(--vx-panel-3),var(--vx-bg));font-size:28px;position:relative}.vx-avatar::after{content:"";width:17px;height:17px;border-radius:50%;position:absolute;right:-2px;bottom:5px;background:var(--vx-accent);border:3px solid var(--vx-bg);box-shadow:var(--vx-glow)}
+.vx-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--vx-accent);background:radial-gradient(circle at 38% 30%,var(--vx-panel-3),var(--vx-bg));font-size:15px;position:relative}.vx-avatar::after{content:"";width:10px;height:10px;border-radius:50%;position:absolute;right:-2px;bottom:5px;background:var(--vx-accent);border:2px solid var(--vx-bg);box-shadow:var(--vx-glow)}
 .vx-main{position:relative;overflow:hidden;background:var(--vx-bg)}
 .vx-page{height:100%;overflow:hidden;padding:0 28px 18px;display:flex;flex-direction:column;gap:15px}
 .vx-page-scroll{overflow-y:auto;overflow-x:hidden;scrollbar-width:none;overscroll-behavior-y:none}.vx-page-scroll::-webkit-scrollbar{display:none}

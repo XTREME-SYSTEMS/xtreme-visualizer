@@ -491,7 +491,7 @@
 .viz-blemish-grid .vx-btn.compact { grid-column: 1 / -1; }
 
 /* ===== Responsive ===== */
-@media (max-width: 900px) {
+@media (max-width: 9999px) {
   .tools-grid { grid-template-columns: repeat(3, 1fr); }
   .pipeline { grid-template-columns: repeat(2, 1fr); }
   .content-header h1 { font-size: 22px; }
