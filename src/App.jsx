@@ -18,6 +18,7 @@ import '@/vx4-pages.css';
 
 // VX4 pages
 import Home from '@/pages/Home';
+import { getLoadingLogo } from '@/components/settings/BrandingCustomizer';
 import Projects from '@/pages/Projects';
 import Leads from '@/pages/Leads';
 import LeadDetail from '@/pages/LeadDetail';
@@ -66,7 +67,7 @@ const AuthenticatedApp = () => {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#1A1A1A", gap: 24 }}>
         <img
-          src="/logo.png"
+          src={getLoadingLogo()}
           alt="Xtreme Floor Visualizer"
           style={{ height: 64, width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(255,214,10,.4))" }}
         />

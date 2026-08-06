@@ -16,11 +16,13 @@ import {
 } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 import { getHeroImage, getHeroFilters, heroFilterString } from "@/components/settings/HeroImagePicker";
+import { getHomeButtonConfig } from "@/components/settings/BrandingCustomizer";
 
 export default function Home() {
   const navigate = useNavigate();
   const HERO_IMG = getHeroImage();
   const heroFilters = getHeroFilters();
+  const homeBtn = getHomeButtonConfig();
 
   return (
     <div className="home-full hx-home">
@@ -39,7 +41,7 @@ export default function Home() {
         </div>
         <button className="hx-hero-btn" onClick={() => navigate("/visualizer")}>
           <Plus size={18} />
-          <span>New Visualization</span>
+          <span>{homeBtn.label}</span>
           <ChevronRight size={18} />
         </button>
       </div>

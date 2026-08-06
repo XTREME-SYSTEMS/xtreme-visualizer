@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
+import { getDownloadButtonConfig } from "@/components/settings/BrandingCustomizer";
 
 export default function PWAInstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -78,7 +79,7 @@ export default function PWAInstallButton() {
         }}
       >
         <Download size={18} strokeWidth={2.5} />
-        <span>Install Xtreme</span>
+        <span>{getDownloadButtonConfig().label}</span>
       </button>
       <button
         onClick={handleDismiss}
