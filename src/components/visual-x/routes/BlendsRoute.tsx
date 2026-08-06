@@ -4,6 +4,7 @@ import { useApp } from '@/components/AppProvider';
 import { api } from '@/lib/api';
 import { VisualXField, VisualXProvenanceBadge, VisualXEmptyState, swatchSrc } from '../VisualXPrimitives';
 import { Search, Save, ScanLine, ReceiptText, Star } from 'lucide-react';
+import { PullToRefresh } from '../PullToRefresh';
 
 export function BlendsRoute() {
   const { state, notify, refresh, selectedColorIds, toggleColor } = useApp();
@@ -27,6 +28,7 @@ export function BlendsRoute() {
   };
 
   return (
+    <PullToRefresh onRefresh={refresh}>
     <>
       <div className="vx-page-header"><div><span className="vx-kicker">FLAKE BLEND STUDIO</span><h1>Blend studio</h1><p>Combine flake colors to create custom blends.</p></div></div>
       {selected.length > 0 && (
@@ -58,5 +60,6 @@ export function BlendsRoute() {
         <button className="studio-action" onClick={() => navigate('/app/quote')}><ReceiptText className="vx-icon" />Attach to quote</button>
       </div>
     </>
+    </PullToRefresh>
   );
 }

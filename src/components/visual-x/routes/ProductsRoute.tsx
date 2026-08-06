@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/components/AppProvider';
 import { VisualXTabs, VisualXField, VisualXEmptyState, VisualXProvenanceBadge, swatchSrc } from '../VisualXPrimitives';
 import { Search, PackageSearch, ScanLine } from 'lucide-react';
+import { PullToRefresh } from '../PullToRefresh';
 
 const TABS = [
   { key: 'all', label: 'All' }, { key: 'metallic', label: 'Metallic' },
@@ -11,7 +12,7 @@ const TABS = [
 ];
 
 export function ProductsRoute() {
-  const { state, selectedColorIds, toggleColor } = useApp();
+  const { state, selectedColorIds, toggleColor, refresh } = useApp();
   const navigate = useNavigate();
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
@@ -26,6 +27,7 @@ export function ProductsRoute() {
   }, [colors, tab, search]);
 
   return (
+    <PullToRefresh onRefresh={refresh}>
     <>
       <div className="vx-page-header"><div><span className="vx-kicker">PRODUCTS & COLORS</span><h1>Catalog</h1><p>Browse verified floor systems, colors, and products.</p></div></div>
       <VisualXField label="Search colors" inputProps={{ value: search, onChange: e => setSearch(e.target.value), placeholder: 'Search by name or code...' }} />
@@ -68,5 +70,6 @@ export function ProductsRoute() {
         </div>
       )}
     </>
+    </PullToRefresh>
   );
 }

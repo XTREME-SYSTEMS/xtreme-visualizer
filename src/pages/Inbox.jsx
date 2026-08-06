@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   Loader2, RefreshCw, Sparkles, Send, Mail, Search, Plus, X, AlertTriangle,
 } from "lucide-react";
+import { PullToRefresh } from "@/components/visual-x/PullToRefresh";
 
 const GMAIL_CONNECTOR_ID = "69db200274332486fd28dd7e";
 
@@ -158,6 +159,7 @@ export default function Inbox() {
   };
 
   return (
+    <PullToRefresh onRefresh={fetchInbox}>
     <div className="page hx-page" style={{ gap: 10 }}>
       <div className="hx-page-head">
         <div>
@@ -301,5 +303,6 @@ export default function Inbox() {
         </div>
       )}
     </div>
+    </PullToRefresh>
   );
 }
