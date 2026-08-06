@@ -13,6 +13,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import { AppProvider } from '@/components/AppProvider';
 import { UIProvider } from '@/lib/uiContext';
 import { DeviceShell } from '@/components/visual-x/DeviceShell';
+import { getLoadingLogo } from '@/components/settings/BrandingCustomizer';
 import '@/styles.css';
 import '@/vx4-pages.css';
 
@@ -65,9 +66,11 @@ const AuthenticatedApp = () => {
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
+    const loadingLogo = getLoadingLogo();
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#1A1A1A", gap: 24 }}>
-        <div className="w-8 h-8 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(255,214,10,.2)", borderTopColor: "#FFD60A" }}></div>
+      <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#030303", gap: 22 }}>
+        <img src={loadingLogo} alt="Xtreme Floor Visualizer" style={{ height: 92, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 20px rgba(255,214,10,.25))' }} />
+        <div className="w-7 h-7 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(255,214,10,.18)", borderTopColor: "#FFD60A" }} />
       </div>
     );
   }
