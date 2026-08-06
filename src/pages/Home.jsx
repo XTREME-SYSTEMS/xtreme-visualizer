@@ -126,7 +126,7 @@ export default function Home() {
       </div>
 
       {/* Recent bids */}
-      <section className="home-section">
+      <section className="home-section home-section-bids">
         <div className="home-section-head">
           <h2>
             <Clock size={16} /> Recent bids

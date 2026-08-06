@@ -265,7 +265,12 @@
 .message p { margin: 0; color: var(--vx-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ===== Full-page home navigation ===== */
-.home-full { display: grid; gap: 10px; }
+.home-full { height: 100%; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.home-hero { min-height: 80px; flex-shrink: 0; }
+.home-hero-content { padding: 10px 14px; }
+.home-hero h1 { font-size: 16px; margin: 0 0 2px; line-height: 1.1; }
+.home-hero h1 span { display: inline; }
+.home-hero p { font-size: 10px; line-height: 1.3; margin: 0; }
 .home-nav-section { display: grid; gap: 10px; }
 .home-nav-title {
   font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
@@ -389,8 +394,8 @@
 
 /* ===== Home command center ===== */
 .home-cta-card {
-  display: flex; align-items: center; gap: 12px; width: 100%;
-  padding: 12px; border-radius: 14px; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; width: 100%; flex-shrink: 0;
+  padding: 10px 12px; border-radius: 12px; cursor: pointer;
   border: 1px solid var(--vx-accent);
   background: linear-gradient(135deg, var(--vx-accent-soft), var(--vx-panel));
   box-shadow: var(--vx-glow);
@@ -400,26 +405,29 @@
 .home-cta-card:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(156,255,0,.4); }
 .home-cta-card:active { transform: translateY(0) scale(.99); }
 .home-cta-icon {
-  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
   display: grid; place-items: center; color: var(--vx-accent);
   border: 1px solid #4c7600; background: rgba(156,255,0,.1);
 }
-.home-cta-text { display: grid; gap: 2px; flex: 1; min-width: 0; }
-.home-cta-text strong { font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
-.home-cta-text small { font-size: 11px; color: var(--vx-muted); line-height: 1.35; }
+.home-cta-text { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.home-cta-text strong { font-size: 14px; font-weight: 800; letter-spacing: -.02em; }
+.home-cta-text small { font-size: 10px; color: var(--vx-muted); line-height: 1.3; }
 .home-cta-arrow { color: var(--vx-accent); flex-shrink: 0; }
 
 .home-pipeline {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex-shrink: 0;
 }
 .home-pipeline-card {
-  display: grid; gap: 1px; padding: 10px 4px; border-radius: 12px; text-align: center;
+  display: grid; gap: 1px; padding: 8px 4px; border-radius: 10px; text-align: center;
   border: 1px solid var(--vx-border-soft); background: var(--vx-panel);
 }
-.home-pipeline-card strong { font-size: 18px; color: var(--vx-accent); font-weight: 900; }
-.home-pipeline-card span { font-size: 9px; color: var(--vx-muted); text-transform: uppercase; letter-spacing: .06em; }
+.home-pipeline-card strong { font-size: 16px; color: var(--vx-accent); font-weight: 900; }
+.home-pipeline-card span { font-size: 8px; color: var(--vx-muted); text-transform: uppercase; letter-spacing: .06em; }
 
-.home-section { display: grid; gap: 8px; }
+.home-section { display: grid; gap: 8px; flex-shrink: 0; }
+.home-section-bids { flex: 1 1 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.home-section-bids .home-bid-list { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.home-section-bids .home-bid-list::-webkit-scrollbar { display: none; }
 .home-section-head {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
@@ -457,22 +465,22 @@
 }
 .home-bid-share:hover { border-color: var(--vx-accent); background: var(--vx-accent-soft); }
 
-.home-ref-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.home-ref-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex-shrink: 0; }
 .home-ref-card {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 10px 4px; border-radius: 12px; cursor: pointer; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 4px; border-radius: 10px; cursor: pointer; text-align: center;
   border: 1px solid var(--vx-border-soft); background: var(--vx-panel);
   transition: border-color .12s, background .12s;
 }
 .home-ref-card:hover { border-color: var(--vx-accent); background: var(--vx-accent-soft); }
 .home-ref-icon {
-  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
   color: var(--vx-accent); border: 1px solid #4c7600; background: rgba(156,255,0,.06);
 }
-.home-ref-card strong { font-size: 11px; font-weight: 700; }
-.home-ref-card small { font-size: 9px; color: var(--vx-muted); line-height: 1.2; }
+.home-ref-card strong { font-size: 10px; font-weight: 700; }
+.home-ref-card small { font-size: 8px; color: var(--vx-muted); line-height: 1.2; }
 
-.home-disclosure { font-size: 9px; color: var(--vx-faint); margin: 0; line-height: 1.4; padding: 0 4px; }
+.home-disclosure { font-size: 8px; color: var(--vx-faint); margin: 0; line-height: 1.3; padding: 0 4px; flex-shrink: 0; }
 
 /* ===== Visualizer blemish toggle ===== */
 .viz-blemish-toggle {
@@ -508,11 +516,11 @@
   .viz-before-after { grid-template-columns: 1fr; }
   .viz-step { padding: 12px; }
   .viz-upload-hero, .viz-upload-hero img, .viz-ba-panel, .viz-ba-panel img { min-height: 180px; }
-  .home-pipeline { grid-template-columns: repeat(2, 1fr); }
-  .home-ref-grid { grid-template-columns: repeat(2, 1fr); }
-  .home-cta-icon { width: 52px; height: 52px; }
-  .home-cta-text strong { font-size: 17px; }
-  .home-cta-text small { font-size: 11px; }
+  .home-pipeline { grid-template-columns: repeat(4, 1fr); }
+  .home-ref-grid { grid-template-columns: repeat(4, 1fr); }
+  .home-cta-icon { width: 38px; height: 38px; }
+  .home-cta-text strong { font-size: 14px; }
+  .home-cta-text small { font-size: 10px; }
   .viz-blemish-grid { grid-template-columns: 1fr; }
   .vx-chart-strip { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); }
 }
