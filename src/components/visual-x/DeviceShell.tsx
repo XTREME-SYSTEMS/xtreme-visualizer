@@ -166,7 +166,7 @@ export function DeviceShell() {
           {isDesktop ? (
             <>
               <aside className="vx-sidebar">
-                <div className="vx-sidebar-logo">VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
+                <div className="vx-sidebar-logo" style={{ fontWeight: 900, fontStyle: 'italic', letterSpacing: '-.02em' }}><span style={{ color: 'var(--vx-accent)' }}>X</span>TREME</div>
                 <nav className="vx-sidebar-nav">
                   {navItems.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
                   <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
@@ -196,7 +196,7 @@ export function DeviceShell() {
               <div className="vx-brandbar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
-                  <div className="vx-brand-logo" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, fontSize: 22, letterSpacing: '-.04em', color: 'var(--vx-text)' }}>VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
+                  <div className="vx-brand-logo" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, fontStyle: 'italic', fontSize: 22, letterSpacing: '-.02em', color: 'var(--vx-text)' }}><span style={{ color: 'var(--vx-accent)' }}>X</span>TREME</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <RemindersBell />
@@ -228,7 +228,7 @@ export function DeviceShell() {
             <div className="vx-card-soft" style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
               <div className="vx-avatar" style={{ flexShrink: 0 }}>{initials}</div>
               <div style={{ minWidth: 0 }}>
-                <strong style={{ display: 'block', fontSize: 15 }}>{user?.full_name || 'Visual-X User'}</strong>
+                <strong style={{ display: 'block', fontSize: 15 }}>{user?.full_name || 'Xtreme User'}</strong>
                 <span style={{ fontSize: 12, color: 'var(--vx-muted)', wordBreak: 'break-all' }}>{user?.email || ''}</span>
               </div>
             </div>

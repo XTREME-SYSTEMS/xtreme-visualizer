@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 const STORAGE_KEY = "vx-accent-color";
 
 const PRESETS = [
-  { name: "Lime", value: "#9cff00" },
+  { name: "Gold", value: "#FFD700" },
   { name: "Cyan", value: "#22d3ee" },
   { name: "Blue", value: "#3b82f6" },
   { name: "Violet", value: "#a855f7" },
@@ -16,7 +16,7 @@ const PRESETS = [
 
 function hexToRgb(hex) {
   const m = hex.replace("#", "").match(/.{2}/g);
-  if (!m) return "156, 255, 0";
+  if (!m) return "255, 215, 0";
   return `${parseInt(m[0], 16)}, ${parseInt(m[1], 16)}, ${parseInt(m[2], 16)}`;
 }
 
@@ -97,7 +97,7 @@ export function initAccentFromStorage() {
 }
 
 export default function AccentColorPicker() {
-  const [color, setColor] = useState(() => localStorage.getItem(STORAGE_KEY) || "#9cff00");
+  const [color, setColor] = useState(() => localStorage.getItem(STORAGE_KEY) || "#FFD700");
 
   useEffect(() => { initAccentFromStorage(); }, []);
 
@@ -135,7 +135,7 @@ export default function AccentColorPicker() {
         />
         <span className="text-[12px] font-mono text-slate-400 uppercase">{color}</span>
         <button
-          onClick={() => choose("#9cff00")}
+          onClick={() => choose("#FFD700")}
           className="ml-auto text-[12px] text-slate-500 hover:text-slate-700 underline"
         >
           Reset to default

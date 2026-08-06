@@ -55,10 +55,10 @@ export default function PWAInstallButton() {
         gap: 10,
         padding: "10px 12px 10px 16px",
         borderRadius: 14,
-        background: "linear-gradient(135deg, #9cff00, #c4ff3f)",
-        color: "#061000",
-        boxShadow: "0 0 28px rgba(156,255,0,.4), 0 8px 24px rgba(0,0,0,.5)",
-        border: "1px solid #b7ff27",
+        background: "linear-gradient(135deg, #FFD700, #FFED00)",
+        color: "#1A1A1A",
+        boxShadow: "0 0 28px rgba(255,215,0,.4), 0 8px 24px rgba(0,0,0,.5)",
+        border: "1px solid #E6BE00",
         maxWidth: "calc(100vw - 32px)",
       }}
     >
@@ -70,7 +70,7 @@ export default function PWAInstallButton() {
           gap: 8,
           background: "transparent",
           border: 0,
-          color: "#061000",
+          color: "#1A1A1A",
           fontWeight: 800,
           fontSize: 14,
           cursor: "pointer",
@@ -78,7 +78,7 @@ export default function PWAInstallButton() {
         }}
       >
         <Download size={18} strokeWidth={2.5} />
-        <span>Install Visual-X</span>
+        <span>Install Xtreme</span>
       </button>
       <button
         onClick={handleDismiss}
@@ -88,8 +88,8 @@ export default function PWAInstallButton() {
           height: 26,
           borderRadius: 7,
           border: 0,
-          background: "rgba(6,16,0,.15)",
-          color: "#061000",
+          background: "rgba(26,26,26,.15)",
+          color: "#1A1A1A",
           display: "grid",
           placeItems: "center",
           cursor: "pointer",

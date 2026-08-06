@@ -64,8 +64,13 @@ const AuthenticatedApp = () => {
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#1A1A1A", gap: 24 }}>
+        <img
+          src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/e29617215_ChatGPTImageAug6202604_27_16PM.png"
+          alt="Xtreme Floor Visualizer"
+          style={{ height: 64, width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(255,215,0,.4))" }}
+        />
+        <div className="w-8 h-8 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(255,215,0,.2)", borderTopColor: "#FFD700" }}></div>
       </div>
     );
   }
