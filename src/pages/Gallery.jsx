@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Camera, X, ChevronDown } from "lucide-react";
+import { Camera, X } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 const CATEGORIES = [
@@ -123,10 +123,6 @@ const CATEGORIES = [
 ];
 
 function CategorySection({ category, onImageClick }) {
-  const [expanded, setExpanded] = useState(false);
-  const visibleCount = expanded ? category.images.length : 3;
-  const visible = category.images.slice(0, visibleCount);
-
   return (
     <div className="hx-sys-card" style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -141,7 +137,7 @@ function CategorySection({ category, onImageClick }) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
-        {visible.map((img, i) => (
+        {category.images.map((img, i) => (
           <button
             key={i}
             onClick={() => onImageClick(category, i)}
@@ -151,16 +147,6 @@ function CategorySection({ category, onImageClick }) {
           </button>
         ))}
       </div>
-
-      {category.images.length > 3 && (
-        <button
-          onClick={() => setExpanded((e) => !e)}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "8px 12px", borderRadius: 8, border: "1px solid var(--vx-border-soft)", background: "var(--vx-panel-2)", color: "var(--vx-accent)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
-        >
-          {expanded ? "Show Less" : `Show All ${category.images.length}`}
-          <ChevronDown size={14} style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
-        </button>
-      )}
     </div>
   );
 }
