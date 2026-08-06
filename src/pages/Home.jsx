@@ -31,11 +31,25 @@ export default function Home() {
 
   useEffect(() => {
     const scroller = document.querySelector(".vx-page-scroll");
+    const body = document.body;
+    const html = document.documentElement;
+    const prevScroller = scroller?.style.overflow;
+    const prevBody = body.style.overflow;
+    const prevHtml = html.style.overflow;
     if (scroller) {
-      const prev = scroller.style.overflow;
       scroller.style.overflow = "hidden";
-      return () => { scroller.style.overflow = prev; };
+      scroller.classList.add("vx-no-scroll");
     }
+    body.style.overflow = "hidden";
+    html.style.overflow = "hidden";
+    return () => {
+      if (scroller) {
+        scroller.style.overflow = prevScroller || "";
+        scroller.classList.remove("vx-no-scroll");
+      }
+      body.style.overflow = prevBody || "";
+      html.style.overflow = prevHtml || "";
+    };
   }, []);
 
   const q = query.trim().toLowerCase();
