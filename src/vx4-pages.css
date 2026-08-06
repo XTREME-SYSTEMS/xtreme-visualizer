@@ -366,8 +366,7 @@
 
 /* ===== Home portal grid ===== */
 .hx-portal { display: grid; grid-template-rows: auto 1fr; gap: 8px; flex: 1 1 0; min-height: 0; overflow: hidden; }
-.hx-portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; align-content: start; overflow-y: auto; }
-.hx-portal-grid::-webkit-scrollbar { display: none; }
+.hx-portal-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 9px; min-height: 0; }
 .hx-portal-card {
   display: grid; grid-template-columns: 44px 1fr 16px; gap: 11px; align-items: center;
   padding: 13px 14px; border-radius: 14px; border: 1px solid var(--vx-border-soft);
