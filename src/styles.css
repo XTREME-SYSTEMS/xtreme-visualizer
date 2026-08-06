@@ -55,16 +55,14 @@ img{display:block;max-width:100%}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 
 /* Hardware stage. The device chrome is decorative. The application inside is component based. */
-.vx-stage{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,#141414 0,#030303 45%,#000 78%);padding:4px 0}
-.vx-device{position:relative;width:806px;height:1664px;border-radius:110px;border:7px solid #656565;background:#030303;box-shadow:0 0 0 3px #181818,0 0 0 7px #878787,0 28px 90px rgba(0,0,0,.88);overflow:hidden}
-.vx-device::before{content:"";position:absolute;inset:9px;border-radius:100px;border:2px solid #171717;pointer-events:none;z-index:60}
-.vx-device::after{content:"";position:absolute;right:-11px;top:330px;width:8px;height:210px;border-radius:0 6px 6px 0;background:linear-gradient(#9d9d9d,#3e3e3e,#a9a9a9);box-shadow:0 0 0 2px #111;z-index:70}
-.vx-side-buttons{position:absolute;left:-11px;top:240px;width:8px;height:330px;z-index:70}
-.vx-side-buttons::before,.vx-side-buttons::after{content:"";position:absolute;width:8px;border-radius:6px 0 0 6px;background:linear-gradient(#9d9d9d,#3e3e3e,#a9a9a9);box-shadow:0 0 0 2px #111}
-.vx-side-buttons::before{height:85px;top:0}.vx-side-buttons::after{height:170px;top:118px}
-.vx-screen{position:absolute;inset:25px;border-radius:84px;overflow:hidden;background:var(--vx-bg);color:var(--vx-text);display:grid;grid-template-rows:50px 124px minmax(0,1fr) 128px;transition:background .18s ease,color .18s ease}
-.vx-statusbar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:8px 54px 0;font-size:23px;font-weight:700;letter-spacing:.01em;background:var(--vx-bg);z-index:20}
-.vx-island{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:188px;height:44px;background:#000;border-radius:25px;box-shadow:inset 0 0 0 1px #050505}
+.vx-stage{min-height:100vh;display:grid;place-items:center;background:var(--vx-bg);padding:0}
+.vx-device{position:relative;width:100%;max-width:430px;height:100vh;border:0;border-radius:0;background:var(--vx-bg);box-shadow:none;overflow:hidden}
+.vx-device::before{display:none}
+.vx-device::after{display:none}
+.vx-side-buttons{display:none}
+.vx-screen{position:absolute;inset:0;border-radius:0;overflow:hidden;background:var(--vx-bg);color:var(--vx-text);display:grid;grid-template-rows:96px minmax(0,1fr) 76px;transition:background .18s ease,color .18s ease}
+.vx-statusbar{display:none}
+.vx-island{display:none}
 .vx-status-icons{display:flex;align-items:center;gap:10px;font-size:17px}.vx-battery{width:36px;height:17px;border:2px solid currentColor;border-radius:5px;position:relative}.vx-battery::before{content:"";position:absolute;inset:2px;background:currentColor;border-radius:2px}.vx-battery::after{content:"";position:absolute;right:-6px;top:4px;width:3px;height:7px;border-radius:0 2px 2px 0;background:currentColor}
 .vx-brandbar{display:flex;align-items:center;justify-content:space-between;padding:10px 42px 17px;background:var(--vx-bg);z-index:18}
 .vx-brand-logo{width:390px;height:80px;object-fit:contain;object-position:left center;filter:none}
