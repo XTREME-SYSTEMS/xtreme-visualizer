@@ -762,6 +762,29 @@
 .hx-scraper-noemail { font-size: 10px; color: #707070; font-style: italic; }
 .hx-scraper-actionbar { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
 
+/* ===== Schedule / Calendar ===== */
+.hx-cal { display: grid; gap: 10px; padding: 14px; border-radius: 14px; border: 1px solid var(--vx-border-soft); background: #1A1A1A; flex-shrink: 0; }
+.hx-cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.hx-cal-nav { width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--vx-border-soft); background: var(--vx-panel); color: var(--vx-text); display: grid; place-items: center; cursor: pointer; transition: border-color .12s, color .12s; }
+.hx-cal-nav:hover { border-color: var(--vx-accent); color: var(--vx-accent); }
+.hx-cal-title { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -.01em; }
+.hx-cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.hx-cal-dow span { text-align: center; font-size: 10px; font-weight: 800; color: #707070; text-transform: uppercase; letter-spacing: .04em; padding: 4px 0; }
+.hx-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.hx-cal-day { position: relative; aspect-ratio: 1; border-radius: 9px; border: 1px solid transparent; background: var(--vx-panel); color: #A0A0A0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; transition: border-color .12s, background .12s, color .12s; padding: 0; min-width: 0; }
+.hx-cal-day:hover { border-color: var(--vx-border); color: #fff; }
+.hx-cal-day.muted { opacity: .32; }
+.hx-cal-day.today { border-color: var(--vx-accent); }
+.hx-cal-day.selected { background: var(--vx-accent-soft); border-color: var(--vx-accent); color: var(--vx-accent); }
+.hx-cal-day.has { background: rgba(204,255,0,.04); }
+.hx-cal-day.selected.has { background: var(--vx-accent-soft); }
+.hx-cal-num { font-size: 13px; font-weight: 700; line-height: 1; }
+.hx-cal-dots { display: flex; gap: 2px; height: 5px; align-items: center; }
+.hx-cal-dot { width: 5px; height: 5px; border-radius: 50%; background: #707070; }
+.hx-cal-dot.confirmed { background: var(--vx-accent); }
+.hx-cal-dot.done { background: #4bb6ff; }
+.hx-cal-dot.open { background: #ffd200; }
+
 /* ===== Responsive ===== */
 @media (max-width: 9999px) {
   .tools-grid { grid-template-columns: repeat(3, 1fr); }
