@@ -132,6 +132,10 @@ export default function BidGenerator() {
       </div>
 
       <div className="hx-bid-input-card">
+        <div className="hx-bid-input-label">
+          <Sparkles size={15} />
+          <span>Describe the job in one sentence</span>
+        </div>
         <textarea
           className="hx-bid-textarea"
           rows={3}
@@ -140,6 +144,7 @@ export default function BidGenerator() {
           onChange={(e) => setSentence(e.target.value)}
         />
         <div className="hx-bid-examples">
+          <span className="hx-bid-examples-label">Try:</span>
           {EXAMPLES.map((ex, i) => (
             <button key={i} className="hx-bid-example-chip" onClick={() => setSentence(ex)}>
               {ex.length > 46 ? ex.slice(0, 46) + "…" : ex}
@@ -203,6 +208,8 @@ export default function BidGenerator() {
           </div>
 
           <div className="hx-bid-doc">
+            <div className="hx-bid-doc-strip" />
+            <div className="hx-bid-doc-body">
             <div className="hx-bid-doc-head">
               <div className="hx-bid-meta">
                 <span className="hx-bid-title">Proposal</span>
@@ -212,7 +219,7 @@ export default function BidGenerator() {
                   <strong className="hx-bid-company">Xtreme Polishing Systems</strong>
                 )}
               </div>
-              <span style={{ fontSize: 11, color: "#A0A0A0" }}>
+              <span className="hx-bid-date">
                 {new Date(bid.created_date).toLocaleDateString()}
               </span>
             </div>
@@ -224,19 +231,21 @@ export default function BidGenerator() {
 
             <div className="hx-bid-section">
               <h3>Project</h3>
-              <p style={{ margin: 0, fontSize: 12, color: "#fff" }}>
-                {bid.floor_type} — {bid.square_feet.toLocaleString()} sq ft ({bid.condition} condition)
-              </p>
-              {(bid.color_name || bid.finish) && (
-                <p style={{ margin: "2px 0 0", fontSize: 11, color: "#A0A0A0" }}>
-                  {[bid.color_name, bid.finish].filter(Boolean).join(" • ")}
+              <div className="hx-bid-project">
+                <p style={{ margin: 0, fontSize: 13, color: "#fff", fontWeight: 700 }}>
+                  {bid.floor_type} — {bid.square_feet.toLocaleString()} sq ft ({bid.condition} condition)
                 </p>
-              )}
-              {bid.logo_description && (
-                <p style={{ margin: "2px 0 0", fontSize: 11, color: "#A0A0A0" }}>
-                  Floor logo: {bid.logo_description}
-                </p>
-              )}
+                {(bid.color_name || bid.finish) && (
+                  <p style={{ margin: 0, fontSize: 11, color: "#A0A0A0" }}>
+                    {[bid.color_name, bid.finish].filter(Boolean).join(" • ")}
+                  </p>
+                )}
+                {bid.logo_description && (
+                  <p style={{ margin: 0, fontSize: 11, color: "#A0A0A0" }}>
+                    Floor logo: {bid.logo_description}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="hx-bid-section">
@@ -244,8 +253,11 @@ export default function BidGenerator() {
               <div className="hx-bid-scope">
                 {bid.scope_items.map((s, i) => (
                   <div key={i} className="hx-bid-scope-item">
-                    <strong>{s.label}</strong>
-                    <span>{s.detail}</span>
+                    <div className="hx-bid-scope-num">{i + 1}</div>
+                    <div className="hx-bid-scope-text">
+                      <strong>{s.label}</strong>
+                      <span>{s.detail}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -300,6 +312,7 @@ export default function BidGenerator() {
               <p>{TERMS_TEXT}</p>
               <h4>Warranty</h4>
               <p>{WARRANTY_TEXT}</p>
+            </div>
             </div>
           </div>
 
