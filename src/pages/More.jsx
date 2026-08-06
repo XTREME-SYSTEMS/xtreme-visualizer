@@ -4,7 +4,7 @@ import {
   Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
   Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
   Camera, Sparkles, ChevronRight, LayoutDashboard, BarChart3, CreditCard,
-  ClipboardList, Image,
+  ClipboardList, Image, Film,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
@@ -21,6 +21,7 @@ const ALL_SURFACES = [
   { to: "/email-templates", label: "Email Templates", icon: Mail },
   { to: "/lead-generator", label: "Lead Generator", icon: Target },
   { to: "/bid-generator", label: "Bid Generator", icon: Sparkles },
+  { to: "/video-studio", label: "Video Studio", icon: Film },
   { to: "/competitive-pricing", label: "Market Pricing", icon: TrendingUp },
   { to: "/industry", label: "Industry Reference", icon: BookOpen },
   { to: "/appointments", label: "Schedule", icon: CalendarClock },
@@ -45,6 +46,7 @@ const SALES_SURFACES = [
   { to: "/crm", label: "Digital Card Studio", icon: CreditCard },
   { to: "/lead-generator", label: "Lead Generator", icon: Target },
   { to: "/bid-generator", label: "Bid Generator", icon: Sparkles },
+  { to: "/video-studio", label: "Video Studio", icon: Film },
   { to: "/appointments", label: "Schedule", icon: CalendarClock },
   { to: "/gallery", label: "Gallery", icon: Image },
   { to: "/settings", label: "Settings", icon: Settings },

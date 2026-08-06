@@ -52,6 +52,7 @@ import Enhancements from '@/pages/Enhancements';
 import FieldDashboard from '@/pages/FieldDashboard';
 import GalleryPage from '@/pages/Gallery';
 import CustomerPortal from '@/pages/CustomerPortal';
+import VideoStudio from '@/pages/VideoStudio';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 const PUBLIC_PATHS = ['/ThankYou', '/portal'];
@@ -131,6 +132,7 @@ const AuthenticatedApp = () => {
           <Route path="/enhancements" element={<Enhancements />} />
           <Route path="/field" element={<FieldDashboard />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/video-studio" element={<VideoStudio />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
         <Route path="/portal/:leadId" element={<CustomerPortal />} />
