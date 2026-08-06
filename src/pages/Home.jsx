@@ -5,11 +5,11 @@ import {
   ChevronRight,
   ScanLine,
   LayoutDashboard,
-  Calculator,
+  Phone,
   Share2,
   Image,
   Layers,
-  FileText,
+  ClipboardList,
   Globe,
   Calendar,
   CreditCard,
@@ -53,9 +53,9 @@ export default function Home() {
           <LayoutDashboard size={22} />
           <span>Dashboard</span>
         </button>
-        <button className="hx-quick-card" onClick={() => navigate("/pricing")}>
-          <Calculator size={22} />
-          <span>Quote Range</span>
+        <button className="hx-quick-card" onClick={() => navigate("/voice")}>
+          <Phone size={22} />
+          <span>Voice AI</span>
         </button>
         <button className="hx-quick-card" onClick={() => navigate("/close")}>
           <Share2 size={22} />
@@ -83,10 +83,10 @@ export default function Home() {
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
-          <button className="hx-portal-card" onClick={() => navigate("/bid-generator")}>
-            <div className="hx-portal-icon"><FileText size={20} /></div>
+          <button className="hx-portal-card" onClick={() => navigate("/operations")}>
+            <div className="hx-portal-icon"><ClipboardList size={20} /></div>
             <div className="hx-portal-text">
-              <strong>Bid Generator</strong>
+              <strong>Operations</strong>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>

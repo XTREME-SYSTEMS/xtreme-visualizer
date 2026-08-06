@@ -42,6 +42,8 @@ import SettingsPage from '@/pages/Settings';
 import Generator from '@/pages/Generator';
 import Dashboard from '@/pages/Dashboard';
 import Tracking from '@/pages/Tracking';
+import VoiceAssistant from '@/pages/VoiceAssistant';
+import Operations from '@/pages/Operations';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 
@@ -107,6 +109,8 @@ const AuthenticatedApp = () => {
         <Route path="/generator" element={<Generator />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tracking" element={<Tracking />} />
+        <Route path="/voice" element={<VoiceAssistant />} />
+        <Route path="/operations" element={<Operations />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

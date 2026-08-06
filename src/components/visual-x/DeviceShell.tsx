@@ -6,6 +6,7 @@ import { useApp } from '@/components/AppProvider';
 import { useUI } from '@/lib/uiContext';
 import NewProjectSheet from '@/components/vq/NewProjectSheet';
 import PWAInstallButton from '@/components/PWAInstallButton';
+import RemindersBell from '@/components/RemindersBell';
 import { base44 } from '@/api/base44Client';
 
 const NAV = [
@@ -15,6 +16,8 @@ const NAV = [
   { to: '/inbox', label: 'Inbox', icon: MessageSquare },
 ];
 const MORE = [
+  { to: '/voice', label: 'Voice Assistant' },
+  { to: '/operations', label: 'Operations Hub' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/tracking', label: 'Analytics & Tracking' },
   { to: '/projects', label: 'Projects' },
@@ -141,6 +144,7 @@ export function DeviceShell() {
                     <input className="vx-search-input" placeholder="Search projects, locations, systems…" value={query} onChange={e => setQuery(e.target.value)} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <RemindersBell />
                     <button onClick={toggleTheme} className="vx-icon-btn" aria-label="Toggle theme">{theme === 'dark' ? <Sun className="vx-icon" /> : <Moon className="vx-icon" />}</button>
                     <button onClick={() => setSettings(true)} className="vx-avatar" aria-label="Account">{initials}</button>
                   </div>
@@ -159,6 +163,7 @@ export function DeviceShell() {
                   <div className="vx-brand-logo" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, fontSize: 22, letterSpacing: '-.04em', color: 'var(--vx-text)' }}>VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <RemindersBell />
                   <button onClick={toggleSearch} className="vx-icon-btn" aria-label="Search"><Search className="vx-icon" /></button>
                   <button onClick={toggleTheme} className="vx-icon-btn" aria-label="Toggle theme">{theme === 'dark' ? <Sun className="vx-icon" /> : <Moon className="vx-icon" />}</button>
                   <button onClick={() => setSettings(true)} className="vx-avatar" aria-label="Account">{initials}</button>
