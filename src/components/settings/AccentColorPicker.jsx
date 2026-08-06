@@ -20,12 +20,31 @@ function hexToRgb(hex) {
   return `${parseInt(m[0], 16)}, ${parseInt(m[1], 16)}, ${parseInt(m[2], 16)}`;
 }
 
-export function applyAccent(hex) {
-  const root = document.documentElement;
-  root.style.setProperty("--vx-accent", hex);
-  root.style.setProperty("--vx-accent-soft", `rgba(${hexToRgb(hex)}, 0.12)`);
-  root.style.setProperty("--vx-glow", `0 0 24px rgba(${hexToRgb(hex)}, 0.28)`);
-  // Sync tailwind primary token (hsl channels) so shadcn buttons match
+function rgbToHex(r, g, b) {
+  const c = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0");
+  return `#${c(r)}${c(g)}${c(b)}`;
+}
+
+// Lighten a hex color toward white by `amt` (0..1)
+function lighten(hex, amt) {
+  const m = hex.replace("#", "").match(/.{2}/g);
+  if (!m) return hex;
+  const r = parseInt(m[0], 16), g = parseInt(m[1], 16), b = parseInt(m[2], 16);
+  return rgbToHex(r + (255 - r) * amt, g + (255 - g) * amt, b + (255 - b) * amt);
+}
+
+// Relative luminance for foreground contrast (black vs white text)
+function luminance(hex) {
+  const m = hex.replace("#", "").match(/.{2}/g);
+  if (!m) return 1;
+  const [r, g, b] = [parseInt(m[0], 16), parseInt(m[1], 16), parseInt(m[2], 16)].map((v) => {
+    const x = v / 255;
+    return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function hexToHsl(hex) {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;
@@ -42,9 +61,34 @@ export function applyAccent(hex) {
     }
     h /= 6;
   }
-  root.style.setProperty("--primary", `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`);
-  root.style.setProperty("--accent", `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`);
-  root.style.setProperty("--ring", `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`);
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
+export function applyAccent(hex) {
+  const root = document.documentElement;
+  const rgb = hexToRgb(hex);
+  const accent2 = lighten(hex, 0.28);
+  const hsl = hexToHsl(hex);
+  const hsl2 = hexToHsl(accent2);
+  // Dark text on light accents, light text on dark accents
+  const fg = luminance(hex) > 0.5 ? "0 0% 4%" : "0 0% 98%";
+
+  root.style.setProperty("--vx-accent", hex);
+  root.style.setProperty("--vx-accent-2", accent2);
+  root.style.setProperty("--vx-accent-soft", `rgba(${rgb}, 0.12)`);
+  root.style.setProperty("--vx-glow", `0 0 24px rgba(${rgb}, 0.28)`);
+  root.style.setProperty("--primary", hsl);
+  root.style.setProperty("--primary-foreground", fg);
+  root.style.setProperty("--accent", hsl);
+  root.style.setProperty("--accent-foreground", fg);
+  root.style.setProperty("--ring", hsl);
+  root.style.setProperty("--sidebar-primary", hsl);
+  root.style.setProperty("--sidebar-primary-foreground", fg);
+  root.style.setProperty("--sidebar-accent", hsl);
+  root.style.setProperty("--sidebar-accent-foreground", fg);
+  root.style.setProperty("--sidebar-ring", hsl);
+  // Keep the secondary accent token in sync too
+  root.style.setProperty("--secondary", hsl2);
 }
 
 export function initAccentFromStorage() {
