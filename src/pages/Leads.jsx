@@ -4,6 +4,7 @@ import { Plus, Search, Users, Loader2, X, RefreshCw, Cloud, AlertTriangle } from
 import { base44 } from "@/api/base44Client";
 import { useUI } from "@/lib/uiContext";
 import { useToast } from "@/components/ui/use-toast";
+import FollowupManager from "@/components/crm/FollowupManager";
 
 const STATUS_FILTERS = [
   { key: "all", label: "All" },
@@ -216,6 +217,15 @@ export default function Leads() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {leads && leads.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <div className="hx-section-head" style={{ marginBottom: 8 }}>
+            <h2 style={{ fontSize: 15 }}>CRM & Follow-ups</h2>
+          </div>
+          <FollowupManager leads={leads} />
         </div>
       )}
 

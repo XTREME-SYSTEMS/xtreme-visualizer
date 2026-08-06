@@ -1,0 +1,116 @@
+{
+  "name": "MarketingAsset",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "digital_card",
+        "brochure"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object",
+      "description": "Full design + content config (colors, fonts, layout, content fields, social)"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "qr_data": {
+      "type": "string"
+    },
+    "qr_url": {
+      "type": "string"
+    },
+    "primary_color": {
+      "type": "string",
+      "default": "#0A0A0A"
+    },
+    "accent_color": {
+      "type": "string",
+      "default": "#9cff00"
+    },
+    "share_link": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "type",
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

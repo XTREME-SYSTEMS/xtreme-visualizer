@@ -40,6 +40,8 @@ import Receipts from '@/pages/Receipts';
 import Guardrails from '@/pages/Guardrails';
 import SettingsPage from '@/pages/Settings';
 import Generator from '@/pages/Generator';
+import Dashboard from '@/pages/Dashboard';
+import Tracking from '@/pages/Tracking';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 
@@ -103,6 +105,8 @@ const AuthenticatedApp = () => {
         <Route path="/guardrails" element={<Guardrails />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/generator" element={<Generator />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tracking" element={<Tracking />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

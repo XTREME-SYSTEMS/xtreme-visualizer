@@ -4,7 +4,7 @@ import {
   Plus,
   ChevronRight,
   ScanLine,
-  GitCompare,
+  LayoutDashboard,
   Calculator,
   Share2,
   Image,
@@ -49,9 +49,9 @@ export default function Home() {
           <ScanLine size={22} />
           <span>Visualizer</span>
         </button>
-        <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
-          <GitCompare size={22} />
-          <span>Compare Finishes</span>
+        <button className="hx-quick-card" onClick={() => navigate("/dashboard")}>
+          <LayoutDashboard size={22} />
+          <span>Dashboard</span>
         </button>
         <button className="hx-quick-card" onClick={() => navigate("/pricing")}>
           <Calculator size={22} />

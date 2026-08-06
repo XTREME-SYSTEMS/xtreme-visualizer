@@ -15,11 +15,13 @@ const NAV = [
   { to: '/inbox', label: 'Inbox', icon: MessageSquare },
 ];
 const MORE = [
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/tracking', label: 'Analytics & Tracking' },
   { to: '/projects', label: 'Projects' },
   { to: '/systems', label: 'Floor Systems' },
   { to: '/pricing', label: 'Pricing Rules' },
   { to: '/close', label: 'Proposal Studio' },
-  { to: '/crm', label: 'CRM' },
+  { to: '/crm', label: 'Digital Card Studio' },
   { to: '/products', label: 'Products' },
   { to: '/colors', label: 'Color Charts' },
   { to: '/email-templates', label: 'Email Templates' },
