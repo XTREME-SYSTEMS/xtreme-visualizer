@@ -1,8 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { secrets } from 'base44:runtime';
 
-const SKIP = ['google.com', 'youtube.com', 'facebook.com', 'instagram.com', 'linkedin.com', 'yelp.com', 'twitter.com', 'x.com', 'pinterest.com', 'bing.com', 'duckduckgo.com'];
-
 function makeCDP(ws: any) {
   let id = 0;
   const pending = new Map<number, any>();
@@ -42,20 +40,6 @@ function makeCDP(ws: any) {
   };
 }
 
-const LINKS_EXPR = `(() => {
-  const skip = ${JSON.stringify(SKIP)};
-  const seen = new Set(); const out = [];
-  document.querySelectorAll('a[href]').forEach(a => {
-    let h = a.href; const m = h.match(/[?&](?:url|q)=([^&]+)/);
-    if (m) h = decodeURIComponent(m[1]);
-    try { const u = new URL(h); const host = u.hostname.replace(/^www\\./, '');
-      if (skip.some(s => host.includes(s))) return;
-      if (h.startsWith('http') && !seen.has(h)) { seen.add(h); out.push(h); }
-    } catch {}
-  });
-  return out.slice(0, 20);
-})()`;
-
 const EXTRACT_EXPR = `(() => {
   const text = document.body ? document.body.innerText : '';
   const title = document.title || '';
@@ -71,8 +55,8 @@ const EXTRACT_EXPR = `(() => {
 async function evalAt(cdp: any, sessionId: string, url: string, expr: string) {
   try {
     await cdp.send('Page.navigate', { url }, sessionId);
-    await cdp.waitForEvent('Page.loadEventFired', sessionId, 12000).catch(() => {});
-    await new Promise((r) => setTimeout(r, 800));
+    await cdp.waitForEvent('Page.loadEventFired', sessionId, 7000).catch(() => {});
+    await new Promise((r) => setTimeout(r, 400));
     const { result } = await cdp.send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true }, sessionId);
     return result?.value || null;
   } catch {
@@ -89,61 +73,105 @@ export default async function (req: Request): Promise<Response> {
     const { category, city, state, depth } = body;
     if (!category) return Response.json({ error: 'category is required' }, { status: 400 });
 
-    const apiKey = secrets.get('BROWSERBASE_API_KEY');
-    const projectId = secrets.get('BROWSERBASE_PROJECT_ID');
-    if (!apiKey || !projectId) return Response.json({ error: 'Browserbase API key or Project ID not set' }, { status: 500 });
-
     const caps: Record<string, number> = { quick: 6, mid: 10, deep: 8 };
     const cap = caps[depth] || 6;
+    const locationStr = [city, state].filter(Boolean).join(', ');
 
-    const sessionRes = await fetch('https://www.browserbase.com/v1/sessions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-bb-api-key': apiKey },
-      body: JSON.stringify({ projectId }),
-    });
-    if (!sessionRes.ok) {
-      const err = await sessionRes.text();
-      return Response.json({ error: 'Browserbase session creation failed', detail: err }, { status: 502 });
+    // 1. Find local businesses via LLM web search (reliable — no search-engine bot wall)
+    const prompt = `Find up to ${cap} real local businesses matching "${category}"${locationStr ? ` located in ${locationStr}` : ''}. For each business return: business_name, website (full https URL, or empty string if none), phone (E.164 or local format, or empty string), email (publicly listed contact email, or empty string), address (street address, or empty string). Only include actual local businesses — not directories like Yelp/Angi/Houzz, and not national chains unless they have a local branch. Return JSON.`;
+    let businesses: any[] = [];
+    try {
+      const llmRes: any = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        model: 'gemini_3_flash',
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            businesses: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  business_name: { type: 'string' },
+                  website: { type: 'string' },
+                  phone: { type: 'string' },
+                  email: { type: 'string' },
+                  address: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+      });
+      businesses = (llmRes && Array.isArray(llmRes.businesses)) ? llmRes.businesses : [];
+    } catch (e) {
+      return Response.json({ error: 'Business search failed', detail: (e as Error).message }, { status: 502 });
     }
-    const session = await sessionRes.json();
-    const sessionId = session.id;
-    const connectUrl = session.connectUrl || `wss://connect.browserbase.com?session=${sessionId}`;
 
-    const ws: any = new WebSocket(connectUrl);
-    await new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error('WebSocket connect timeout')), 20000);
-      ws.onopen = () => { clearTimeout(t); resolve(null); };
-      ws.onerror = () => { clearTimeout(t); reject(new Error('WebSocket connection failed')); };
-    });
+    const results: any[] = businesses.slice(0, cap).map((b: any) => ({
+      business_name: (b.business_name || '').toString().trim(),
+      address: (b.address || '').toString().trim(),
+      phone: (b.phone || '').toString().trim(),
+      website: (b.website || '').toString().trim(),
+      email: (b.email || '').toString().trim(),
+      source_url: (b.website || '').toString().trim(),
+    }));
 
-    const cdp = makeCDP(ws);
-    const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
-    const { sessionId: psid } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
-    await cdp.send('Page.enable', {}, psid);
-    await cdp.send('Runtime.enable', {}, psid);
+    // 2. Enrich missing emails (and phones/addresses) by visiting each business's own site
+    const needEmail = results.filter((r) => r.website && !r.email);
+    if (needEmail.length > 0) {
+      const apiKey = secrets.get('BROWSERBASE_API_KEY');
+      const projectId = secrets.get('BROWSERBASE_PROJECT_ID');
+      if (apiKey && projectId) {
+        let cdp: any = null;
+        let ws: any = null;
+        let targetId: string | null = null;
+        try {
+          const sessionRes = await fetch('https://www.browserbase.com/v1/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-bb-api-key': apiKey },
+            body: JSON.stringify({ projectId }),
+          });
+          if (sessionRes.ok) {
+            const session = await sessionRes.json();
+            const sessionId = session.id;
+            const connectUrl = session.connectUrl || `wss://connect.browserbase.com?session=${sessionId}`;
+            ws = new WebSocket(connectUrl);
+            await new Promise((resolve, reject) => {
+              const t = setTimeout(() => reject(new Error('WebSocket connect timeout')), 20000);
+              ws.onopen = () => { clearTimeout(t); resolve(null); };
+              ws.onerror = () => { clearTimeout(t); reject(new Error('WebSocket connection failed')); };
+            });
+            cdp = makeCDP(ws);
+            const tgt = await cdp.send('Target.createTarget', { url: 'about:blank' });
+            targetId = tgt.targetId;
+            const { sessionId: psid } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
+            await cdp.send('Page.enable', {}, psid);
+            await cdp.send('Runtime.enable', {}, psid);
 
-    const q = `${category} ${city || ''} ${state || ''}`.trim();
-    const links: string[] = (await evalAt(cdp, psid, `https://www.google.com/search?q=${encodeURIComponent(q)}&num=20`, LINKS_EXPR)) || [];
-
-    const results: any[] = [];
-    for (const url of links.slice(0, cap)) {
-      const data = await evalAt(cdp, psid, url, EXTRACT_EXPR);
-      if (!data) continue;
-      const businessName = (data.title || '').replace(/\s*[|\-–—].*$/, '').trim() || (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; } })();
-      let email = data.emails[0] || '';
-      if (depth === 'deep' && !email) {
-        for (const path of ['/contact', '/contact-us', '/about']) {
-          let cu = '';
-          try { cu = new URL(path, url).href; } catch { continue; }
-          const cdata = await evalAt(cdp, psid, cu, EXTRACT_EXPR);
-          if (cdata?.emails[0]) { email = cdata.emails[0]; break; }
+            for (const r of needEmail) {
+              const data = await evalAt(cdp, psid, r.website, EXTRACT_EXPR);
+              if (data?.emails?.[0]) r.email = data.emails[0];
+              if (!r.phone && data?.phones?.[0]) r.phone = data.phones[0];
+              if (!r.address && data?.address) r.address = data.address;
+              if ((depth === 'deep') && !r.email) {
+                for (const path of ['/contact', '/contact-us', '/about']) {
+                  let cu = '';
+                  try { cu = new URL(path, r.website).href; } catch { continue; }
+                  const cdata = await evalAt(cdp, psid, cu, EXTRACT_EXPR);
+                  if (cdata?.emails?.[0]) { r.email = cdata.emails[0]; break; }
+                }
+              }
+            }
+          }
+        } catch { /* enrichment is best-effort */ }
+        finally {
+          try { if (targetId && cdp) await cdp.send('Target.closeTarget', { targetId }); } catch {}
+          try { if (ws) ws.close(); } catch {}
         }
       }
-      results.push({ business_name: businessName, address: data.address || '', phone: data.phones[0] || '', website: url, email, source_url: url });
     }
-
-    try { await cdp.send('Target.closeTarget', { targetId }); } catch {}
-    try { ws.close(); } catch {}
 
     return Response.json({ results, count: results.length });
   } catch (error) {
