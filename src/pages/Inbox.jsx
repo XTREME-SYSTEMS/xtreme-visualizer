@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, RefreshCw, Sparkles, Send, Check } from "lucide-react";
+import { Loader2, RefreshCw, Sparkles, Send, Mail } from "lucide-react";
 
 function initials(name = "") {
   const parts = name.split(" ").filter(Boolean);
@@ -34,9 +34,7 @@ export default function Inbox() {
     }
   };
 
-  useEffect(() => {
-    fetchInbox();
-  }, []);
+  useEffect(() => { fetchInbox(); }, []);
 
   const open = async (id) => {
     setActiveId(id);
@@ -72,7 +70,7 @@ export default function Inbox() {
       const res = await base44.functions.invoke("gmail", { action: "send", to, subject, text: reply });
       if (res.data?.ok) toast({ title: "Reply sent." });
       else toast({ title: res.data?.error || "Send failed", variant: "destructive" });
-    } catch (e) {
+    } catch {
       toast({ title: "Send failed — is Gmail connected?", variant: "destructive" });
     } finally {
       setSending(false);
@@ -80,69 +78,62 @@ export default function Inbox() {
   };
 
   return (
-    <>
-      <div className="content-header">
+    <div className="page hx-page">
+      <div className="hx-page-head">
         <div>
           <h1>Inbox</h1>
-          <p>Customer questions, proposal activity, and follow-up conversations.</p>
+          <p>Customer questions, proposal activity, and follow-ups.</p>
         </div>
-        <button className="icon-button" onClick={fetchInbox} disabled={loading} aria-label="Refresh">
-          {loading ? <Loader2 size={22} className="animate-spin" /> : <RefreshCw size={22} />}
+        <button className="hx-icon-btn" onClick={fetchInbox} disabled={loading} aria-label="Refresh">
+          {loading ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
         </button>
       </div>
+
       {!connected ? (
-        <div className="content-card">
-          <div className="guardrail">Connect your Gmail in Settings to read and reply to customer emails here.</div>
-        </div>
+        <div className="hx-notice">Connect your Gmail in Settings to read and reply to customer emails here.</div>
       ) : (
-        <div className="content-card">
-          <div className="message-list">
-            {items?.length === 0 && !loading && <div className="empty">No messages found.</div>}
-            {items?.map((m) => (
-              <button key={m.id} className="message" onClick={() => open(m.id)}>
-                <span className="avatar">{initials(m.from)}</span>
-                <span>
-                  <strong>{m.from}</strong>
-                  <p>{m.snippet || m.subject}</p>
-                </span>
-                <time>{m.date || ""}</time>
-              </button>
-            ))}
+        <div className="hx-list">
+          {loading && !items && <div className="hx-loading"><Loader2 size={24} /></div>}
+          {items && items.length === 0 && !loading && (
+            <div className="hx-empty"><div><span>0</span>No messages found.</div></div>
+          )}
+          {items?.map((m) => (
+            <button key={m.id} className={`hx-mail-row ${activeId === m.id ? "active" : ""}`} onClick={() => open(m.id)}>
+              <span className="hx-mail-avatar">{initials(m.from)}</span>
+              <span className="hx-mail-info">
+                <strong>{m.from}</strong>
+                <p>{m.snippet || m.subject}</p>
+              </span>
+              <time>{m.date || ""}</time>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {activeId && detail && (
+        <div className="hx-mail-detail">
+          <div className="hx-mail-detail-head">
+            <strong>{detail.subject}</strong>
+            <button className="hx-icon-btn" onClick={() => { setActiveId(null); setDetail(null); }}>✕</button>
           </div>
-          {activeId && (
-            <div style={{ marginTop: 20 }}>
-              {reading ? (
-                <div style={{ textAlign: "center", padding: 24 }}>
-                  <Loader2 className="animate-spin" size={22} />
-                </div>
-              ) : detail ? (
-                <div>
-                  <div className="guardrail" style={{ marginBottom: 12 }}>
-                    <strong>{detail.subject}</strong>
-                    <br />
-                    {detail.body}
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <button className="gold-button" onClick={draftReply} disabled={drafting} style={{ minHeight: 44, fontSize: 13 }}>
-                      {drafting ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />} Draft AI reply
-                    </button>
-                    <button className="gold-button" onClick={send} disabled={!reply || sending} style={{ minHeight: 44, fontSize: 13, background: "#111", color: "#fff" }}>
-                      {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />} Send reply
-                    </button>
-                  </div>
-                  {reply && (
-                    <textarea
-                      value={reply}
-                      onChange={(e) => setReply(e.target.value)}
-                      style={{ width: "100%", minHeight: 140, marginTop: 12, borderRadius: 13, border: "1px solid var(--xv-line)", padding: 12, fontSize: 13 }}
-                    />
-                  )}
-                </div>
-              ) : null}
-            </div>
+          <p className="hx-mail-body">{detail.body}</p>
+          <div className="hx-mail-actions">
+            <button className="hx-mini-btn" onClick={draftReply} disabled={drafting}>
+              {drafting ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />} Draft AI reply
+            </button>
+            <button className="hx-mini-btn dark" onClick={send} disabled={!reply || sending}>
+              {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} Send reply
+            </button>
+          </div>
+          {reply && (
+            <textarea
+              className="hx-mail-textarea"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+            />
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

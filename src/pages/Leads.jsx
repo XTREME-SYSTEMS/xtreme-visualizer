@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Search, Users, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useUI } from "@/lib/uiContext";
-import PageHeader from "@/components/vq/PageHeader";
-import EmptyState from "@/components/vq/EmptyState";
-import CustomerRow from "@/components/vq/CustomerRow";
 
 const STATUS_FILTERS = [
   { key: "all", label: "All" },
@@ -17,6 +14,16 @@ const STATUS_FILTERS = [
   { key: "won", label: "Won" },
   { key: "lost", label: "Lost" },
 ];
+
+const STATUS_MAP = {
+  new: { label: "New", cls: "ready" },
+  qualified: { label: "Ready to Quote", cls: "ready" },
+  estimate_sent: { label: "Estimate Sent", cls: "progress" },
+  proposal_sent: { label: "Proposal Sent", cls: "progress" },
+  won: { label: "Won", cls: "ready" },
+  lost: { label: "Lost", cls: "blocked" },
+  follow_up: { label: "Draft", cls: "draft" },
+};
 
 export default function Leads() {
   const navigate = useNavigate();
@@ -36,13 +43,13 @@ export default function Leads() {
   }, []);
 
   const stats = useMemo(() => {
-    if (!leads) return { total: 0, new: 0, active: 0, won: 0, value: 0 };
-    const total = leads.length;
-    const wonCount = leads.filter((l) => l.status === "won").length;
-    const newCount = leads.filter((l) => l.status === "new" || !l.status).length;
-    const activeCount = leads.filter((l) => ["qualified", "estimate_sent", "proposal_sent", "follow_up"].includes(l.status)).length;
-    const value = leads.reduce((sum, l) => sum + (Number(l.proposal_total) || Number(l.estimate_high) || 0), 0);
-    return { total, new: newCount, active: activeCount, won: wonCount, value };
+    if (!leads) return { total: 0, new: 0, active: 0, won: 0 };
+    return {
+      total: leads.length,
+      new: leads.filter((l) => l.status === "new" || !l.status).length,
+      active: leads.filter((l) => ["qualified", "estimate_sent", "proposal_sent", "follow_up"].includes(l.status)).length,
+      won: leads.filter((l) => l.status === "won").length,
+    };
   }, [leads]);
 
   const filtered = useMemo(() => {
@@ -57,93 +64,68 @@ export default function Leads() {
   }, [leads, search, statusFilter]);
 
   return (
-    <div className="page">
-      <PageHeader
-        eyebrow="Customer relationship center"
-        title="Customers"
-        description="Every customer you accumulate through the visualizer, lead generator, and manual entry — all in one pipeline."
-        action={
-          <button className="gold-button" onClick={openNewProject}>
-            <Plus size={19} /> Customer
-          </button>
-        }
-      />
-
-      {/* Pipeline stats */}
-      <div className="home-pipeline">
-        <div className="home-pipeline-card">
-          <strong>{stats.total}</strong>
-          <span>Total customers</span>
+    <div className="page hx-page">
+      <div className="hx-page-head">
+        <div>
+          <h1>Customers</h1>
+          <p>Every customer from the visualizer, lead generator, and manual entry.</p>
         </div>
-        <div className="home-pipeline-card">
-          <strong>{stats.new}</strong>
-          <span>New leads</span>
-        </div>
-        <div className="home-pipeline-card">
-          <strong>{stats.active}</strong>
-          <span>Active</span>
-        </div>
-        <div className="home-pipeline-card">
-          <strong>{stats.won}</strong>
-          <span>Won</span>
-        </div>
+        <button className="hx-mini-btn" onClick={openNewProject}>
+          <Plus size={16} /> <span>Customer</span>
+        </button>
       </div>
 
-      {/* Search + filters */}
-      <div className="content-card" style={{ display: "grid", gap: 12 }}>
-        <div className="searchbar" style={{ padding: 0, position: "relative" }}>
-          <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--vx-faint)" }} />
-          <input
-            style={{ paddingLeft: 38 }}
-            placeholder="Search by name, email, phone, address, system…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="hx-stats hx-stats-4">
+        <div className="hx-stat"><strong>{stats.total}</strong><span>Total</span></div>
+        <div className="hx-stat"><strong>{stats.new}</strong><span>New</span></div>
+        <div className="hx-stat"><strong>{stats.active}</strong><span>Active</span></div>
+        <div className="hx-stat"><strong>{stats.won}</strong><span>Won</span></div>
+      </div>
+
+      <div className="hx-search-card">
+        <div className="hx-search">
+          <Search size={16} />
+          <input placeholder="Search name, email, address, system…" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div className="hx-filters">
           {STATUS_FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setStatusFilter(f.key)}
-              style={{
-                border: "1px solid",
-                borderColor: statusFilter === f.key ? "var(--vx-accent)" : "var(--vx-border-soft)",
-                background: statusFilter === f.key ? "var(--vx-accent-soft)" : "var(--vx-panel-2)",
-                color: statusFilter === f.key ? "var(--vx-accent)" : "var(--vx-muted)",
-                borderRadius: 10, padding: "7px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer",
-                transition: "border-color .12s, background .12s, color .12s",
-              }}
-            >
+            <button key={f.key} className={statusFilter === f.key ? "active" : ""} onClick={() => setStatusFilter(f.key)}>
               {f.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Customer list */}
       {leads === null ? (
-        <div className="content-card" style={{ display: "grid", placeItems: "center", padding: 40 }}>
-          <Loader2 size={24} style={{ color: "var(--vx-accent)", animation: "spin .8s linear infinite" }} />
-        </div>
+        <div className="hx-loading"><Loader2 size={24} /></div>
       ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={Users}
-          title={leads.length === 0 ? "No customers yet" : "No matches"}
-          hint={leads.length === 0 ? "Generate a bid from the visualizer or tap Customer to add one." : "Try a different search or filter."}
-        />
-      ) : (
-        <div className="home-bid-list">
-          {filtered.map((lead) => (
-            <CustomerRow key={lead.id} lead={lead} onClick={() => navigate(`/leads/${lead.id}`)} />
-          ))}
+        <div className="hx-empty">
+          <div>
+            <span>0</span>
+            {leads.length === 0 ? "No customers yet. Add one or generate a bid." : "No matches found."}
+          </div>
         </div>
-      )}
-
-      {leads && leads.length > 0 && (
-        <p className="home-disclosure">
-          {filtered.length} of {leads.length} customers shown · estimated pipeline value{" "}
-          {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(stats.value)}
-        </p>
+      ) : (
+        <div className="hx-list">
+          {filtered.map((lead) => {
+            const badge = STATUS_MAP[lead.status] || { label: lead.status, cls: "ready" };
+            return (
+              <button key={lead.id} className="hx-project-row" onClick={() => navigate(`/leads/${lead.id}`)}>
+                <div className="hx-project-thumb">
+                  {lead.photo_url ? <img src={lead.photo_url} alt="" /> : <Users size={18} />}
+                </div>
+                <div className="hx-project-info">
+                  <strong>{lead.customer_name || "Untitled"}</strong>
+                  <small>{lead.project_address || "No address"}</small>
+                  <small className="hx-sqft">{lead.square_feet ? `${lead.square_feet.toLocaleString()} sq ft` : "—"}</small>
+                </div>
+                <div className="hx-project-side">
+                  <span className={`vx-chip ${badge.cls}`}>{badge.label}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );

@@ -1,9 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Briefcase, Inbox as InboxIcon, ShieldCheck, Settings, FileText, Calculator, Users, Palette, Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText } from "lucide-react";
+import {
+  Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
+  Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
+  Camera, DollarSign, Sparkles,
+} from "lucide-react";
 
 const SURFACES = [
-  { to: "/visualizer", label: "Vizualizer", icon: Briefcase },
+  { to: "/visualizer", label: "Visualizer", icon: Camera },
   { to: "/systems", label: "Floor Systems", icon: Briefcase },
   { to: "/pricing", label: "Pricing Rules", icon: Calculator },
   { to: "/close", label: "Proposal Studio", icon: FileText },
@@ -12,7 +16,7 @@ const SURFACES = [
   { to: "/colors", label: "Color Charts", icon: Palette },
   { to: "/email-templates", label: "Email Templates", icon: Mail },
   { to: "/lead-generator", label: "Lead Generator", icon: Target },
-  { to: "/bid-generator", label: "Bid Generator", icon: FileText },
+  { to: "/bid-generator", label: "Bid Generator", icon: Sparkles },
   { to: "/competitive-pricing", label: "Market Pricing", icon: TrendingUp },
   { to: "/industry", label: "Industry Reference", icon: BookOpen },
   { to: "/appointments", label: "Appointments", icon: CalendarClock },
@@ -24,44 +28,21 @@ const SURFACES = [
 export default function More() {
   const navigate = useNavigate();
   return (
-    <>
-      <div className="content-header">
+    <div className="page hx-page hx-more">
+      <div className="hx-page-head">
         <div>
-          <h1>System & Guardrails</h1>
-          <p>Brand controls, backend health, and protected AI boundaries.</p>
+          <h1>All Screens</h1>
+          <p>Every tool and surface in your workspace.</p>
         </div>
       </div>
-      <div className="content-card">
-        <h2 className="section-title" style={{ fontSize: 20 }}>Backend connection</h2>
-        <div className="status-card" style={{ marginTop: 15 }}>
-          <div className="status-line">
-            <span>Base44 API</span>
-            <strong className="online">Connected</strong>
-          </div>
-          <div className="status-line">
-            <span>Endpoint</span>
-            <code>base44/entities</code>
-          </div>
-          <div className="status-line">
-            <span>Storage</span>
-            <strong>Cloud DB + receipts</strong>
-          </div>
-        </div>
-
-        <h2 className="section-title" style={{ fontSize: 20, marginTop: 25 }}>Vizzy guardrails</h2>
-        <div className="guardrail" style={{ marginTop: 14 }}>
-          Vizzy may explain systems, guide photo capture, compare finishes, summarize scope, and draft communications. Vizzy must never state a final price, completion date, warranty, engineering suitability, or code compliance. All pricing remains preliminary and subject to contractor site verification.
-        </div>
-
-        <h2 className="section-title" style={{ fontSize: 20, marginTop: 25 }}>Backend surfaces</h2>
-        <div className="sheet-list" style={{ marginTop: 12 }}>
-          {SURFACES.map(({ to, label, icon: Icon }) => (
-            <button key={to} className="sheet-item" onClick={() => navigate(to)}>
-              <Icon size={20} /> {label}
-            </button>
-          ))}
-        </div>
+      <div className="hx-more-grid">
+        {SURFACES.map(({ to, label, icon: Icon }) => (
+          <button key={to} className="hx-more-card" onClick={() => navigate(to)}>
+            <Icon size={20} />
+            <span>{label}</span>
+          </button>
+        ))}
       </div>
-    </>
+    </div>
   );
 }
