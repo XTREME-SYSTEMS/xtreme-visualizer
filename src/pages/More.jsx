@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
   Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
-  Camera, Sparkles, ChevronRight,
+  Camera, Sparkles, ChevronRight, Images,
 } from "lucide-react";
 
 const SURFACES = [
@@ -13,6 +13,7 @@ const SURFACES = [
   { to: "/close", label: "Proposal Studio", icon: FileText },
   { to: "/crm", label: "CRM", icon: Users },
   { to: "/products", label: "Products", icon: Package },
+  { to: "/gallery", label: "Gallery", icon: Images },
   { to: "/colors", label: "Color Charts", icon: Palette },
   { to: "/email-templates", label: "Email Templates", icon: Mail },
   { to: "/lead-generator", label: "Lead Generator", icon: Target },
