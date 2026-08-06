@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import GeneratorSection from "@/components/biz/GeneratorSection";
-import { Loader2, Search, Check, Globe, Film } from "lucide-react";
+import { Loader2, Search, Check, Globe, Film, Wand2, ClipboardList, Palette, FileText, Mail, MonitorSmartphone, CreditCard, Smartphone, Share2, Image } from "lucide-react";
 
 const VIBES = ["Modern", "Premium / Luxury", "Rugged / Industrial", "Friendly / Approachable", "Bold / Energetic", "Minimalist"];
 const NAME_STYLES = ["Descriptive", "Invented / Brandable", "Founder-based", "Acronym", "Compound"];
@@ -33,10 +33,12 @@ function isTaken(name, existing) {
   });
 }
 
-function SectionHead({ index, tag, title, description }) {
+function SectionHead({ icon: Icon, tag, title, description }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-      <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", fontWeight: 900, fontSize: 15, color: "var(--vx-accent)", border: "1px solid #8A7300", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>{index}</span>
+      <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid #8A7300", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>
+        {Icon ? <Icon style={{ width: 22, height: 22 }} /> : null}
+      </span>
       <div style={{ minWidth: 0 }}>
         <span className="vx-kicker">{tag}</span>
         <h2 style={{ margin: "3px 0 0", fontSize: 19, letterSpacing: "-.02em" }}>{title}</h2>
@@ -185,33 +187,48 @@ export default function BusinessGenerator() {
   return (
     <div style={{ display: "grid", gap: 16, padding: "8px 0 36px" }}>
       {/* Hero header */}
-      <div className="vx-card" style={{ padding: 22, position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 90% at 0% 0%, rgba(255,214,10,.10), transparent 55%)", pointerEvents: "none" }} />
-        <div style={{ position: "relative" }}>
-          <span className="vx-kicker">AI BUSINESS BUILDER</span>
-          <h1 style={{ margin: "4px 0 0", fontSize: 30, letterSpacing: "-.035em" }}>Business Generator</h1>
-          <p style={{ margin: "7px 0 0", color: "var(--vx-muted)", fontSize: 13.5, lineHeight: 1.5, maxWidth: 520 }}>
-            Answer a few questions, generate 10 validated business names, then build your entire brand — logo, proposal, emails, website, app, and social video — three options at a time.
-          </p>
+      <div className="vx-card" style={{ padding: 24, position: "relative", overflow: "hidden", borderColor: "#8A7300" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(130% 100% at 0% 0%, rgba(255,214,10,.14), transparent 55%), radial-gradient(120% 120% at 100% 100%, rgba(255,184,0,.08), transparent 60%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, var(--vx-accent), transparent)", opacity: 0.7 }} />
+        <div style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 16 }}>
+          <span style={{ flexShrink: 0, width: 56, height: 56, borderRadius: 15, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid var(--vx-accent)", background: "rgba(255,214,10,.10)", boxShadow: "var(--vx-glow)" }}>
+            <Wand2 style={{ width: 28, height: 28 }} />
+          </span>
+          <div style={{ minWidth: 0 }}>
+            <span className="vx-kicker">AI BUSINESS BUILDER</span>
+            <h1 style={{ margin: "4px 0 0", fontSize: 30, letterSpacing: "-.035em", fontWeight: 900 }}>Business <span style={{ color: "var(--vx-accent)" }}>Generator</span></h1>
+            <p style={{ margin: "7px 0 0", color: "var(--vx-muted)", fontSize: 13.5, lineHeight: 1.5, maxWidth: 520 }}>
+              Answer a few questions, generate 10 validated business names, then build your entire brand — logo, proposal, emails, website, app, and social video — three options at a time.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Stepper */}
-      <div className="vx-card-soft" style={{ padding: "12px 14px", display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none" }}>
-        {steps.map((s, i) => (
-          <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
-            <span style={{ width: 24, height: 24, borderRadius: "50%", display: "grid", placeItems: "center", fontSize: 11, fontWeight: 800, background: s.done ? "var(--vx-accent)" : "var(--vx-panel-3)", color: s.done ? "#0A0A0A" : "var(--vx-faint)", border: s.done ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", boxShadow: s.done ? "var(--vx-glow)" : "none" }}>
-              {s.done ? <Check style={{ width: 13, height: 13 }} /> : i + 1}
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: s.done ? "var(--vx-text)" : "var(--vx-faint)", whiteSpace: "nowrap" }}>{s.label}</span>
-            {i < steps.length - 1 && <span style={{ width: 16, height: 1, background: "var(--vx-border-soft)", marginLeft: 2 }} />}
-          </div>
-        ))}
+      {/* Progress bar */}
+      <div className="vx-card-soft" style={{ padding: "13px 15px", display: "grid", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--vx-muted)", letterSpacing: ".04em", textTransform: "uppercase" }}>Build progress</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: "var(--vx-accent)" }}>{steps.filter((s) => s.done).length} / {steps.length}</span>
+        </div>
+        <div style={{ position: "relative", height: 8, borderRadius: 6, background: "var(--vx-panel-3)", overflow: "hidden", border: "1px solid var(--vx-border-soft)" }}>
+          <div style={{ position: "absolute", inset: 0, width: (steps.filter((s) => s.done).length / steps.length * 100) + "%", background: "linear-gradient(90deg, #FFB800, #FFD60A)", boxShadow: "var(--vx-glow)", borderRadius: 6, transition: "width .3s ease" }} />
+        </div>
+        <div style={{ display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none" }}>
+          {steps.map((s, i) => (
+            <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+              <span style={{ width: 22, height: 22, borderRadius: "50%", display: "grid", placeItems: "center", fontSize: 10, fontWeight: 800, background: s.done ? "var(--vx-accent)" : "transparent", color: s.done ? "#0A0A0A" : "var(--vx-faint)", border: s.done ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", boxShadow: s.done ? "var(--vx-glow)" : "none" }}>
+                {s.done ? <Check style={{ width: 12, height: 12 }} /> : i + 1}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: s.done ? "var(--vx-text)" : "var(--vx-faint)", whiteSpace: "nowrap" }}>{s.label}</span>
+              {i < steps.length - 1 && <span style={{ width: 12, height: 1, background: "var(--vx-border-soft)" }} />}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Step 1: Onboarding */}
       <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16 }}>
-        <SectionHead index={1} tag="ONBOARDING" title="Tell us about the business" description="The more detail you give, the better the AI can tailor every name and asset." />
+        <SectionHead icon={ClipboardList} tag="ONBOARDING" title="Tell us about the business" description="The more detail you give, the better the AI can tailor every name and asset." />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 13 }}>
           <div className="vx-field"><label>City</label><input className="vx-input" value={onboarding.city} onChange={set("city")} placeholder="Austin" /></div>
           <div className="vx-field"><label>State</label><input className="vx-input" value={onboarding.state} onChange={set("state")} placeholder="TX" /></div>
@@ -228,7 +245,7 @@ export default function BusinessGenerator() {
 
       {/* Step 2: Names + validation */}
       <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16 }}>
-        <SectionHead index={2} tag="NAMING" title="Generate 10 business names" description="Each name is checked against the scraper to see if it's already in use in your area." />
+        <SectionHead icon={Search} tag="NAMING" title="Generate 10 business names" description="Each name is checked against the scraper to see if it's already in use in your area." />
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <button className="vx-btn primary" onClick={generateNames} disabled={!onboardingReady || namesLoading}>
             {namesLoading ? <Loader2 className="vx-icon" /> : <Search className="vx-icon" />}
@@ -243,7 +260,7 @@ export default function BusinessGenerator() {
             {names.map((n, i) => {
               const active = savedName === n.name;
               return (
-                <div key={i} onClick={() => setSavedName(n.name)} style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, padding: 15, borderRadius: 15, border: active ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", background: active ? "var(--vx-accent-soft)" : "var(--vx-panel)", boxShadow: active ? "var(--vx-glow)" : "inset 0 1px rgba(255,255,255,.025)", transition: "border-color .15s, box-shadow .15s, background .15s" }}>
+                <div key={i} onClick={() => setSavedName(n.name)} style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, padding: 15, borderRadius: 15, border: active ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", background: active ? "linear-gradient(160deg, var(--vx-accent-soft), var(--vx-panel))" : "var(--vx-panel)", boxShadow: active ? "var(--vx-glow)" : "inset 0 1px rgba(255,255,255,.025)", transition: "border-color .15s, box-shadow .15s, background .15s" }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                       <strong style={{ fontSize: 16 }}>{n.name}</strong>
@@ -262,8 +279,9 @@ export default function BusinessGenerator() {
         )}
 
         {savedName && (
-          <div className="vx-notice" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Check className="vx-icon" /> Approved name: <strong style={{ color: "#ffd85a" }}>{savedName}</strong>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14, border: "1px solid var(--vx-accent)", background: "linear-gradient(135deg, rgba(255,214,10,.10), var(--vx-panel))", boxShadow: "var(--vx-glow)" }}>
+            <span style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--vx-accent)", color: "#0A0A0A", display: "grid", placeItems: "center", flexShrink: 0 }}><Check style={{ width: 17, height: 17 }} /></span>
+            <span style={{ fontSize: 13, color: "var(--vx-muted)" }}>Approved name: <strong style={{ color: "var(--vx-accent)", fontSize: 16 }}>{savedName}</strong></span>
           </div>
         )}
 
@@ -276,14 +294,14 @@ export default function BusinessGenerator() {
       </section>
 
       {/* Step 3: Logo */}
-      <GeneratorSection index={3} tag="IDENTITY" title="Logo generator" description="3 distinct logo concepts based on your approved name." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateLogos} selectedKey={savedLogo?._i} onSelect={(opt, i, save) => setSavedLogo({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={3} icon={Image} tag="IDENTITY" title="Logo generator" description="3 distinct logo concepts based on your approved name." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateLogos} selectedKey={savedLogo?._i} onSelect={(opt, i, save) => setSavedLogo({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={{ ...imgBox, aspectRatio: "16/10" }}>
           <img src={opt.url} alt="logo option" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
       )} />
 
       {/* Step 4: Brand package */}
-      <GeneratorSection index={4} tag="BRAND" title="Brand package generator" description="3 full brand systems — palette, fonts, tagline, voice, differentiator." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateBrand} selectedKey={savedBrand?._i} onSelect={(opt, i) => setSavedBrand({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={4} icon={Palette} tag="BRAND" title="Brand package generator" description="3 full brand systems — palette, fonts, tagline, voice, differentiator." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateBrand} selectedKey={savedBrand?._i} onSelect={(opt, i) => setSavedBrand({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={optPad}>
           <strong style={{ fontSize: 15 }}>{opt.name}</strong>
           <div style={{ display: "flex", gap: 7 }}>
@@ -303,7 +321,7 @@ export default function BusinessGenerator() {
       )} />
 
       {/* Step 5: Proposal */}
-      <GeneratorSection index={5} tag="SALES" title="Proposal generator" description="3 proposal templates to pitch your services." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateProposals} selectedKey={savedProposal?._i} onSelect={(opt, i) => setSavedProposal({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={5} icon={FileText} tag="SALES" title="Proposal generator" description="3 proposal templates to pitch your services." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateProposals} selectedKey={savedProposal?._i} onSelect={(opt, i) => setSavedProposal({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={optPad}>
           <strong style={{ fontSize: 15 }}>{opt.title}</strong>
           <span style={{ fontSize: 11, color: "var(--vx-accent)", textTransform: "uppercase", letterSpacing: ".05em", fontWeight: 700 }}>{opt.angle}</span>
@@ -318,7 +336,7 @@ export default function BusinessGenerator() {
       )} />
 
       {/* Step 6: Emails */}
-      <GeneratorSection index={6} tag="OUTREACH" title="Email template generator" description="3 cold outreach email drafts." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateEmails} selectedKey={savedEmail?._i} onSelect={(opt, i) => setSavedEmail({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={6} icon={Mail} tag="OUTREACH" title="Email template generator" description="3 cold outreach email drafts." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateEmails} selectedKey={savedEmail?._i} onSelect={(opt, i) => setSavedEmail({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={optPad}>
           <strong style={{ fontSize: 13.5, color: "var(--vx-accent)" }}>{opt.subject}</strong>
           <div style={divider} />
@@ -327,7 +345,7 @@ export default function BusinessGenerator() {
       )} />
 
       {/* Step 7: Website / PWA */}
-      <GeneratorSection index={7} tag="WEB" title="Desktop / PWA website generator" description="3 homepage concepts, mobile-first." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateWebsites} selectedKey={savedWebsite?._i} onSelect={(opt, i) => setSavedWebsite({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={7} icon={MonitorSmartphone} tag="WEB" title="Desktop / PWA website generator" description="3 homepage concepts, mobile-first." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateWebsites} selectedKey={savedWebsite?._i} onSelect={(opt, i) => setSavedWebsite({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={optPad}>
           <strong style={{ fontSize: 17, letterSpacing: "-.02em" }}>{opt.hero_headline}</strong>
           <p style={{ margin: 0, fontSize: 12.5, color: "var(--vx-muted)", lineHeight: 1.45 }}>{opt.hero_sub}</p>
@@ -343,14 +361,14 @@ export default function BusinessGenerator() {
       )} />
 
       {/* Step 8: Digital card + brochure */}
-      <GeneratorSection index={8} tag="PRINT" title="Digital business card & brochure generator" description="3 brochure/card designs." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateCards} selectedKey={savedCard?._i} onSelect={(opt, i) => setSavedCard({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={8} icon={CreditCard} tag="PRINT" title="Digital business card & brochure generator" description="3 brochure/card designs." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateCards} selectedKey={savedCard?._i} onSelect={(opt, i) => setSavedCard({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={{ ...imgBox, aspectRatio: "3/4" }}>
           <img src={opt.url} alt="brochure option" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       )} />
 
       {/* Step 9: App concept */}
-      <GeneratorSection index={9} tag="PRODUCT" title="App generator" description="3 mobile app concepts for your customers." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateApps} selectedKey={savedApp?._i} onSelect={(opt, i) => setSavedApp({ ...opt, _i: i })} renderOption={(opt) => (
+      <GeneratorSection index={9} icon={Smartphone} tag="PRODUCT" title="App generator" description="3 mobile app concepts for your customers." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateApps} selectedKey={savedApp?._i} onSelect={(opt, i) => setSavedApp({ ...opt, _i: i })} renderOption={(opt) => (
         <div style={optPad}>
           <strong style={{ fontSize: 15 }}>{opt.app_name}</strong>
           <p style={{ margin: 0, fontSize: 12.5, color: "var(--vx-accent)" }}>{opt.value_prop}</p>
@@ -361,7 +379,7 @@ export default function BusinessGenerator() {
       )} />
 
       {/* Step 10: Social + video */}
-      <GeneratorSection index={10} tag="CONTENT" title="Social media content & video generator" description="3 social post concepts; render a 4s video from your pick." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateSocial} selectedKey={savedSocial?._i} onSelect={(opt, i) => { setSavedSocial({ ...opt, _i: i }); setVideoUrl(null); }} renderOption={(opt) => (
+      <GeneratorSection index={10} icon={Share2} tag="CONTENT" title="Social media content & video generator" description="3 social post concepts; render a 4s video from your pick." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateSocial} selectedKey={savedSocial?._i} onSelect={(opt, i) => { setSavedSocial({ ...opt, _i: i }); setVideoUrl(null); }} renderOption={(opt) => (
         <div style={optPad}>
           <p style={{ margin: 0, fontSize: 13, color: "var(--vx-text)", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{opt.caption}</p>
           <p style={{ margin: 0, fontSize: 12, color: "var(--vx-accent)" }}>{(opt.hashtags || []).join(" ")}</p>
@@ -371,8 +389,8 @@ export default function BusinessGenerator() {
       )} />
 
       {savedSocial && (
-        <section className="vx-card" style={{ padding: 20, display: "grid", gap: 14 }}>
-          <SectionHead index={"▶"} tag="VIDEO" title="Render your social video" description="Generates a 4-second vertical clip from your selected post concept." />
+        <section className="vx-card" style={{ padding: 20, display: "grid", gap: 14, borderColor: "#8A7300", background: "linear-gradient(145deg, var(--vx-panel-2), var(--vx-panel))" }}>
+          <SectionHead icon={Film} tag="VIDEO" title="Render your social video" description="Generates a 4-second vertical clip from your selected post concept." />
           <button className="vx-btn primary" onClick={renderVideo} disabled={videoLoading} style={{ alignSelf: "flex-start" }}>
             {videoLoading ? <Loader2 className="vx-icon" /> : <Film className="vx-icon" />}
             {videoLoading ? "Rendering video…" : "Render 4s video"}

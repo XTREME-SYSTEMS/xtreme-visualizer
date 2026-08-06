@@ -3,6 +3,7 @@ import { Loader2, Sparkles, Lock, Check } from "lucide-react";
 
 export default function GeneratorSection({
   index,
+  icon: Icon,
   title,
   description,
   tag,
@@ -41,8 +42,8 @@ export default function GeneratorSection({
   return (
     <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16 }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-        <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", fontWeight: 900, fontSize: 15, color: numColor, border: "1px solid " + numBorder, background: numBg, boxShadow: numShadow }}>
-          {index}
+        <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: numColor, border: "1px solid " + numBorder, background: numBg, boxShadow: numShadow }}>
+          {Icon ? <Icon style={{ width: 22, height: 22 }} /> : <strong style={{ fontSize: 15 }}>{index}</strong>}
         </span>
         <div style={{ minWidth: 0 }}>
           <span className="vx-kicker">{tag}</span>
@@ -77,7 +78,7 @@ export default function GeneratorSection({
                   cursor: "pointer",
                   border: active ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)",
                   borderRadius: 15,
-                  background: active ? "var(--vx-accent-soft)" : "var(--vx-panel)",
+                  background: active ? "linear-gradient(160deg, var(--vx-accent-soft), var(--vx-panel))" : "var(--vx-panel)",
                   boxShadow: active ? "var(--vx-glow)" : "inset 0 1px rgba(255,255,255,.025)",
                   overflow: "hidden",
                   position: "relative",
