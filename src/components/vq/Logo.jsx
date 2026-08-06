@@ -1,7 +1,6 @@
 import React from "react";
 
-const LOGO_URL =
-  "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/aee59f2a2_ChatGPTImageAug6202604_27_16PM.png";
+const LOGO_URL = "/logo.svg";
 
 /**
  * Xtreme Floor Visualizer — full logo asset (emblem + wordmark).
