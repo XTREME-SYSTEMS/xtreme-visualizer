@@ -5,44 +5,23 @@ import {
   Palette,
   Layers,
   Calculator,
-  Mail,
-  MessageSquare,
   ChevronRight,
   TrendingUp,
-  Clock,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useUI } from "@/lib/uiContext";
-import { money as moneyFmt } from "@/lib/pricing";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 
 export default function Home() {
   const navigate = useNavigate();
   const { query } = useUI();
   const [leads, setLeads] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     base44.entities.Lead.list("-created_date", 50)
       .then((l) => setLeads(l))
-      .catch(() => setLeads([]))
-      .finally(() => setLoading(false));
+      .catch(() => setLeads([]));
   }, []);
-
-  const q = query.trim().toLowerCase();
-
-  const recentBids = useMemo(() => {
-    const filtered = q
-      ? leads.filter((l) =>
-          [l.customer_name, l.system_name, l.project_address, l.color_name]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase()
-            .includes(q)
-        )
-      : leads;
-    return filtered.slice(0, 4);
-  }, [leads, q]);
 
   const stats = useMemo(() => {
     const count = (status) => leads.filter((l) => l.status === status).length;
@@ -54,30 +33,10 @@ export default function Home() {
     };
   }, [leads]);
 
-  const buildBidText = (l) => {
-    const low = l.estimate_low || 0;
-    const high = l.estimate_high || 0;
-    return (
-      "VISUAL-X PRELIMINARY BID\n" +
-      "Project: " + (l.customer_name || "Untitled") + "\n" +
-      "System: " + (l.system_name || "—") + "\n" +
-      "Color: " + (l.color_name || "Standard") + "\n" +
-      "Square feet: " + (l.square_feet || "—") + "\n" +
-      "Condition: " + (l.condition || "—") + "\n\n" +
-      "Estimated range: " + moneyFmt(low) + " – " + moneyFmt(high) + "\n\n" +
-      "This is a preliminary, non-binding range. Final pricing requires onsite verification. Valid for 30 days."
-    );
-  };
-
-  const shareEmail = (l) =>
-    "mailto:?subject=" + encodeURIComponent("Preliminary bid — " + (l.system_name || "floor") + " (" + (l.square_feet || 0) + " sq ft)") +
-    "&body=" + encodeURIComponent(buildBidText(l));
-  const shareSms = (l) => "sms:?&body=" + encodeURIComponent(buildBidText(l));
-
   return (
     <div className="home-full">
       {/* Hero */}
-      <div className="home-hero">
+      <div className="home-hero home-hero-large">
         <img
           src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png"
           alt=""
@@ -124,60 +83,6 @@ export default function Home() {
           <span>Total</span>
         </div>
       </div>
-
-      {/* Recent bids */}
-      <section className="home-section home-section-bids">
-        <div className="home-section-head">
-          <h2>
-            <Clock size={16} /> Recent bids
-          </h2>
-          {leads.length > 5 && (
-            <button className="text-link" onClick={() => navigate("/leads")}>
-              View all <ChevronRight size={14} />
-            </button>
-          )}
-        </div>
-        {loading ? (
-          <div className="empty">Loading recent bids…</div>
-        ) : recentBids.length === 0 ? (
-          <div className="empty">
-            No bids yet. Tap <strong>Start New Bid</strong> to create your first estimate.
-          </div>
-        ) : (
-          <div className="home-bid-list">
-            {recentBids.map((l) => (
-              <div key={l.id} className="home-bid-row">
-                <button className="home-bid-main" onClick={() => navigate("/leads/" + l.id)}>
-                  <span className="home-bid-thumb">
-                    {l.photo_url ? (
-                      <img src={l.photo_url} alt="" />
-                    ) : (
-                      <Layers size={20} />
-                    )}
-                  </span>
-                  <span className="home-bid-info">
-                    <strong>{l.customer_name || "Untitled"}</strong>
-                    <small>
-                      {l.system_name || "—"} · {l.square_feet ? l.square_feet.toLocaleString() + " sq ft" : "—"}
-                    </small>
-                    <span className="home-bid-range">
-                      {moneyFmt(l.estimate_low)} – {moneyFmt(l.estimate_high)}
-                    </span>
-                  </span>
-                </button>
-                <span className="home-bid-actions">
-                  <a className="home-bid-share" href={shareEmail(l)} title="Email bid">
-                    <Mail size={16} />
-                  </a>
-                  <a className="home-bid-share" href={shareSms(l)} title="SMS bid">
-                    <MessageSquare size={16} />
-                  </a>
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
 
       {/* Quick reference */}
       <section className="home-section">

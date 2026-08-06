@@ -268,6 +268,12 @@
 .vx-page-noscroll { overflow: hidden !important; }
 .home-full { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
 .home-hero { min-height: 48px; flex-shrink: 0; }
+.home-hero-large { min-height: 150px; border-radius: 14px; overflow: hidden; position: relative; border: 1px solid var(--vx-border); }
+.home-hero-large .home-hero-content { padding: 18px 16px; width: 74%; }
+.home-hero-large h1 { font-size: 22px; margin: 0 0 6px; line-height: 1.08; letter-spacing: -.04em; }
+.home-hero-large h1 span { display: block; color: var(--vx-accent); }
+.home-hero-large p { display: block; color: #efefef; font-size: 11px; line-height: 1.4; margin: 0; }
+.home-hero-large .vx-kicker { font-size: 10px; margin-bottom: 4px; }
 .home-hero-content { padding: 6px 14px; }
 .home-hero h1 { font-size: 14px; margin: 0; line-height: 1.1; }
 .home-hero h1 span { display: inline; }
