@@ -265,7 +265,7 @@
 .message p { margin: 0; color: var(--vx-muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ===== Full-page home navigation ===== */
-.home-full { height: 100%; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.home-full { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
 .home-hero { min-height: 80px; flex-shrink: 0; }
 .home-hero-content { padding: 10px 14px; }
 .home-hero h1 { font-size: 16px; margin: 0 0 2px; line-height: 1.1; }
@@ -426,8 +426,12 @@
 
 .home-section { display: grid; gap: 8px; flex-shrink: 0; }
 .home-section-bids { flex: 1 1 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
-.home-section-bids .home-bid-list { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
-.home-section-bids .home-bid-list::-webkit-scrollbar { display: none; }
+.home-section-bids .home-section-head { flex-shrink: 0; }
+.home-section-bids .home-bid-list,
+.home-section-bids .empty { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+.home-section-bids .home-bid-list::-webkit-scrollbar,
+.home-section-bids .empty::-webkit-scrollbar { display: none; }
+.home-section-bids .empty { display: grid; place-items: center; text-align: center; }
 .home-section-head {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
