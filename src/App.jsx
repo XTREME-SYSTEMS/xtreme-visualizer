@@ -44,6 +44,7 @@ import Dashboard from '@/pages/Dashboard';
 import Tracking from '@/pages/Tracking';
 import VoiceAssistant from '@/pages/VoiceAssistant';
 import Operations from '@/pages/Operations';
+import Admin from '@/pages/Admin';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
         <Route path="/tracking" element={<Tracking />} />
         <Route path="/voice" element={<VoiceAssistant />} />
         <Route path="/operations" element={<Operations />} />
+        <Route path="/admin" element={<Admin />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
