@@ -93,7 +93,7 @@ export default function Pricing() {
         eyebrow="Configuration · v2.0"
         title="Pricing engine"
         description="Recalibrated to 2025 national averages. Manually tune every rate, activate a version to drive all preliminary bids, or scrape live local market pricing by ZIP code."
-        actions={
+        action={
           <button className="vx-btn primary" onClick={() => setDraft({ version: `v${(rules.length || 0) + 1}.0`, status: "draft", range_spread_pct: 0.15, ...(active ? { ...active, id: undefined } : {}) })}>
             <Plus size={16} /> New version
           </button>
