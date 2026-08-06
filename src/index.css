@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --vx-accent: #FFD700;
-    --vx-accent-2: #FFED00;
-    --vx-accent-soft: rgba(255, 215, 0, 0.12);
+    --vx-accent: #FFD60A;
+    --vx-accent-2: #FFB800;
+    --vx-accent-soft: rgba(255, 214, 10, 0.12);
     --vx-bg: #030303;
     --vx-bg-2: #080808;
     --vx-panel: #101010;
@@ -22,7 +22,7 @@
     --vx-info: #43a9ff;
     --vx-radius: 18px;
     --vx-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
-    --vx-glow: 0 0 24px rgba(255, 215, 0, 0.28);
+    --vx-glow: 0 0 24px rgba(255, 214, 10, 0.28);
     color-scheme: dark;
 
     --background: 0 0% 1.5%;
@@ -31,19 +31,19 @@
     --card-foreground: 0 0% 97%;
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 97%;
-    --primary: 51 100% 50%;
+    --primary: 50 100% 52%;
     --primary-foreground: 0 0% 4%;
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 97%;
     --muted: 0 0% 12%;
     --muted-foreground: 0 0% 72%;
-    --accent: 51 100% 50%;
+    --accent: 50 100% 52%;
     --accent-foreground: 0 0% 4%;
     --destructive: 358 100% 66%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 18%;
     --input: 0 0% 18%;
-    --ring: 51 100% 50%;
+    --ring: 50 100% 52%;
     --radius: 18px;
     --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
@@ -63,7 +63,7 @@
     --vx-border: #aeb7a8;
     --vx-border-soft: #d8ddd2;
     --vx-shadow: 0 14px 34px rgba(32, 45, 18, 0.12);
-    --vx-glow: 0 0 18px rgba(255, 215, 0, 0.18);
+    --vx-glow: 0 0 18px rgba(255, 214, 10, 0.18);
 
     --background: 80 18% 95%;
     --foreground: 80 22% 7%;

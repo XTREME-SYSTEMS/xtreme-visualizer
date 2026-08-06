@@ -166,7 +166,7 @@ export function DeviceShell() {
           {isDesktop ? (
             <>
               <aside className="vx-sidebar">
-                <img src="/logo.svg" alt="Xtreme Floor Visualizer" style={{ height: 34, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,215,0,.25))' }} />
+                <img src="/logo.png" alt="Xtreme Floor Visualizer" style={{ height: 34, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,214,10,.25))' }} />
                 <nav className="vx-sidebar-nav">
                   {navItems.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
                   <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
@@ -196,7 +196,7 @@ export function DeviceShell() {
               <div className="vx-brandbar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
-                  <img src="/logo.svg" alt="Xtreme Floor Visualizer" style={{ height: 120, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,215,0,.25))' }} />
+                  <img src="/logo.png" alt="Xtreme Floor Visualizer" style={{ height: 120, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,214,10,.25))' }} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <RemindersBell />

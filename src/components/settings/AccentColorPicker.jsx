@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 const STORAGE_KEY = "vx-accent-color";
 
 const PRESETS = [
-  { name: "Gold", value: "#FFD700" },
+  { name: "Gold", value: "#FFD60A" },
   { name: "Cyan", value: "#22d3ee" },
   { name: "Blue", value: "#3b82f6" },
   { name: "Violet", value: "#a855f7" },
@@ -97,7 +97,7 @@ export function initAccentFromStorage() {
 }
 
 export default function AccentColorPicker() {
-  const [color, setColor] = useState(() => localStorage.getItem(STORAGE_KEY) || "#FFD700");
+  const [color, setColor] = useState(() => localStorage.getItem(STORAGE_KEY) || "#FFD60A");
 
   useEffect(() => { initAccentFromStorage(); }, []);
 
@@ -135,7 +135,7 @@ export default function AccentColorPicker() {
         />
         <span className="text-[12px] font-mono text-slate-400 uppercase">{color}</span>
         <button
-          onClick={() => choose("#FFD700")}
+          onClick={() => choose("#FFD60A")}
           className="ml-auto text-[12px] text-slate-500 hover:text-slate-700 underline"
         >
           Reset to default

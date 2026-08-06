@@ -66,11 +66,11 @@ const AuthenticatedApp = () => {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#1A1A1A", gap: 24 }}>
         <img
-          src="/logo.svg"
+          src="/logo.png"
           alt="Xtreme Floor Visualizer"
-          style={{ height: 64, width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(255,215,0,.4))" }}
+          style={{ height: 64, width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(255,214,10,.4))" }}
         />
-        <div className="w-8 h-8 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(255,215,0,.2)", borderTopColor: "#FFD700" }}></div>
+        <div className="w-8 h-8 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(255,214,10,.2)", borderTopColor: "#FFD60A" }}></div>
       </div>
     );
   }

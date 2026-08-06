@@ -1,6 +1,6 @@
 import React from "react";
 
-const LOGO_URL = "/logo.svg";
+const LOGO_URL = "/logo.png";
 
 /**
  * Xtreme Floor Visualizer — full logo asset (emblem + wordmark).
@@ -16,7 +16,7 @@ export function LogoMark({ size = 36, dark = false }) {
         width: "auto",
         objectFit: "contain",
         flexShrink: 0,
-        filter: "drop-shadow(0 0 10px rgba(255,215,0,.25))",
+        filter: "drop-shadow(0 0 10px rgba(255,214,10,.25))",
       }}
     />
   );
@@ -31,7 +31,7 @@ export function LogoFull({ size = 36, dark = false }) {
         height: size,
         width: "auto",
         objectFit: "contain",
-        filter: "drop-shadow(0 0 12px rgba(255,215,0,.28))",
+        filter: "drop-shadow(0 0 12px rgba(255,214,10,.28))",
       }}
     />
   );

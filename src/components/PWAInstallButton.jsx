@@ -55,10 +55,10 @@ export default function PWAInstallButton() {
         gap: 10,
         padding: "10px 12px 10px 16px",
         borderRadius: 14,
-        background: "linear-gradient(135deg, #FFD700, #FFED00)",
+        background: "linear-gradient(135deg, #FFD60A, #FFB800)",
         color: "#1A1A1A",
-        boxShadow: "0 0 28px rgba(255,215,0,.4), 0 8px 24px rgba(0,0,0,.5)",
-        border: "1px solid #FFD700",
+        boxShadow: "0 0 28px rgba(255,214,10,.4), 0 8px 24px rgba(0,0,0,.5)",
+        border: "1px solid #FFD60A",
         maxWidth: "calc(100vw - 32px)",
       }}
     >
