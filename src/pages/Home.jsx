@@ -6,7 +6,7 @@ import {
   ScanLine,
   LayoutDashboard,
   Phone,
-  Share2,
+  Wand2,
   Image,
   Layers,
   ClipboardList,
@@ -61,9 +61,9 @@ export default function Home() {
           <Phone size={22} />
           <span>Voice AI</span>
         </button>
-        <button className="hx-quick-card" onClick={() => navigate("/close")}>
-          <Share2 size={22} />
-          <span>Share Proposal</span>
+        <button className="hx-quick-card" onClick={() => navigate("/business-generator")}>
+          <Wand2 size={22} />
+          <span>Business Generator</span>
         </button>
       </div>
 

@@ -52,6 +52,7 @@ import FieldDashboard from '@/pages/FieldDashboard';
 import GalleryPage from '@/pages/Gallery';
 import CustomerPortal from '@/pages/CustomerPortal';
 import VideoStudio from '@/pages/VideoStudio';
+import BusinessGenerator from '@/pages/BusinessGenerator';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 const PUBLIC_PATHS = ['/ThankYou', '/portal'];
@@ -127,6 +128,7 @@ const AuthenticatedApp = () => {
           <Route path="/field" element={<FieldDashboard />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/video-studio" element={<VideoStudio />} />
+          <Route path="/business-generator" element={<BusinessGenerator />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
         <Route path="/portal/:leadId" element={<CustomerPortal />} />
