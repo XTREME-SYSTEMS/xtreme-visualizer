@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, ChevronRight, Layers, Images, Palette, Sparkles } from "lucide-react";
+import { Plus, ChevronRight, ScanLine, GitCompare, Calculator, Share2, Layers, Images, Palette, Sparkles } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 
 const HERO_IMG =
@@ -30,8 +30,24 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Branded Quick Actions */}
+      {/* Quick Actions */}
       <div className="hx-quick-grid">
+        <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
+          <ScanLine size={22} />
+          <span>Scan Space</span>
+        </button>
+        <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
+          <GitCompare size={22} />
+          <span>Compare Finishes</span>
+        </button>
+        <button className="hx-quick-card" onClick={() => navigate("/pricing")}>
+          <Calculator size={22} />
+          <span>Quote Range</span>
+        </button>
+        <button className="hx-quick-card" onClick={() => navigate("/close")}>
+          <Share2 size={22} />
+          <span>Share Proposal</span>
+        </button>
         <button className="hx-quick-card" onClick={() => navigate("/systems")}>
           <Layers size={22} />
           <span>Floor Systems</span>
