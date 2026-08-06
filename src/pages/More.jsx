@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
   Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
   Camera, Sparkles, ChevronRight, LayoutDashboard, BarChart3, CreditCard,
+  ClipboardList, Image,
 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
-const SURFACES = [
+const ALL_SURFACES = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/tracking", label: "Analytics & Tracking", icon: BarChart3 },
   { to: "/visualizer", label: "Visualizer", icon: Camera },
@@ -27,8 +29,35 @@ const SURFACES = [
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
+// #23: Role-based surface filtering
+const CREW_SURFACES = [
+  { to: "/operations", label: "Operations Hub", icon: ClipboardList },
+  { to: "/field", label: "Field Dashboard", icon: Camera },
+  { to: "/gallery", label: "Gallery", icon: Image },
+  { to: "/appointments", label: "Schedule", icon: CalendarClock },
+  { to: "/settings", label: "Settings", icon: Settings },
+];
+
+const SALES_SURFACES = [
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/visualizer", label: "Visualizer", icon: Camera },
+  { to: "/close", label: "Proposal Studio", icon: FileText },
+  { to: "/crm", label: "Digital Card Studio", icon: CreditCard },
+  { to: "/lead-generator", label: "Lead Generator", icon: Target },
+  { to: "/bid-generator", label: "Bid Generator", icon: Sparkles },
+  { to: "/appointments", label: "Schedule", icon: CalendarClock },
+  { to: "/gallery", label: "Gallery", icon: Image },
+  { to: "/settings", label: "Settings", icon: Settings },
+];
+
 export default function More() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+
+  const role = user?.role || "admin";
+  const surfaces = role === "crew" ? CREW_SURFACES : role === "sales" ? SALES_SURFACES : ALL_SURFACES;
+
   return (
     <div className="page hx-page hx-more">
       <div className="hx-page-head">
@@ -38,7 +67,7 @@ export default function More() {
         </div>
       </div>
       <div className="hx-more-list">
-        {SURFACES.map(({ to, label, icon: Icon }) => (
+        {surfaces.map(({ to, label, icon: Icon }) => (
           <button key={to} className="hx-more-row" onClick={() => navigate(to)}>
             <span className="hx-more-icon"><Icon size={20} /></span>
             <span className="hx-more-label">{label}</span>

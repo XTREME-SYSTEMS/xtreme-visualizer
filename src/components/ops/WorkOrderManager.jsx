@@ -138,6 +138,15 @@ export default function WorkOrderManager({ notify }) {
         } catch (e) { /* silent */ }
       }
 
+      // #19: Auto-generate warranty certificate on completion
+      if (newStatus === "completed" && o.customer_email) {
+        try {
+          const res = await base44.functions.invoke("generateWarranty", { work_order_id: o.id });
+          const d = res.data || res;
+          if (d.ok && d.sent) notify("Warranty certificate emailed to customer");
+        } catch (e) { /* silent — Gmail not connected */ }
+      }
+
       load();
     } catch (e) { notify("Update failed: " + e.message); }
   };

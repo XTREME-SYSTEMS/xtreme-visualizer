@@ -9,6 +9,8 @@ import PWAInstallButton from '@/components/PWAInstallButton';
 import RemindersBell from '@/components/RemindersBell';
 import { base44 } from '@/api/base44Client';
 
+import { ClipboardList, Camera as CameraIcon, Users as UsersIcon, MessageSquare as InboxIcon, BarChart3, Share2, Globe, Calendar, Settings as SettingsIcon } from 'lucide-react';
+
 const NAV = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
@@ -36,6 +38,36 @@ const MORE = [
   { to: '/billing', label: 'Billing & Invoices' },
   { to: '/receipts', label: 'Activity Receipts' },
   { to: '/guardrails', label: 'Guardrails' },
+  { to: '/settings', label: 'Settings' },
+];
+
+// #23: Role-based navigation — admins see everything, crew sees field ops, sales sees CRM tools
+const CREW_NAV = [
+  { to: '/', label: 'Home', icon: Home },
+  { to: '/operations', label: 'Operations', icon: ClipboardList },
+  { to: '/field', label: 'Field', icon: CameraIcon },
+  { to: '/inbox', label: 'Inbox', icon: InboxIcon },
+];
+const CREW_MORE = [
+  { to: '/field', label: 'Field Dashboard' },
+  { to: '/appointments', label: 'Schedule' },
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/settings', label: 'Settings' },
+];
+const SALES_NAV = [
+  { to: '/', label: 'Home', icon: Home },
+  { to: '/visualizer', label: 'New Bid', icon: Camera },
+  { to: '/leads', label: 'Leads', icon: Users },
+  { to: '/inbox', label: 'Inbox', icon: MessageSquare },
+];
+const SALES_MORE = [
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/close', label: 'Proposal Studio' },
+  { to: '/crm', label: 'Digital Card Studio' },
+  { to: '/lead-generator', label: 'Lead Generator' },
+  { to: '/bid-generator', label: 'Bid Generator' },
+  { to: '/appointments', label: 'Schedule' },
+  { to: '/gallery', label: 'Gallery' },
   { to: '/settings', label: 'Settings' },
 ];
 const TAB_PATHS = ['/', '/visualizer', '/leads', '/inbox', '/more'];
@@ -106,6 +138,9 @@ export function DeviceShell() {
   }, [theme]);
   const [user, setUser] = useState<any>(null);
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+  const userRole = user?.role || 'admin';
+  const navItems = userRole === 'crew' ? CREW_NAV : userRole === 'sales' ? SALES_NAV : NAV;
+  const moreItems = userRole === 'crew' ? CREW_MORE : userRole === 'sales' ? SALES_MORE : MORE;
   const initials = user?.full_name ? user.full_name.split(' ').map((p: string) => p[0]).slice(0, 2).join('').toUpperCase() : 'VX';
   const handleLogout = async () => { try { await base44.auth.logout(); window.location.href = '/login'; } catch { notify('Logout failed'); } };
 
@@ -133,7 +168,7 @@ export function DeviceShell() {
               <aside className="vx-sidebar">
                 <div className="vx-sidebar-logo">VISUAL<span style={{ color: 'var(--vx-accent)' }}>X</span></div>
                 <nav className="vx-sidebar-nav">
-                  {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
+                  {navItems.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
                   <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
                 </nav>
               </aside>
@@ -179,14 +214,14 @@ export function DeviceShell() {
                 <div className={pageClassName} style={homePageStyle}><Outlet /></div>
               </div>
               <nav className="vx-nav">
-                {NAV.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
+                {navItems.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
                 <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
               </nav>
             </>
           )}
           <VisualXDrawer open={more} title="All screens" onClose={() => setMore(false)}>
             <button className="vx-btn outline-accent" onClick={() => { navigate('/more'); setMore(false); }}><Settings className="vx-icon" />System &amp; Guardrails</button>
-            {MORE.map(i => <button key={i.to} className="vx-btn" onClick={() => { navigate(i.to); setMore(false); }}>{i.label}</button>)}
+            {moreItems.map(i => <button key={i.to} className="vx-btn" onClick={() => { navigate(i.to); setMore(false); }}>{i.label}</button>)}
             <button className="vx-btn outline-accent" onClick={() => { setMore(false); setSettings(true); }}><Settings className="vx-icon" />Settings &amp; Account</button>
           </VisualXDrawer>
           <VisualXDrawer open={settings} title="Settings & Account" onClose={() => setSettings(false)}>
