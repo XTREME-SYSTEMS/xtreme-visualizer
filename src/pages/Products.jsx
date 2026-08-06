@@ -42,7 +42,7 @@ export default function Products() {
         eyebrow="Product base · Xtreme Polishing Systems"
         title="Products and pricing"
         description="Real XPS products scraped from xtremepolishingsystems.com — epoxy kits, polyaspartics, pigments, sealers, flakes, quartz, equipment, and tooling. These power the pricing engine and specs."
-        actions={
+        action={
           <Button onClick={handleSync} disabled={syncing}>
             <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
             {syncing ? "Syncing…" : "Sync catalog"}

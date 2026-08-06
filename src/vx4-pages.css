@@ -516,3 +516,62 @@
   .viz-blemish-grid { grid-template-columns: 1fr; }
   .vx-chart-strip { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); }
 }
+
+/* ===== Brand override: map light Tailwind utilities → vx dark theme ===== */
+/* Scoped to .vx-page so auth pages keep their own styling. Unlayered rules
+   win over Tailwind's @layer utilities, and the .vx-page prefix raises
+   specificity so these overrides always take effect inside the app shell. */
+.vx-page .bg-white { background-color: var(--vx-panel); }
+.vx-page .bg-slate-50 { background-color: var(--vx-panel-2); }
+.vx-page .bg-slate-100 { background-color: var(--vx-panel-2); }
+.vx-page .bg-slate-200 { background-color: var(--vx-panel-3); }
+.vx-page .bg-slate-50\/40 { background-color: var(--vx-panel-2); }
+.vx-page .bg-emerald-50 { background-color: var(--vx-accent-soft); }
+.vx-page .bg-emerald-100 { background-color: var(--vx-accent-soft); }
+.vx-page .bg-red-50 { background-color: rgba(255,82,88,.12); }
+.vx-page .bg-red-100 { background-color: rgba(255,82,88,.12); }
+.vx-page .bg-blue-100 { background-color: rgba(67,169,255,.12); }
+
+.vx-page .text-slate-900,
+.vx-page .text-slate-800,
+.vx-page .text-slate-700 { color: var(--vx-text); }
+.vx-page .text-slate-600,
+.vx-page .text-slate-500,
+.vx-page .text-slate-300 { color: var(--vx-muted); }
+.vx-page .text-slate-400 { color: var(--vx-faint); }
+.vx-page .text-slate-200 { color: var(--vx-text); }
+.vx-page .text-emerald-600,
+.vx-page .text-emerald-700 { color: var(--vx-accent); }
+.vx-page .text-red-600,
+.vx-page .text-red-700,
+.vx-page .text-red-500 { color: var(--vx-danger); }
+.vx-page .text-blue-700,
+.vx-page .text-blue-600 { color: var(--vx-info); }
+.vx-page .text-\[\#E6A90B\] { color: var(--vx-accent); }
+
+.vx-page .border-slate-200 { border-color: var(--vx-border-soft); }
+.vx-page .border-slate-300 { border-color: var(--vx-border); }
+.vx-page .border-slate-400 { border-color: var(--vx-border); }
+.vx-page .border-slate-900 { border-color: var(--vx-accent); }
+.vx-page .border-emerald-200 { border-color: var(--vx-accent); }
+.vx-page .border-red-200 { border-color: var(--vx-danger); }
+.vx-page .border-black\/10 { border-color: var(--vx-border-soft); }
+
+.vx-page .divide-slate-100 > :not([hidden]) ~ :not([hidden]) { border-color: var(--vx-border-soft); }
+.vx-page .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: var(--vx-border-soft); }
+
+.vx-page .hover\:border-slate-400:hover { border-color: var(--vx-border); }
+.vx-page .hover\:bg-slate-50:hover { background-color: var(--vx-panel-2); }
+.vx-page .hover\:bg-slate-100:hover { background-color: var(--vx-panel-2); }
+.vx-page .hover\:bg-slate-800:hover { background-color: var(--vx-panel-3); }
+.vx-page .hover\:bg-slate-700:hover { background-color: var(--vx-panel-3); }
+.vx-page .focus\:border-slate-400:focus { border-color: var(--vx-border); }
+.vx-page .focus\:border-slate-900:focus { border-color: var(--vx-accent); }
+.vx-page .focus\:border-slate-500:focus { border-color: var(--vx-accent); }
+
+/* Dark emphasis boxes (bg-slate-900 on divs) stay dark; primary action buttons
+   (bg-slate-900 on <button>) use the brand accent to match vx-btn primary. */
+.vx-page .bg-slate-900 { background-color: var(--vx-bg-2); }
+.vx-page button.bg-slate-900 { background-color: var(--vx-accent); color: #061000; border-color: var(--vx-accent); }
+.vx-page button.bg-slate-900:hover { background-color: var(--vx-accent-2); }
+.vx-page button.hover\:bg-slate-800:hover { background-color: var(--vx-accent-2); }

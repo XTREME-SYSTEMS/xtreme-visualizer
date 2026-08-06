@@ -106,7 +106,7 @@ export default function CRM() {
         eyebrow="National Concrete Polishing"
         title="CRM"
         description="Track every customer, proposal, and signature. Push leads to HubSpot and manage your follow-up pipeline."
-        actions={
+        action={
           <Button onClick={connectHubSpot} variant={hubspotConnected ? "outline" : "default"} className={hubspotConnected ? "" : "bg-[#FF7A59] hover:bg-[#FF7A59]/90 text-white"}>
             {hubspotConnected ? <><Check className="w-4 h-4 mr-1.5" /> HubSpot connected</> : <><ExternalLink className="w-4 h-4 mr-1.5" /> Connect HubSpot</>}
           </Button>

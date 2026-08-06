@@ -70,7 +70,7 @@ Format as a clean, professional document with Markdown headings. Keep it under 8
         eyebrow="Company bid package"
         title="Bid package generator"
         description="AI scans your company websites and generates a professional bid package with company highlights, insurance, and certifications — ready to send to any client."
-        actions={
+        action={
           <Button onClick={generate} disabled={generating} className="bg-slate-900 hover:bg-slate-800">
             {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
             {generating ? "Scanning..." : "Generate bid package"}
