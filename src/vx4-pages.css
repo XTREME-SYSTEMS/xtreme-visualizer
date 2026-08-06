@@ -4,7 +4,7 @@
 
 /* ===== Layout containers ===== */
 .xv-app { min-height: 100%; display: flex; flex-direction: column; }
-.page { flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 0; min-width: 0; max-width: 100%; overflow-x: hidden; }
+.page { flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 0; min-width: 0; }
 
 /* ===== TopBar ===== */
 .topbar {
@@ -385,7 +385,7 @@
 .hx-portal-arrow { color: #707070; }
 
 /* ===== Project Gallery ===== */
-.hx-gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; max-width: 100%; overflow: hidden; }
+.hx-gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
 .hx-gallery-card {
   position: relative; border-radius: 14px; overflow: hidden;
   border: 1px solid var(--vx-border-soft); background: #1A1A1A;
@@ -414,8 +414,8 @@
 .hx-gallery-page .hx-filters button.active { color: var(--vx-accent); opacity: 1; }
 
 /* ===== Floor Systems ===== */
-.hx-sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; max-width: 100%; overflow: hidden; }
-.hx-sys-card { padding: 14px; border-radius: 14px; border: 1px solid var(--vx-border-soft); background: #1A1A1A; display: grid; gap: 10px; min-width: 0; max-width: 100%; overflow: hidden; }
+.hx-sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
+.hx-sys-card { padding: 14px; border-radius: 14px; border: 1px solid var(--vx-border-soft); background: #1A1A1A; display: grid; gap: 10px; min-width: 0; }
 .hx-sys-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .hx-sys-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .hx-sys-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; border: 1px solid #4c7600; color: var(--vx-accent); background: rgba(204,255,0,.06); flex-shrink: 0; }
