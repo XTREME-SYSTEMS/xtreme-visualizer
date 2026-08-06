@@ -66,7 +66,7 @@ const AuthenticatedApp = () => {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#1A1A1A", gap: 24 }}>
         <img
-          src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/e29617215_ChatGPTImageAug6202604_27_16PM.png"
+          src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/aee59f2a2_ChatGPTImageAug6202604_27_16PM.png"
           alt="Xtreme Floor Visualizer"
           style={{ height: 64, width: "auto", objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(255,215,0,.4))" }}
         />

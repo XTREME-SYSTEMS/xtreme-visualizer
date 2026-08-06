@@ -166,7 +166,7 @@ export function DeviceShell() {
           {isDesktop ? (
             <>
               <aside className="vx-sidebar">
-                <div className="vx-sidebar-logo" style={{ fontWeight: 900, fontStyle: 'italic', letterSpacing: '-.02em' }}><span style={{ color: 'var(--vx-accent)' }}>X</span>TREME</div>
+                <img src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/aee59f2a2_ChatGPTImageAug6202604_27_16PM.png" alt="Xtreme Floor Visualizer" style={{ height: 34, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,215,0,.25))' }} />
                 <nav className="vx-sidebar-nav">
                   {navItems.map(i => <button key={i.to} className={activeTab === i.to ? 'active' : ''} onClick={() => handleTabClick(i.to)}><i.icon className="vx-icon" /><span>{i.label}</span></button>)}
                   <button className={activeTab === '/more' ? 'active' : ''} onClick={() => navigate('/more')}><Menu className="vx-icon" /><span>More</span></button>
@@ -196,7 +196,7 @@ export function DeviceShell() {
               <div className="vx-brandbar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   {showBack && <button onClick={() => navigate(-1)} className="vx-back-btn" aria-label="Go back"><ChevronLeft className="vx-icon" /></button>}
-                  <div className="vx-brand-logo" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, fontStyle: 'italic', fontSize: 22, letterSpacing: '-.02em', color: 'var(--vx-text)' }}><span style={{ color: 'var(--vx-accent)' }}>X</span>TREME</div>
+                  <img src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/aee59f2a2_ChatGPTImageAug6202604_27_16PM.png" alt="Xtreme Floor Visualizer" style={{ height: 30, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 10px rgba(255,215,0,.25))' }} />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <RemindersBell />

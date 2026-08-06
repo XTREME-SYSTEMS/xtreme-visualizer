@@ -74,8 +74,8 @@
 /* ===== Gold button ===== */
 .gold-button {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
-  border-radius: 12px; border: 1px solid #E6BE00; padding: 10px 16px;
-  background: linear-gradient(180deg, #FFED00, #E6BE00); color: #1A1A1A;
+  border-radius: 12px; border: 1px solid #FFD700; padding: 10px 16px;
+  background: linear-gradient(180deg, #FFED00, #FFD700); color: #1A1A1A;
   font-weight: 800; font-size: 14px; cursor: pointer;
   transition: transform .12s, box-shadow .12s; white-space: nowrap;
 }
@@ -216,7 +216,7 @@
 .vizzy-copy { display: flex; align-items: center; gap: 14px; }
 .vizzy-mark {
   width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0;
-  border: 1px solid #E6BE00; background: rgba(255,215,0,.08);
+  border: 1px solid #FFD700; background: rgba(255,215,0,.08);
 }
 .vizzy-text { display: grid; gap: 8px; }
 .vizzy-text strong { font-size: 14px; line-height: 1.3; }

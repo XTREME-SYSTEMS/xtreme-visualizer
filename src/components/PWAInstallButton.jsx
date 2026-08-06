@@ -58,7 +58,7 @@ export default function PWAInstallButton() {
         background: "linear-gradient(135deg, #FFD700, #FFED00)",
         color: "#1A1A1A",
         boxShadow: "0 0 28px rgba(255,215,0,.4), 0 8px 24px rgba(0,0,0,.5)",
-        border: "1px solid #E6BE00",
+        border: "1px solid #FFD700",
         maxWidth: "calc(100vw - 32px)",
       }}
     >
