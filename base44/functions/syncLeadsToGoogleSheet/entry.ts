@@ -8,6 +8,13 @@ export default async function (req: Request): Promise<Response> {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const body = await req.json().catch(() => ({}));
+    // Ping mode: test the connector connection without creating a spreadsheet
+    if (body?.ping) {
+      await base44.asServiceRole.connectors.getCurrentAppUserConnection(GOOGLE_SHEETS_CONNECTOR_ID);
+      return Response.json({ ok: true });
+    }
+
     let accessToken: string;
     try {
       const conn = await base44.asServiceRole.connectors.getCurrentAppUserConnection(GOOGLE_SHEETS_CONNECTOR_ID);

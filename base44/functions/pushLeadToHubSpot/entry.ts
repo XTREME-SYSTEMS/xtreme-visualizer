@@ -8,7 +8,12 @@ export default async function (req: Request): Promise<Response> {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
-    const { leadId, customerName, email, phone, address, squareFeet, systemName, estimateLow, estimateHigh } = body;
+    const { leadId, customerName, email, phone, address, squareFeet, systemName, estimateLow, estimateHigh, ping } = body;
+    // Ping mode: test the connector connection without creating a contact/deal
+    if (ping) {
+      await base44.asServiceRole.connectors.getCurrentAppUserConnection(HUBSPOT_CONNECTOR_ID);
+      return Response.json({ ok: true });
+    }
     if (!customerName) return Response.json({ error: 'customerName is required' }, { status: 400 });
 
     const { accessToken } = await base44.asServiceRole.connectors.getCurrentAppUserConnection(HUBSPOT_CONNECTOR_ID);

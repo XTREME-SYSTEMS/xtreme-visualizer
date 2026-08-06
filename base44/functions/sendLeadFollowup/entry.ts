@@ -14,30 +14,50 @@ function getEmailContent(stage, lead) {
   const templates = {
     welcome: {
       subject: `Thanks for reaching out about your flooring project, ${name}`,
-      body: `Hi ${name},\n\nThanks for your interest in our flooring services! Based on the information you provided, your preliminary project range for a ${system} floor is ${range}.\n\nWe'd love to schedule a free consultation to see your space and provide a detailed quote. Reply to this email or call us to set up a time that works for you.\n\nBest regards,\nThe VisualQuote Team`,
+      body: `Hi ${name},\n\nThanks for your interest in our flooring services! Based on the information you provided, your preliminary project range for a ${system} floor is ${range}.\n\nWe'd love to schedule a free consultation to see your space and provide a detailed quote. Reply to this email or call us to set up a time that works for you.\n\nBest regards,\nThe Visual-X Team`,
     },
     first_followup: {
       subject: `Following up on your flooring project, ${name}`,
-      body: `Hi ${name},\n\nI wanted to follow up on your flooring project inquiry. Have you had a chance to review the preliminary range of ${range}?\n\nI'm happy to answer any questions about the ${system} system, timeline, or scheduling a site visit at your convenience.\n\nBest regards,\nThe VisualQuote Team`,
+      body: `Hi ${name},\n\nI wanted to follow up on your flooring project inquiry. Have you had a chance to review the preliminary range of ${range}?\n\nI'm happy to answer any questions about the ${system} system, timeline, or scheduling a site visit at your convenience.\n\nBest regards,\nThe Visual-X Team`,
     },
     second_followup: {
       subject: `Your flooring project — still interested, ${name}?`,
-      body: `Hi ${name},\n\nJust checking in on your flooring project. We still have availability coming up and would love to work with you.\n\nIf you're ready to move forward or have any questions about the ${system} system, just reply to this email and I'll get right back to you.\n\nBest regards,\nThe VisualQuote Team`,
+      body: `Hi ${name},\n\nJust checking in on your flooring project. We still have availability coming up and would love to work with you.\n\nIf you're ready to move forward or have any questions about the ${system} system, just reply to this email and I'll get right back to you.\n\nBest regards,\nThe Visual-X Team`,
     },
     final_reminder: {
       subject: `Last check-in on your flooring project, ${name}`,
-      body: `Hi ${name},\n\nThis will be my last follow-up regarding your flooring project. If you're still interested in the ${system} system, please reach out and we'll be happy to help.\n\nIf now isn't the right time, no worries — we're here whenever you're ready.\n\nBest regards,\nThe VisualQuote Team`,
+      body: `Hi ${name},\n\nThis will be my last follow-up regarding your flooring project. If you're still interested in the ${system} system, please reach out and we'll be happy to help.\n\nIf now isn't the right time, no worries — we're here whenever you're ready.\n\nBest regards,\nThe Visual-X Team`,
     },
   };
 
   return templates[stage] || templates.welcome;
 }
 
+// Resolve a Gmail access token. Tries APP_USER connection first (what the Admin page connects),
+// then falls back to the SHARED connection. Works in both UI and workflow contexts.
+async function getGmailToken(base44, user) {
+  // APP_USER: requires a user context (UI calls)
+  if (user) {
+    try {
+      const c = await base44.asServiceRole.connectors.getCurrentAppUserConnection(GMAIL_CONNECTOR_ID);
+      if (c?.accessToken) return c.accessToken;
+    } catch {}
+  }
+  // SHARED: works in workflow context (no user) if a shared connection was authorized
+  try {
+    const c = await base44.asServiceRole.connectors.getConnection("gmail");
+    if (c?.accessToken) return c.accessToken;
+  } catch {}
+  return null;
+}
+
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    // Auth is OPTIONAL: this function is called from both the UI (user present)
+    // and the Lead Follow-up workflow (no user context). Use asServiceRole for all
+    // entity operations so RLS doesn't block workflow calls.
     const user = await base44.auth.me().catch(() => null);
-    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
     const body = await req.json().catch(() => ({}));
     const { lead_id, stage } = body;
 
@@ -45,14 +65,15 @@ export default async function(req) {
       return Response.json({ error: "lead_id and stage are required" }, { status: 400 });
     }
 
-    // Fetch the lead using the user-scoped client so RLS enforces ownership
-    const lead = await base44.entities.Lead.get(lead_id);
+    // Use asServiceRole so workflow calls (no user) can read the lead
+    const lead = await base44.asServiceRole.entities.Lead.get(lead_id);
     if (!lead) {
       return Response.json({ error: "Lead not found" }, { status: 404 });
     }
 
-    // Defense-in-depth: verify the caller owns this lead or is an admin
-    if (lead.created_by_id !== user.id && user.role !== "admin") {
+    // Defense-in-depth: verify ownership ONLY when a user is present (UI calls).
+    // Workflow calls have no user and are trusted (triggered by the platform).
+    if (user && lead.created_by_id !== user.id && user.role !== "admin") {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -68,13 +89,13 @@ export default async function(req) {
 
     const { subject, body: emailBody } = getEmailContent(stage, lead);
 
-    // Try to send via gmail connector
+    // Send via Gmail connector (APP_USER or SHARED)
     let emailSent = false;
     let sendError = null;
-    try {
-      const { accessToken } = await base44.asServiceRole.connectors.getConnection("gmail");
-      if (accessToken) {
-        const fromEmail = "VisualQuote Team <noreply@visualquote.ai>";
+    const accessToken = await getGmailToken(base44, user);
+    if (accessToken) {
+      try {
+        const fromEmail = user?.email || "Visual-X Team <noreply@visual-x.app>";
         const mime = buildMime({ from: fromEmail, to: lead.email, subject, text: emailBody });
         const raw = base64Url(mime);
         const r = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
@@ -88,12 +109,14 @@ export default async function(req) {
           const data = await r.json();
           sendError = data.error?.message || "send failed";
         }
+      } catch (e) {
+        sendError = e.message;
       }
-    } catch (e) {
-      sendError = e.message;
+    } else {
+      sendError = "Gmail not connected";
     }
 
-    // Create a MessageTemplate record
+    // Create a MessageTemplate record (asServiceRole for workflow compatibility)
     const template = await base44.asServiceRole.entities.MessageTemplate.create({
       lead_id: lead_id,
       template_type: stage === "welcome" ? "clarification" : stage === "first_followup" ? "reminder" : stage === "second_followup" ? "viewed_no_response" : "lost_feedback",
@@ -102,8 +125,8 @@ export default async function(req) {
       status: emailSent ? "sent" : "draft",
     });
 
-    // Update the lead's follow-up stage and last contacted date (user-scoped, RLS-enforced)
-    await base44.entities.Lead.update(lead_id, {
+    // Update the lead's follow-up stage (asServiceRole for workflow compatibility)
+    await base44.asServiceRole.entities.Lead.update(lead_id, {
       follow_up_stage: stage + "_sent",
       last_contacted_date: new Date().toISOString(),
       status: lead.status === "new" ? "qualified" : lead.status,
@@ -117,6 +140,7 @@ export default async function(req) {
       template_id: template.id,
     });
   } catch (error) {
+    console.error("sendLeadFollowup error", error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 }

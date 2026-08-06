@@ -13,15 +13,19 @@ export default async function (req: Request): Promise<Response> {
     if (due.length === 0) return Response.json({ ok: true, sent: 0, message: 'no due plans' });
 
     let accessToken: string | null = null;
+    // Try APP_USER first (UI calls with user context), then SHARED (workflow calls)
     try {
       if (user) {
         const c = await base44.asServiceRole.connectors.getCurrentAppUserConnection(GMAIL_CONNECTOR_ID);
-        accessToken = c.accessToken;
-      } else {
-        const c = await base44.asServiceRole.connectors.getConnection('gmail');
-        accessToken = c.accessToken;
+        if (c?.accessToken) accessToken = c.accessToken;
       }
     } catch {}
+    if (!accessToken) {
+      try {
+        const c = await base44.asServiceRole.connectors.getConnection('gmail');
+        if (c?.accessToken) accessToken = c.accessToken;
+      } catch {}
+    }
 
     const tally = { ok: 0, failed: 0, skipped: 0 };
     for (const plan of due) {
