@@ -46,7 +46,7 @@
 [data-theme="light"] .vx-loading{background:var(--vx-bg)}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--vx-bg);color:var(--vx-text)}
-body{min-height:100vh;max-height:880px;overflow-x:hidden;overscroll-behavior-y:none}
+body{min-height:100vh;overflow-x:hidden;overscroll-behavior-y:none}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 button:disabled{cursor:not-allowed}.vx-btn,.vx-icon-btn,.vx-tabbar button,.vx-nav button,.vx-nav a,.swatch,.scan-tool,.system-choice,.home-action,.studio-action,.proposal-action,.compare-option,.scene-card,.vx-select-trigger,.vx-select-option,.vx-back-btn{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
@@ -219,8 +219,8 @@ img{display:block;max-width:100%}
 /* Desktop: center the mobile app in a polished, branded frame.
    Mobile (<768px) is untouched — this only adds presentation on larger screens. */
 @media(min-width:768px){
-  .vx-stage{padding:28px 24px;min-height:100vh;background:radial-gradient(ellipse 60% 50% at 50% 20%, rgba(156,255,0,.09), transparent 60%), radial-gradient(ellipse 50% 40% at 50% 95%, rgba(67,169,255,.05), transparent 55%), var(--vx-bg)}
-  .vx-device{max-width:420px;max-height:880px;border:1px solid var(--vx-border-soft);border-radius:38px;box-shadow:0 40px 90px rgba(0,0,0,.65), 0 0 0 9px rgba(255,255,255,.018), inset 0 1px 0 rgba(255,255,255,.04)}
+  .vx-stage{padding:24px 20px;min-height:100vh;background:radial-gradient(ellipse 60% 50% at 50% 20%, rgba(156,255,0,.09), transparent 60%), radial-gradient(ellipse 50% 40% at 50% 95%, rgba(67,169,255,.05), transparent 55%), var(--vx-bg)}
+  .vx-device{width:100%;max-width:420px;height:calc(100vh - 48px);max-height:880px;border:1px solid var(--vx-border-soft);border-radius:38px;box-shadow:0 40px 90px rgba(0,0,0,.65), 0 0 0 9px rgba(255,255,255,.018), inset 0 1px 0 rgba(255,255,255,.04)}
   .vx-screen{border-radius:38px}
   .vx-page{padding:0 22px 14px}
 }
