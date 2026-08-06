@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, MapPin, LogIn, LogOut } from "lucide-react";
 
-export default function ClockManager({ notify }) {
+export default function ClockManager({ notify, workOrder }) {
   const [orders, setOrders] = useState([]);
   const [events, setEvents] = useState({});
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    const list = await base44.entities.WorkOrder.list("-created_date", 50);
-    setOrders(list);
+    if (workOrder) { setOrders([workOrder]); }
+    else {
+      const list = await base44.entities.WorkOrder.list("-created_date", 50);
+      setOrders(list);
+    }
     const evs = await base44.entities.ClockEvent.list("-created_date", 100);
     const map = {};
     evs.forEach((e) => { if (!e.clock_out_at) map[e.work_order_id] = e; });

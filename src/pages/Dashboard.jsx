@@ -70,6 +70,27 @@ export default function Dashboard() {
     return Object.entries(months).map(([name, value]) => ({ name, value }));
   }, [data]);
 
+  const sourceAttribution = useMemo(() => {
+    if (!data) return [];
+    const sources = {};
+    data.leads.forEach((l) => {
+      const s = l.source || "manual";
+      if (!sources[s]) sources[s] = { total: 0, won: 0, revenue: 0 };
+      sources[s].total++;
+      if (l.status === "won") {
+        sources[s].won++;
+        sources[s].revenue += l.proposal_total || l.estimate_high || 0;
+      }
+    });
+    return Object.entries(sources).map(([name, v]) => ({
+      name: name.replace(/_/g, " "),
+      total: v.total,
+      won: v.won,
+      rate: v.total > 0 ? Math.round(v.won / v.total * 100) : 0,
+      revenue: v.revenue,
+    }));
+  }, [data]);
+
   if (!data || !metrics) return <div className="hx-loading"><Loader2 className="spin" size={26} /></div>;
 
   const contextSummary = `Business metrics — Leads: ${metrics.leads} total, ${metrics.won} won. Revenue won: $${metrics.revenue.toLocaleString()}. Active projects: ${metrics.activeProjects}. Confirmed appointments: ${metrics.appts}. Proposals: ${metrics.proposals}. Marketing assets: ${metrics.assets}. Tracking events: ${metrics.events}. Pipeline: ${pipelineData.map((p) => `${p.name}=${p.count}`).join(", ")}.`;
@@ -155,6 +176,21 @@ export default function Dashboard() {
               <YAxis type="category" dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 9 }} width={80} />
               <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
               <Bar dataKey="count" fill="#9cff00" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      )}
+
+      {sourceAttribution.length > 0 && (
+        <ChartCard title="Lead Source Attribution">
+          <ResponsiveContainer>
+            <BarChart data={sourceAttribution} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2f2f2f" />
+              <XAxis dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 9 }} angle={-20} textAnchor="end" height={40} />
+              <YAxis tick={{ fill: "#A0A0A0", fontSize: 10 }} allowDecimals={false} />
+              <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} formatter={(v, n) => n === "rate" ? `${v}%` : v} />
+              <Bar dataKey="total" name="Total Leads" fill="#43a9ff" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="won" name="Won" fill="#9cff00" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

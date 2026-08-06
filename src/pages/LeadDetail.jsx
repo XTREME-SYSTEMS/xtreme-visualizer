@@ -6,6 +6,7 @@ import PageHeader from "@/components/vq/PageHeader";
 import Disclosure from "@/components/vq/Disclosure";
 import EstimateAdjuster from "@/components/lead/EstimateAdjuster";
 import ProposalDraft from "@/components/lead/ProposalDraft";
+import DepositCheckout from "@/components/lead/DepositCheckout";
 import FloorSpecEditor from "@/components/lead/FloorSpecEditor";
 import MaskEditor from "@/components/visualizer/MaskEditor";
 import { Image } from "@/components/ui/image";
@@ -166,7 +167,11 @@ export default function LeadDetail() {
           )}
         </SectionCard>
 
-        <SectionCard index="07" title="Activity and audit receipts" tag="Evidence" tagTone="slate">
+        <SectionCard index="07" title="Deposit & payment" tag="Auto-generated" tagTone="gold">
+          <DepositCheckout leadId={lead.id} />
+        </SectionCard>
+
+        <SectionCard index="08" title="Activity and audit receipts" tag="Evidence" tagTone="slate">
           {receipts.length ? (
             <ul className="space-y-2 max-h-64 overflow-y-auto">
               {receipts.map((r) => (

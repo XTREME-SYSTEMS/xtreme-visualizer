@@ -12,14 +12,17 @@ const CATEGORIES = [
   { key: "site_after", label: "Site After", required: true },
 ];
 
-export default function FieldPhotoManager({ notify }) {
+export default function FieldPhotoManager({ notify, workOrderId }) {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [uploading, setUploading] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const loadOrders = async () => { setOrders(await base44.entities.WorkOrder.list("-created_date", 50)); };
+  const loadOrders = async () => {
+    if (workOrderId) { setSelected(workOrderId); }
+    else { setOrders(await base44.entities.WorkOrder.list("-created_date", 50)); }
+  };
   const loadPhotos = async (id) => { setLoading(true); setPhotos(await base44.entities.FieldPhoto.filter({ work_order_id: id })); setLoading(false); };
 
   useEffect(() => { loadOrders(); }, []);
@@ -46,13 +49,15 @@ export default function FieldPhotoManager({ notify }) {
 
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      <div className="hx-scraper-form" style={{ padding: 12 }}>
-        <label style={{ fontSize: 12, color: "var(--vx-muted)", fontWeight: 700 }}>Select Work Order</label>
-        <select className="hx-scraper-input" value={selected || ""} onChange={(e) => setSelected(e.target.value)}>
-          <option value="">Choose a work order…</option>
-          {orders.map((o) => <option key={o.id} value={o.id}>{o.customer_name || "Untitled"}</option>)}
-        </select>
-      </div>
+      {!workOrderId && (
+        <div className="hx-scraper-form" style={{ padding: 12 }}>
+          <label style={{ fontSize: 12, color: "var(--vx-muted)", fontWeight: 700 }}>Select Work Order</label>
+          <select className="hx-scraper-input" value={selected || ""} onChange={(e) => setSelected(e.target.value)}>
+            <option value="">Choose a work order…</option>
+            {orders.map((o) => <option key={o.id} value={o.id}>{o.customer_name || "Untitled"}</option>)}
+          </select>
+        </div>
+      )}
 
       {selected && (
         <>

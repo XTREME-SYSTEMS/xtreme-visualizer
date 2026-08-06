@@ -13,7 +13,7 @@ const DEFAULT_ITEMS = [
   "Customer walkthrough complete",
 ];
 
-export default function PunchList({ notify }) {
+export default function PunchList({ notify, workOrder }) {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);
   const [items, setItems] = useState([]);
@@ -22,7 +22,10 @@ export default function PunchList({ notify }) {
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef(null);
 
-  const loadOrders = async () => { setOrders(await base44.entities.WorkOrder.list("-created_date", 50)); };
+  const loadOrders = async () => {
+    if (workOrder) { setOrders([workOrder]); setSelected(workOrder.id); }
+    else { setOrders(await base44.entities.WorkOrder.list("-created_date", 50)); }
+  };
   const loadItems = async (id) => { setLoading(true); setItems(await base44.entities.PunchItem.filter({ work_order_id: id })); setLoading(false); };
 
   useEffect(() => { loadOrders(); }, []);

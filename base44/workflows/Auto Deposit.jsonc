@@ -1,0 +1,40 @@
+{
+  "name": "Auto Deposit",
+  "description": "When a lead signs the proposal, auto-generate a deposit invoice and checkout link",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Lead",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ (.trigger.data.signature_url // \"\") != \"\" and (.trigger.old_data.signature_url // \"\") == \"\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_deposit",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "create_deposit": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoDepositOnSignature",
+            "args": {
+              "lead_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto-generate deposit",
+            "description": "Create invoice + checkout link"
+          }
+        }
+      }
+    ]
+  }
+}

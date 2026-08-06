@@ -47,6 +47,9 @@ import Operations from '@/pages/Operations';
 import Admin from '@/pages/Admin';
 import Billing from '@/pages/Billing';
 import ThankYou from '@/pages/ThankYou';
+import Enhancements from '@/pages/Enhancements';
+import FieldDashboard from '@/pages/FieldDashboard';
+import GalleryPage from '@/pages/Gallery';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 const PUBLIC_PATHS = ['/ThankYou'];
@@ -118,6 +121,9 @@ const AuthenticatedApp = () => {
         <Route path="/operations" element={<Operations />} />
         <Route path="/admin" element={<Admin />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/enhancements" element={<Enhancements />} />
+          <Route path="/field" element={<FieldDashboard />} />
+          <Route path="/gallery" element={<GalleryPage />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="*" element={<Navigate to="/" replace />} />

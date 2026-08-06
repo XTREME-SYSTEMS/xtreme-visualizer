@@ -1,73 +1,58 @@
 {
-  "name": "Invoice",
+  "name": "Enhancement",
   "type": "object",
   "properties": {
-    "lead_id": {
+    "title": {
       "type": "string"
     },
-    "work_order_id": {
-      "type": "string"
-    },
-    "customer_name": {
-      "type": "string"
-    },
-    "customer_email": {
-      "type": "string"
-    },
-    "type": {
+    "category": {
       "type": "string",
       "enum": [
-        "deposit",
-        "final"
+        "revenue",
+        "operations",
+        "intelligence",
+        "customer",
+        "technical"
       ],
-      "default": "deposit"
+      "default": "technical"
     },
     "description": {
       "type": "string"
     },
-    "amount": {
-      "type": "number",
-      "description": "Amount in major units (USD)"
+    "impact": {
+      "type": "string"
     },
-    "currency": {
-      "type": "string",
-      "default": "USD"
+    "priority": {
+      "type": "number",
+      "default": 99
     },
     "status": {
       "type": "string",
       "enum": [
-        "draft",
-        "pending",
-        "paid",
-        "void"
+        "logged",
+        "planned",
+        "in_progress",
+        "implemented",
+        "audited",
+        "validated",
+        "deferred"
       ],
-      "default": "draft"
+      "default": "logged"
     },
-    "checkout_session_id": {
-      "type": "string",
-      "description": "Wix checkout session id; correlation key"
+    "audit_notes": {
+      "type": "string"
     },
-    "purchase_id": {
-      "type": "string",
-      "description": "Base44Purchase id after checkout session created"
+    "implementation_notes": {
+      "type": "string"
     },
-    "checkout_url": {
-      "type": "string",
-      "description": "Wix checkout redirect URL for the customer to pay"
-    },
-    "paid_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "due_date": {
-      "type": "string",
-      "format": "date"
+    "audit_round": {
+      "type": "number",
+      "default": 0
     }
   },
   "required": [
-    "customer_name",
-    "type",
-    "amount"
+    "title",
+    "category"
   ],
   "rls": {
     "create": {

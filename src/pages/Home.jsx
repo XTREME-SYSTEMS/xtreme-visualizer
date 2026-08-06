@@ -69,7 +69,7 @@ export default function Home() {
           <h2>Tools</h2>
         </div>
         <div className="hx-portal-grid">
-          <button className="hx-portal-card" onClick={() => navigate("/colors")}>
+          <button className="hx-portal-card" onClick={() => navigate("/gallery")}>
             <div className="hx-portal-icon"><Image size={20} /></div>
             <div className="hx-portal-text">
               <strong>Gallery</strong>
