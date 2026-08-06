@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { ClipboardList, FileDiff, DollarSign, HardHat, MapPin, Camera, ListChecks, FolderTree } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { base44 } from "@/api/base44Client";
+import { ClipboardList, FileDiff, DollarSign, HardHat, MapPin, Camera, ListChecks, FolderTree, Radio } from "lucide-react";
 import WorkOrderManager from "@/components/ops/WorkOrderManager";
 import ChangeOrderManager from "@/components/ops/ChangeOrderManager";
 import JobCostManager from "@/components/ops/JobCostManager";
@@ -22,13 +23,28 @@ const TABS = [
 
 export default function Operations() {
   const [tab, setTab] = useState("work");
+  const [liveBadge, setLiveBadge] = useState(false);
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
   const notify = (msg) => { const t = document.createElement("div"); t.className = "vx-toast"; t.textContent = msg; t.style.cssText = "position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:200"; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); };
+
+  useEffect(() => {
+    const unsub = base44.entities.WorkOrder.subscribe((event) => {
+      setLiveBadge(true);
+      setTimeout(() => setLiveBadge(false), 3000);
+      if (tabRef.current === "work") {
+        const action = event.type === "create" ? "New work order" : event.type === "update" ? "Work order updated" : "Work order deleted";
+        notify(`${action} — list refreshed`);
+      }
+    });
+    return unsub;
+  }, []);
 
   return (
     <div className="page hx-page" style={{ gap: 12 }}>
       <div className="hx-page-head">
         <div>
-          <h1>Operations Hub</h1>
+          <h1>Operations Hub {liveBadge && <Radio size={14} style={{ color: "var(--vx-accent)", display: "inline", marginLeft: 6, animation: "pulse 1s" }} />}</h1>
           <p>Work orders, change orders, job costing, and subcontractor management for the whole company.</p>
         </div>
       </div>

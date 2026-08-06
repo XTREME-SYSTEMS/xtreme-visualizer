@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { money } from "@/lib/pricing";
 import { specsToText } from "@/lib/floorSpecs";
 import { Loader2, FileText } from "lucide-react";
+import DiscountTimer from "@/components/lead/DiscountTimer";
 
 export default function ProposalDraft({ lead, onSave }) {
   const [text, setText] = useState(lead.proposal_draft || "");
@@ -32,6 +33,9 @@ Sections: overview, scope of work (include every spec item as a line item — co
 
   return (
     <div className="space-y-3">
+      {lead.discount_expires && (
+        <DiscountTimer expiresAt={lead.discount_expires} discountAmount={lead.discount_amount} discountPct={lead.discount_pct} />
+      )}
       <div className="flex gap-2">
         <Button size="sm" variant="outline" className="text-[12px]" onClick={generate} disabled={busy}>
           {busy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}

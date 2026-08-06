@@ -11,15 +11,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     const load = async () => {
-      const [leads, projects, appts, proposals, assets, events] = await Promise.all([
+      const [leads, projects, appts, proposals, assets, events, workOrders, clockEvents, fieldPhotos, jobCosts] = await Promise.all([
         base44.entities.Lead.list("-created_date", 200).catch(() => []),
         base44.entities.Project.list("-created_date", 200).catch(() => []),
         base44.entities.Appointment.list("-created_date", 200).catch(() => []),
         base44.entities.Proposal.list("-created_date", 200).catch(() => []),
         base44.entities.MarketingAsset.list("-created_date", 100).catch(() => []),
         base44.entities.TrackingEvent.list("-created_date", 200).catch(() => []),
+        base44.entities.WorkOrder.list("-created_date", 200).catch(() => []),
+        base44.entities.ClockEvent.list("-created_date", 200).catch(() => []),
+        base44.entities.FieldPhoto.list("-created_date", 200).catch(() => []),
+        base44.entities.JobCost.list("-created_date", 200).catch(() => []),
       ]);
-      setData({ leads, projects, appts, proposals, assets, events });
+      setData({ leads, projects, appts, proposals, assets, events, workOrders, clockEvents, fieldPhotos, jobCosts });
     };
     load();
   }, []);
@@ -89,6 +93,70 @@ export default function Dashboard() {
       rate: v.total > 0 ? Math.round(v.won / v.total * 100) : 0,
       revenue: v.revenue,
     }));
+  }, [data]);
+
+  // #14 Price elasticity: estimate range vs proposal_total vs win/loss
+  const priceElasticity = useMemo(() => {
+    if (!data) return [];
+    const withProposals = data.leads.filter((l) => l.proposal_total && l.estimate_high);
+    return withProposals.map((l) => {
+      const midEstimate = ((l.estimate_low + l.estimate_high) / 2) || 1;
+      const ratio = l.proposal_total / midEstimate;
+      return {
+        name: l.customer_name?.slice(0, 12) || "—",
+        estimate: Math.round(midEstimate),
+        proposal: l.proposal_total,
+        won: l.status === "won",
+        ratio: Math.round(ratio * 100),
+      };
+    }).slice(-15);
+  }, [data]);
+
+  // #15 Crew utilization: hours per crew leader this week
+  const crewUtilization = useMemo(() => {
+    if (!data || !data.clockEvents?.length) return [];
+    const weekAgo = Date.now() - 7 * 86400000;
+    const crews = {};
+    data.clockEvents.forEach((c) => {
+      if (!c.clock_in_at) return;
+      const cin = new Date(c.clock_in_at).getTime();
+      if (cin < weekAgo) return;
+      const cout = c.clock_out_at ? new Date(c.clock_out_at).getTime() : Date.now();
+      const hours = (cout - cin) / 3600000;
+      const name = c.user_name || "Unknown";
+      if (!crews[name]) crews[name] = 0;
+      crews[name] += hours;
+    });
+    return Object.entries(crews).map(([name, hours]) => ({ name: name.slice(0, 15), hours: Math.round(hours * 10) / 10 }));
+  }, [data]);
+
+  // #16 Photo compliance: % of completed WOs with all 7 photo categories
+  const photoCompliance = useMemo(() => {
+    if (!data) return { score: 0, total: 0, compliant: 0 };
+    const completed = data.workOrders?.filter((w) => w.status === "completed") || [];
+    if (completed.length === 0) return { score: 0, total: 0, compliant: 0 };
+    const required = ["site_before", "prep", "primer", "base_coat", "color_install", "topcoat", "site_after"];
+    const woIds = completed.map((w) => w.id);
+    const woPhotos = (data.fieldPhotos || []).filter((p) => woIds.includes(p.work_order_id));
+    let compliant = 0;
+    completed.forEach((w) => {
+      const cats = new Set(woPhotos.filter((p) => p.work_order_id === w.id).map((p) => p.category));
+      if (required.every((r) => cats.has(r))) compliant++;
+    });
+    return { score: Math.round(compliant / completed.length * 100), total: completed.length, compliant };
+  }, [data]);
+
+  // #12 Job cost variance: jobs where actual > predicted * 1.15
+  const jobCostAlerts = useMemo(() => {
+    if (!data || !data.jobCosts?.length) return [];
+    return data.jobCosts
+      .filter((j) => j.actual_total > 0 && j.predicted_total > 0 && j.actual_total > j.predicted_total * 1.15)
+      .map((j) => ({
+        name: `JC ${j.id.slice(-4)}`,
+        predicted: j.predicted_total,
+        actual: j.actual_total,
+        variance: Math.round((j.actual_total / j.predicted_total - 1) * 100),
+      }));
   }, [data]);
 
   if (!data || !metrics) return <div className="hx-loading"><Loader2 className="spin" size={26} /></div>;
@@ -194,6 +262,61 @@ export default function Dashboard() {
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
+      )}
+
+      {photoCompliance.total > 0 && (
+        <div className="hx-sys-card" style={{ padding: 16, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <h3 style={{ fontSize: 12, color: "var(--vx-accent)", letterSpacing: ".06em", textTransform: "uppercase", margin: 0 }}>Photo Compliance Score</h3>
+            <p style={{ fontSize: 11, color: "var(--vx-muted)", margin: "4px 0 0" }}>{photoCompliance.compliant}/{photoCompliance.total} completed jobs have all 7 required photo categories</p>
+          </div>
+          <div style={{ fontSize: 32, fontWeight: 900, color: photoCompliance.score >= 80 ? "var(--vx-accent)" : photoCompliance.score >= 50 ? "var(--vx-warning)" : "var(--vx-danger)" }}>
+            {photoCompliance.score}%
+          </div>
+        </div>
+      )}
+
+      {priceElasticity.length > 0 && (
+        <ChartCard title="Price Elasticity — Estimate vs Proposal">
+          <ResponsiveContainer>
+            <BarChart data={priceElasticity} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2f2f2f" />
+              <XAxis dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 8 }} angle={-30} textAnchor="end" height={50} />
+              <YAxis tick={{ fill: "#A0A0A0", fontSize: 10 }} />
+              <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
+              <Bar dataKey="estimate" name="Estimate Mid" fill="#43a9ff" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="proposal" name="Proposal Total" fill="#9cff00" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      )}
+
+      {crewUtilization.length > 0 && (
+        <ChartCard title="Crew Utilization — Hours This Week">
+          <ResponsiveContainer>
+            <BarChart data={crewUtilization} layout="vertical" margin={{ top: 4, right: 10, left: 20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2f2f2f" />
+              <XAxis type="number" tick={{ fill: "#A0A0A0", fontSize: 10 }} />
+              <YAxis type="category" dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 9 }} width={80} />
+              <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} formatter={(v) => `${v} hrs`} />
+              <Bar dataKey="hours" fill="#c4ff3f" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      )}
+
+      {jobCostAlerts.length > 0 && (
+        <div className="hx-sys-card" style={{ padding: 16, display: "grid", gap: 8 }}>
+          <h3 style={{ fontSize: 12, color: "var(--vx-danger)", letterSpacing: ".06em", textTransform: "uppercase", margin: 0 }}>⚠ Job Cost Variance Alerts</h3>
+          {jobCostAlerts.map((j, i) => (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 10px", borderRadius: 8, background: "rgba(255,82,88,.06)", border: "1px solid var(--vx-danger)" }}>
+              <strong style={{ fontSize: 12, color: "var(--vx-text)" }}>{j.name}</strong>
+              <span style={{ fontSize: 11, color: "var(--vx-danger)", fontWeight: 700 }}>
+                ${j.predicted.toLocaleString()} → ${j.actual.toLocaleString()} (+{j.variance}%)
+              </span>
+            </div>
+          ))}
+        </div>
       )}
 
       <div style={{ flex: 1, minHeight: 280, display: "flex", flexDirection: "column" }}>
