@@ -52,13 +52,20 @@ export function DeviceShell() {
     );
   });
   const [isDesktop, setIsDesktop] = useState<boolean>(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return false;
-    return window.matchMedia('(min-width: 768px)').matches;
+    if (typeof window === 'undefined') return false;
+    const viewportDesktop = !!(window.matchMedia && window.matchMedia('(min-width: 768px)').matches);
+    const screenDesktop = !!(window.screen && window.screen.width >= 768);
+    const nativeMobile = !!window.navigator && /WebView|iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
+    return viewportDesktop || (screenDesktop && !nativeMobile);
   });
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
     const mql = window.matchMedia('(min-width: 768px)');
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    const handler = (e: MediaQueryListEvent) => {
+      const screenDesktop = !!(window.screen && window.screen.width >= 768);
+      const nativeMobile = !!window.navigator && /WebView|iPhone|iPad|iPod|Android/i.test(window.navigator.userAgent);
+      setIsDesktop(e.matches || (screenDesktop && !nativeMobile));
+    };
     mql.addEventListener('change', handler);
     return () => mql.removeEventListener('change', handler);
   }, []);
@@ -109,7 +116,7 @@ export function DeviceShell() {
     } catch (e) { notify('Account deletion failed: ' + (e instanceof Error ? e.message : 'error')); setDeleting(false); setConfirmDelete(false); }
   };
   return (
-    <div className="vx-stage">
+    <div className={"vx-stage" + (isDesktop ? " vx-desktop" : "")}>
       <div className="vx-device">
         <div className="vx-side-buttons" />
         <div className={"vx-screen" + (isDesktop ? " vx-desktop" : "") + (isNativeMobile ? " vx-native" : "")}>
