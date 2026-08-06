@@ -33,18 +33,18 @@ function isTaken(name, existing) {
   });
 }
 
-function Field({ label, children, hint }) {
+function SectionHead({ index, tag, title, description }) {
   return (
-    <label style={{ display: "grid", gap: 6, fontSize: 12, color: "var(--vx-muted)", fontWeight: 700 }}>
-      {label}
-      {children}
-      {hint && <span style={{ color: "var(--vx-faint)", fontWeight: 400 }}>{hint}</span>}
-    </label>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+      <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", fontWeight: 900, fontSize: 15, color: "var(--vx-accent)", border: "1px solid #8A7300", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>{index}</span>
+      <div style={{ minWidth: 0 }}>
+        <span className="vx-kicker">{tag}</span>
+        <h2 style={{ margin: "3px 0 0", fontSize: 19, letterSpacing: "-.02em" }}>{title}</h2>
+        {description && <p style={{ margin: "5px 0 0", color: "var(--vx-muted)", fontSize: 12.5, lineHeight: 1.45 }}>{description}</p>}
+      </div>
+    </div>
   );
 }
-
-const inputCls = "vx-input";
-const selCls = "vx-input";
 
 export default function BusinessGenerator() {
   const [onboarding, setOnboarding] = useState({ city: "", state: "", industry: "", specialties: "", vibe: VIBES[0], targetCustomer: "", nameStyle: NAME_STYLES[1], notes: "" });
@@ -68,50 +68,33 @@ export default function BusinessGenerator() {
   const set = (k) => (e) => setOnboarding((o) => ({ ...o, [k]: e.target.value }));
   const onboardingReady = onboarding.city.trim() && onboarding.industry.trim() && onboarding.specialties.trim();
 
-  const ctx = () => `Business name: ${savedName || "(not chosen yet)"}
-Industry: ${onboarding.industry}
-Location: ${onboarding.city}, ${onboarding.state}
-Specialties: ${onboarding.specialties}
-Brand vibe: ${onboarding.vibe}
-Target customer: ${onboarding.targetCustomer || "(general)"}
-Naming style preference: ${onboarding.nameStyle}
-Extra notes: ${onboarding.notes || "none"}`;
+  const ctx = () => "Business name: " + (savedName || "(not chosen yet)") +
+    "\nIndustry: " + onboarding.industry +
+    "\nLocation: " + onboarding.city + ", " + onboarding.state +
+    "\nSpecialties: " + onboarding.specialties +
+    "\nBrand vibe: " + onboarding.vibe +
+    "\nTarget customer: " + (onboarding.targetCustomer || "(general)") +
+    "\nNaming style preference: " + onboarding.nameStyle +
+    "\nExtra notes: " + (onboarding.notes || "none");
 
-  // Step 2: generate 10 names + scraper validation
   const generateNames = async () => {
-    setNamesLoading(true);
-    setNamesError("");
-    setNames([]);
-    setCompetitors([]);
-    setSavedName(null);
+    setNamesLoading(true); setNamesError(""); setNames([]); setCompetitors([]); setSavedName(null);
     try {
-      const prompt = `Generate 10 unique, brandable business names for a new company. Context:
-${ctx()}
-
-Rules:
-- Names must fit the "${onboarding.vibe}" vibe and the "${onboarding.nameStyle}" naming style.
-- Avoid obvious existing major brands and trademarks.
-- Make them memorable, easy to spell, and relevant to the industry and specialties.
-- Return exactly 10 names, each with a one-line rationale and a short tagline.`;
-      const schema = obj({
-        names: { type: "array", items: obj({ name: { type: "string" }, rationale: { type: "string" }, tagline: { type: "string" } }, ["name"]) },
-      }, ["names"]);
+      const prompt = "Generate 10 unique, brandable business names for a new company. Context:\n" + ctx() +
+        "\n\nRules:\n- Names must fit the \"" + onboarding.vibe + "\" vibe and the \"" + onboarding.nameStyle + "\" naming style.\n- Avoid obvious existing major brands and trademarks.\n- Make them memorable, easy to spell, and relevant to the industry and specialties.\n- Return exactly 10 names, each with a one-line rationale and a short tagline.";
+      const schema = obj({ names: { type: "array", items: obj({ name: { type: "string" }, rationale: { type: "string" }, tagline: { type: "string" } }, ["name"]) } }, ["names"]);
       const list = await llmOptions(prompt, schema, "names");
 
-      // Scraper validation — one scrape for the industry+location, then match
       setValidating(true);
       let existing = [];
       try {
         const res = await base44.functions.invoke("browserbaseScrape", { category: onboarding.industry, city: onboarding.city, state: onboarding.state, depth: "mid" });
         existing = (res?.results || []).map((r) => r.business_name).filter(Boolean);
         setCompetitors(existing);
-      } catch (e) {
-        // scraper optional — treat as no data
-      }
+      } catch (e) {}
       setValidating(false);
 
-      const validated = list.map((n) => ({ ...n, taken: isTaken(n.name, existing) }));
-      setNames(validated);
+      setNames(list.map((n) => ({ ...n, taken: isTaken(n.name, existing) })));
     } catch (e) {
       setNamesError(e?.message || "Name generation failed");
     } finally {
@@ -119,138 +102,59 @@ Rules:
     }
   };
 
-  // Step 3: logo (3 images)
   const generateLogos = async () => {
     const styles = ["minimalist wordmark, clean typography", "emblem with a custom icon mark", "abstract geometric symbol with the name"];
-    const prompts = styles.map((s) => `Professional logo design for a business named "${savedName}", in the ${onboarding.industry} industry, ${onboarding.vibe} style. ${s}. Flat, modern, high contrast, centered on a dark background.`);
+    const prompts = styles.map((s) => "Professional logo design for a business named \"" + savedName + "\", in the " + onboarding.industry + " industry, " + onboarding.vibe + " style. " + s + ". Flat, modern, high contrast, centered on a dark background.");
     return genImages(prompts);
   };
 
-  // Step 4: brand package (3)
   const generateBrand = async () => {
-    const prompt = `Design 3 distinct brand package options for this business. For each option provide: a confirmed brand name, a 3-color palette (each with name + hex), a heading font name, a body font name, a tagline, a voice/tone description, and a key differentiator.
-
-Context:
-${ctx()}`;
-    const schema = obj({
-      options: {
-        type: "array",
-        items: obj({
-          name: { type: "string" },
-          colors: { type: "array", items: obj({ name: { type: "string" }, hex: { type: "string" } }) },
-          heading_font: { type: "string" },
-          body_font: { type: "string" },
-          tagline: { type: "string" },
-          voice: { type: "string" },
-          differentiator: { type: "string" },
-        }),
-      },
-    }, ["options"]);
+    const prompt = "Design 3 distinct brand package options for this business. For each option provide: a confirmed brand name, a 3-color palette (each with name + hex), a heading font name, a body font name, a tagline, a voice/tone description, and a key differentiator.\n\nContext:\n" + ctx();
+    const schema = obj({ options: { type: "array", items: obj({ name: { type: "string" }, colors: { type: "array", items: obj({ name: { type: "string" }, hex: { type: "string" } }) }, heading_font: { type: "string" }, body_font: { type: "string" }, tagline: { type: "string" }, voice: { type: "string" }, differentiator: { type: "string" } }) } }, ["options"]);
     return llmOptions(prompt, schema);
   };
 
-  // Step 5: proposal templates (3)
   const generateProposals = async () => {
-    const prompt = `Create 3 distinct proposal templates for selling this business's services to a prospective customer. Each template: a title, an angle (e.g. Good/Better/Best or Premium/Standard/Essentials), and 3-4 sections each with a heading and body copy. Make it persuasive and ready to customize.
-
-Context:
-${ctx()}`;
-    const schema = obj({
-      options: {
-        type: "array",
-        items: obj({
-          title: { type: "string" },
-          angle: { type: "string" },
-          sections: { type: "array", items: obj({ heading: { type: "string" }, body: { type: "string" } }) },
-        }),
-      },
-    }, ["options"]);
+    const prompt = "Create 3 distinct proposal templates for selling this business's services to a prospective customer. Each template: a title, an angle, and 3-4 sections each with a heading and body copy. Make it persuasive and ready to customize.\n\nContext:\n" + ctx();
+    const schema = obj({ options: { type: "array", items: obj({ title: { type: "string" }, angle: { type: "string" }, sections: { type: "array", items: obj({ heading: { type: "string" }, body: { type: "string" } }) } }) } }, ["options"]);
     return llmOptions(prompt, schema);
   };
 
-  // Step 6: email templates (3)
   const generateEmails = async () => {
-    const prompt = `Write 3 distinct cold outreach email templates for this business to prospective customers. Each with a subject line and a body. Vary the angle (e.g. problem-led, value-led, social-proof). Keep concise and professional.
-
-Context:
-${ctx()}`;
-    const schema = obj({
-      options: {
-        type: "array",
-        items: obj({ subject: { type: "string" }, body: { type: "string" } }),
-      },
-    }, ["options"]);
+    const prompt = "Write 3 distinct cold outreach email templates for this business to prospective customers. Each with a subject line and a body. Vary the angle. Keep concise and professional.\n\nContext:\n" + ctx();
+    const schema = obj({ options: { type: "array", items: obj({ subject: { type: "string" }, body: { type: "string" } }) } }, ["options"]);
     return llmOptions(prompt, schema);
   };
 
-  // Step 7: website/PWA (3)
   const generateWebsites = async () => {
-    const prompt = `Design 3 distinct homepage concepts for a PWA website for this business. Each: a hero headline, a hero subheadline, 3-4 sections (each with a title and copy), and a primary CTA label. Optimize for mobile-first.
-
-Context:
-${ctx()}`;
-    const schema = obj({
-      options: {
-        type: "array",
-        items: obj({
-          hero_headline: { type: "string" },
-          hero_sub: { type: "string" },
-          cta: { type: "string" },
-          sections: { type: "array", items: obj({ title: { type: "string" }, copy: { type: "string" } }) },
-        }),
-      },
-    }, ["options"]);
+    const prompt = "Design 3 distinct homepage concepts for a PWA website for this business. Each: a hero headline, a hero subheadline, 3-4 sections (each with a title and copy), and a primary CTA label. Optimize for mobile-first.\n\nContext:\n" + ctx();
+    const schema = obj({ options: { type: "array", items: obj({ hero_headline: { type: "string" }, hero_sub: { type: "string" }, cta: { type: "string" }, sections: { type: "array", items: obj({ title: { type: "string" }, copy: { type: "string" } }) } }) } }, ["options"]);
     return llmOptions(prompt, schema);
   };
 
-  // Step 8: digital card + brochure (3 images)
   const generateCards = async () => {
     const styles = ["front-cover brochure, bold headline + hero imagery", "tri-fold brochure layout, services + contact", "digital business card, minimalist contact + QR style"];
-    const prompts = styles.map((s) => `Marketing brochure design for "${savedName}", ${onboarding.industry} industry, ${onboarding.vibe} style. ${s}. Professional, print-ready, dark premium aesthetic with the business name visible.`);
+    const prompts = styles.map((s) => "Marketing brochure design for \"" + savedName + "\", " + onboarding.industry + " industry, " + onboarding.vibe + " style. " + s + ". Professional, print-ready, dark premium aesthetic with the business name visible.");
     return genImages(prompts);
   };
 
-  // Step 9: app concept (3)
   const generateApps = async () => {
-    const prompt = `Conceptualize 3 distinct mobile app ideas for this business to serve its customers. Each: an app name, a list of 4-6 core features, a list of 3-5 primary screens, and a one-line value proposition.
-
-Context:
-${ctx()}`;
-    const schema = obj({
-      options: {
-        type: "array",
-        items: obj({
-          app_name: { type: "string" },
-          value_prop: { type: "string" },
-          core_features: { type: "array", items: { type: "string" } },
-          primary_screens: { type: "array", items: { type: "string" } },
-        }),
-      },
-    }, ["options"]);
+    const prompt = "Conceptualize 3 distinct mobile app ideas for this business to serve its customers. Each: an app name, a list of 4-6 core features, a list of 3-5 primary screens, and a one-line value proposition.\n\nContext:\n" + ctx();
+    const schema = obj({ options: { type: "array", items: obj({ app_name: { type: "string" }, value_prop: { type: "string" }, core_features: { type: "array", items: { type: "string" } }, primary_screens: { type: "array", items: { type: "string" } } }) } }, ["options"]);
     return llmOptions(prompt, schema);
   };
 
-  // Step 10: social content + video (3)
   const generateSocial = async () => {
-    const prompt = `Create 3 distinct social media post concepts for this business. Each: a caption (with emojis), 5-8 hashtags, and a 4-second short-form video script (describe the visual scene). Tailor to ${onboarding.vibe} tone.
-
-Context:
-${ctx()}`;
-    const schema = obj({
-      options: {
-        type: "array",
-        items: obj({ caption: { type: "string" }, hashtags: { type: "array", items: { type: "string" } }, video_script: { type: "string" } }),
-      },
-    }, ["options"]);
+    const prompt = "Create 3 distinct social media post concepts for this business. Each: a caption (with emojis), 5-8 hashtags, and a 4-second short-form video script (describe the visual scene). Tailor to " + onboarding.vibe + " tone.\n\nContext:\n" + ctx();
+    const schema = obj({ options: { type: "array", items: obj({ caption: { type: "string" }, hashtags: { type: "array", items: { type: "string" } }, video_script: { type: "string" } }) } }, ["options"]);
     return llmOptions(prompt, schema);
   };
 
   const renderVideo = async () => {
     if (!savedSocial) return;
-    setVideoLoading(true);
-    setVideoUrl(null);
+    setVideoLoading(true); setVideoUrl(null);
     try {
-      const prompt = `A 4-second vertical promotional video for a business named "${savedName}" in the ${onboarding.industry} industry. Scene: ${savedSocial.video_script}. ${onboarding.vibe} mood, cinematic, high quality, branded.`;
+      const prompt = "A 4-second vertical promotional video for a business named \"" + savedName + "\" in the " + onboarding.industry + " industry. Scene: " + savedSocial.video_script + ". " + onboarding.vibe + " mood, cinematic, high quality, branded.";
       const r = await base44.integrations.Core.GenerateVideo({ prompt, duration: 4, aspect_ratio: "9:16", generate_audio: false });
       setVideoUrl(r.url);
     } catch (e) {
@@ -262,97 +166,95 @@ ${ctx()}`;
 
   const steps = [
     { key: "onboard", label: "Onboarding", done: !!onboardingReady },
-    { key: "names", label: "Business Names", done: !!savedName },
+    { key: "names", label: "Names", done: !!savedName },
     { key: "logo", label: "Logo", done: !!savedLogo },
-    { key: "brand", label: "Brand Package", done: !!savedBrand },
+    { key: "brand", label: "Brand", done: !!savedBrand },
     { key: "proposal", label: "Proposal", done: !!savedProposal },
     { key: "email", label: "Emails", done: !!savedEmail },
-    { key: "web", label: "Website / PWA", done: !!savedWebsite },
-    { key: "card", label: "Card & Brochure", done: !!savedCard },
-    { key: "app", label: "App Concept", done: !!savedApp },
-    { key: "social", label: "Social & Video", done: !!savedSocial },
+    { key: "web", label: "Website", done: !!savedWebsite },
+    { key: "card", label: "Card", done: !!savedCard },
+    { key: "app", label: "App", done: !!savedApp },
+    { key: "social", label: "Social", done: !!savedSocial },
   ];
 
+  const imgBox = { background: "#0b0b0b", overflow: "hidden" };
+  const optPad = { padding: 15, display: "grid", gap: 9 };
+  const subLabel = { fontSize: 11, fontWeight: 800, letterSpacing: ".05em", textTransform: "uppercase", color: "var(--vx-faint)" };
+  const divider = { height: 1, background: "var(--vx-border-soft)", margin: "2px 0" };
+
   return (
-    <div style={{ display: "grid", gap: 16, padding: "16px 0 32px" }}>
-      {/* Header */}
-      <div>
-        <span className="vx-kicker">AI BUSINESS BUILDER</span>
-        <h1 style={{ margin: "4px 0 0", fontSize: 28, letterSpacing: "-.03em" }}>Business Generator</h1>
-        <p style={{ margin: "6px 0 0", color: "var(--vx-muted)", fontSize: 14, lineHeight: 1.45 }}>
-          Answer a few questions, generate 10 validated business names, then build your entire brand — logo, proposal, emails, website, app, and social video — 3 options at a time.
-        </p>
+    <div style={{ display: "grid", gap: 16, padding: "8px 0 36px" }}>
+      {/* Hero header */}
+      <div className="vx-card" style={{ padding: 22, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 90% at 0% 0%, rgba(255,214,10,.10), transparent 55%)", pointerEvents: "none" }} />
+        <div style={{ position: "relative" }}>
+          <span className="vx-kicker">AI BUSINESS BUILDER</span>
+          <h1 style={{ margin: "4px 0 0", fontSize: 30, letterSpacing: "-.035em" }}>Business Generator</h1>
+          <p style={{ margin: "7px 0 0", color: "var(--vx-muted)", fontSize: 13.5, lineHeight: 1.5, maxWidth: 520 }}>
+            Answer a few questions, generate 10 validated business names, then build your entire brand — logo, proposal, emails, website, app, and social video — three options at a time.
+          </p>
+        </div>
       </div>
 
       {/* Stepper */}
-      <div className="vx-card-soft" style={{ padding: 12, display: "flex", gap: 6, overflowX: "auto" }}>
+      <div className="vx-card-soft" style={{ padding: "12px 14px", display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none" }}>
         {steps.map((s, i) => (
-          <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-            <span style={{ width: 22, height: 22, borderRadius: "50%", display: "grid", placeItems: "center", fontSize: 11, fontWeight: 800, background: s.done ? "var(--vx-accent)" : "var(--vx-panel-3)", color: s.done ? "#0A0A0A" : "var(--vx-faint)" }}>
+          <div key={s.key} style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+            <span style={{ width: 24, height: 24, borderRadius: "50%", display: "grid", placeItems: "center", fontSize: 11, fontWeight: 800, background: s.done ? "var(--vx-accent)" : "var(--vx-panel-3)", color: s.done ? "#0A0A0A" : "var(--vx-faint)", border: s.done ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", boxShadow: s.done ? "var(--vx-glow)" : "none" }}>
               {s.done ? <Check style={{ width: 13, height: 13 }} /> : i + 1}
             </span>
-            <span style={{ fontSize: 12, color: s.done ? "var(--vx-text)" : "var(--vx-faint)", whiteSpace: "nowrap" }}>{s.label}</span>
-            {i < steps.length - 1 && <span style={{ color: "var(--vx-border)", margin: "0 2px" }}>·</span>}
+            <span style={{ fontSize: 12, fontWeight: 600, color: s.done ? "var(--vx-text)" : "var(--vx-faint)", whiteSpace: "nowrap" }}>{s.label}</span>
+            {i < steps.length - 1 && <span style={{ width: 16, height: 1, background: "var(--vx-border-soft)", marginLeft: 2 }} />}
           </div>
         ))}
       </div>
 
       {/* Step 1: Onboarding */}
-      <section className="vx-card" style={{ padding: 18, display: "grid", gap: 14 }}>
-        <div>
-          <span className="vx-kicker">ONBOARDING</span>
-          <h2 style={{ margin: "4px 0 0", fontSize: 20 }}>1. Tell us about the business</h2>
-          <p style={{ margin: "6px 0 0", color: "var(--vx-muted)", fontSize: 13 }}>The more detail you give, the better the AI can tailor every name and asset.</p>
+      <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16 }}>
+        <SectionHead index={1} tag="ONBOARDING" title="Tell us about the business" description="The more detail you give, the better the AI can tailor every name and asset." />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 13 }}>
+          <div className="vx-field"><label>City</label><input className="vx-input" value={onboarding.city} onChange={set("city")} placeholder="Austin" /></div>
+          <div className="vx-field"><label>State</label><input className="vx-input" value={onboarding.state} onChange={set("state")} placeholder="TX" /></div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <Field label="City"><input className={inputCls} value={onboarding.city} onChange={set("city")} placeholder="e.g. Austin" /></Field>
-          <Field label="State"><input className={inputCls} value={onboarding.state} onChange={set("state")} placeholder="e.g. TX" /></Field>
+        <div className="vx-field"><label>Industry</label><input className="vx-input" value={onboarding.industry} onChange={set("industry")} placeholder="Epoxy floor coatings" /></div>
+        <div className="vx-field"><label>Specialties</label><input className="vx-input" value={onboarding.specialties} onChange={set("specialties")} placeholder="garage floors, commercial polished concrete" /><span className="vx-help">Comma-separated services or differentiators</span></div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 13 }}>
+          <div className="vx-field"><label>Brand vibe</label><select className="vx-input" value={onboarding.vibe} onChange={set("vibe")}>{VIBES.map((v) => <option key={v} value={v}>{v}</option>)}</select></div>
+          <div className="vx-field"><label>Name style</label><select className="vx-input" value={onboarding.nameStyle} onChange={set("nameStyle")}>{NAME_STYLES.map((v) => <option key={v} value={v}>{v}</option>)}</select></div>
         </div>
-        <Field label="Industry"><input className={inputCls} value={onboarding.industry} onChange={set("industry")} placeholder="e.g. Epoxy floor coatings" /></Field>
-        <Field label="Specialties" hint="Comma-separated services or differentiators"><input className={inputCls} value={onboarding.specialties} onChange={set("specialties")} placeholder="e.g. garage floors, commercial polished concrete" /></Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <Field label="Brand vibe">
-            <select className={selCls} value={onboarding.vibe} onChange={set("vibe")}>{VIBES.map((v) => <option key={v} value={v}>{v}</option>)}</select>
-          </Field>
-          <Field label="Name style">
-            <select className={selCls} value={onboarding.nameStyle} onChange={set("nameStyle")}>{NAME_STYLES.map((v) => <option key={v} value={v}>{v}</option>)}</select>
-          </Field>
-        </div>
-        <Field label="Target customer" hint="Who you serve most"><input className={inputCls} value={onboarding.targetCustomer} onChange={set("targetCustomer")} placeholder="e.g. homeowners, property managers" /></Field>
-        <Field label="Anything else?"><textarea className={inputCls} rows={2} value={onboarding.notes} onChange={set("notes")} placeholder="Keywords to include, names to avoid, founders' initials, etc." /></Field>
+        <div className="vx-field"><label>Target customer</label><input className="vx-input" value={onboarding.targetCustomer} onChange={set("targetCustomer")} placeholder="homeowners, property managers" /><span className="vx-help">Who you serve most</span></div>
+        <div className="vx-field"><label>Anything else?</label><textarea className="vx-input" rows={2} value={onboarding.notes} onChange={set("notes")} placeholder="Keywords to include, names to avoid, founders' initials, etc." /></div>
       </section>
 
       {/* Step 2: Names + validation */}
-      <section className="vx-card" style={{ padding: 18, display: "grid", gap: 14 }}>
-        <div>
-          <span className="vx-kicker">NAMING</span>
-          <h2 style={{ margin: "4px 0 0", fontSize: 20 }}>2. Generate 10 business names</h2>
-          <p style={{ margin: "6px 0 0", color: "var(--vx-muted)", fontSize: 13 }}>Each name is checked against the scraper to see if it's already in use in your area.</p>
+      <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16 }}>
+        <SectionHead index={2} tag="NAMING" title="Generate 10 business names" description="Each name is checked against the scraper to see if it's already in use in your area." />
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <button className="vx-btn primary" onClick={generateNames} disabled={!onboardingReady || namesLoading}>
+            {namesLoading ? <Loader2 className="vx-icon" /> : <Search className="vx-icon" />}
+            {namesLoading ? (validating ? "Validating with scraper…" : "Generating…") : "Generate & validate 10 names"}
+          </button>
+          {!onboardingReady && <span style={{ fontSize: 12, color: "var(--vx-faint)" }}>Fill city, industry, and specialties first.</span>}
         </div>
-        <button className="vx-btn primary" onClick={generateNames} disabled={!onboardingReady || namesLoading} style={{ alignSelf: "flex-start" }}>
-          {namesLoading ? <Loader2 className="vx-icon" /> : <Search className="vx-icon" />}
-          {namesLoading ? (validating ? "Validating with scraper…" : "Generating…") : "Generate & validate 10 names"}
-        </button>
-        {!onboardingReady && <p style={{ color: "var(--vx-faint)", fontSize: 12, margin: 0 }}>Fill city, industry, and specialties first.</p>}
         {namesError && <p style={{ color: "var(--vx-danger)", fontSize: 12, margin: 0 }}>{namesError}</p>}
 
         {names.length > 0 && (
-          <div style={{ display: "grid", gap: 8 }}>
+          <div style={{ display: "grid", gap: 10 }}>
             {names.map((n, i) => {
               const active = savedName === n.name;
               return (
-                <div key={i} onClick={() => setSavedName(n.name)} style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, padding: 14, borderRadius: 14, border: active ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", background: active ? "var(--vx-accent-soft)" : "var(--vx-panel)", boxShadow: active ? "var(--vx-glow)" : "none" }}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div key={i} onClick={() => setSavedName(n.name)} style={{ cursor: "pointer", display: "grid", gridTemplateColumns: "1fr auto", gap: 12, padding: 15, borderRadius: 15, border: active ? "1px solid var(--vx-accent)" : "1px solid var(--vx-border-soft)", background: active ? "var(--vx-accent-soft)" : "var(--vx-panel)", boxShadow: active ? "var(--vx-glow)" : "inset 0 1px rgba(255,255,255,.025)", transition: "border-color .15s, box-shadow .15s, background .15s" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                       <strong style={{ fontSize: 16 }}>{n.name}</strong>
-                      <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".04em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 8, border: n.taken ? "1px solid #7f1a20" : "1px solid #8A7300", color: n.taken ? "#ff858b" : "var(--vx-accent)", background: n.taken ? "rgba(255,82,88,.08)" : "rgba(255,214,10,.06)" }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".05em", textTransform: "uppercase", padding: "3px 9px", borderRadius: 8, border: n.taken ? "1px solid #7f1a20" : "1px solid #8A7300", color: n.taken ? "#ff858b" : "var(--vx-accent)", background: n.taken ? "rgba(255,82,88,.08)" : "rgba(255,214,10,.06)" }}>
                         {n.taken ? "Possibly taken" : "Likely available"}
                       </span>
                     </div>
-                    {n.rationale && <p style={{ margin: "4px 0 0", color: "var(--vx-muted)", fontSize: 12 }}>{n.rationale}</p>}
-                    {n.tagline && <p style={{ margin: "2px 0 0", color: "var(--vx-accent)", fontSize: 12, fontStyle: "italic" }}>“{n.tagline}”</p>}
+                    {n.rationale && <p style={{ margin: "5px 0 0", color: "var(--vx-muted)", fontSize: 12, lineHeight: 1.4 }}>{n.rationale}</p>}
+                    {n.tagline && <p style={{ margin: "3px 0 0", color: "var(--vx-accent)", fontSize: 12.5, fontStyle: "italic" }}>“{n.tagline}”</p>}
                   </div>
-                  {active && <span style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--vx-accent)", color: "#0A0A0A", display: "grid", placeItems: "center", alignSelf: "start" }}><Check style={{ width: 13, height: 13 }} /></span>}
+                  {active && <span style={{ width: 26, height: 26, borderRadius: "50%", background: "var(--vx-accent)", color: "#0A0A0A", display: "grid", placeItems: "center", alignSelf: "start", boxShadow: "var(--vx-glow)" }}><Check style={{ width: 15, height: 15 }} /></span>}
                 </div>
               );
             })}
@@ -361,48 +263,55 @@ ${ctx()}`;
 
         {savedName && (
           <div className="vx-notice" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Check className="vx-icon" /> Approved name: <strong style={{ color: "var(--vx-accent)" }}>{savedName}</strong>
+            <Check className="vx-icon" /> Approved name: <strong style={{ color: "#ffd85a" }}>{savedName}</strong>
           </div>
         )}
 
         {competitors.length > 0 && (
           <div className="vx-card-soft" style={{ padding: 14 }}>
             <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", display: "flex", alignItems: "center", gap: 6 }}><Globe className="vx-icon-sm" /> Competitors already operating in {onboarding.city}:</p>
-            <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--vx-faint)" }}>{competitors.slice(0, 12).join(" · ")}</p>
+            <p style={{ margin: "7px 0 0", fontSize: 12, color: "var(--vx-faint)", lineHeight: 1.5 }}>{competitors.slice(0, 12).join(" · ")}</p>
           </div>
         )}
       </section>
 
       {/* Step 3: Logo */}
-      <GeneratorSection index={3} tag="IDENTITY" title="Logo generator" description="3 distinct logo concepts based on your approved name." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateLogos} selectedKey={savedLogo?._i} onSelect={(opt, i, save) => { setSavedLogo({ ...opt, _i: i }); if (save) setSavedLogo({ ...opt, _i: i }); }} renderOption={(opt) => (
-        <div style={{ aspectRatio: "16/10", background: "#0b0b0b" }}>
+      <GeneratorSection index={3} tag="IDENTITY" title="Logo generator" description="3 distinct logo concepts based on your approved name." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateLogos} selectedKey={savedLogo?._i} onSelect={(opt, i, save) => setSavedLogo({ ...opt, _i: i })} renderOption={(opt) => (
+        <div style={{ ...imgBox, aspectRatio: "16/10" }}>
           <img src={opt.url} alt="logo option" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
       )} />
 
       {/* Step 4: Brand package */}
-      <GeneratorSection index={4} tag="BRAND" title="Brand package generator" description="3 full brand systems — palette, fonts, tagline, voice, differentiator." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateBrand} selectedKey={savedBrand?._i} onSelect={(opt, i, save) => setSavedBrand({ ...opt, _i: i })} renderOption={(opt) => (
-        <div style={{ padding: 14, display: "grid", gap: 8 }}>
+      <GeneratorSection index={4} tag="BRAND" title="Brand package generator" description="3 full brand systems — palette, fonts, tagline, voice, differentiator." canGenerate={!!savedName} lockedMessage="Save a business name first." generate={generateBrand} selectedKey={savedBrand?._i} onSelect={(opt, i) => setSavedBrand({ ...opt, _i: i })} renderOption={(opt) => (
+        <div style={optPad}>
           <strong style={{ fontSize: 15 }}>{opt.name}</strong>
-          <div style={{ display: "flex", gap: 6 }}>
-            {(opt.colors || []).map((c, j) => <div key={j} title={`${c.name} ${c.hex}`} style={{ flex: 1, height: 32, borderRadius: 8, background: c.hex, border: "1px solid var(--vx-border-soft)" }} />)}
+          <div style={{ display: "flex", gap: 7 }}>
+            {(opt.colors || []).map((c, j) => (
+              <div key={j} style={{ flex: 1 }}>
+                <div title={c.name + " " + c.hex} style={{ height: 34, borderRadius: 9, background: c.hex, border: "1px solid var(--vx-border-soft)" }} />
+                <span style={{ fontSize: 10, color: "var(--vx-faint)", display: "block", marginTop: 4, textAlign: "center" }}>{c.hex}</span>
+              </div>
+            ))}
           </div>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}>Fonts: <span style={{ color: "var(--vx-text)" }}>{opt.heading_font}</span> / <span style={{ color: "var(--vx-text)" }}>{opt.body_font}</span></p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-accent)" }}>“{opt.tagline}”</p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}><strong style={{ color: "var(--vx-text)" }}>Voice:</strong> {opt.voice}</p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}><strong style={{ color: "var(--vx-text)" }}>Differentiator:</strong> {opt.differentiator}</p>
+          <div style={divider} />
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}><span style={subLabel}>Fonts </span><span style={{ color: "var(--vx-text)" }}>{opt.heading_font}</span> / <span style={{ color: "var(--vx-text)" }}>{opt.body_font}</span></p>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--vx-accent)", fontStyle: "italic" }}>“{opt.tagline}”</p>
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.45 }}><span style={subLabel}>Voice </span>{opt.voice}</p>
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.45 }}><span style={subLabel}>Differentiator </span>{opt.differentiator}</p>
         </div>
       )} />
 
       {/* Step 5: Proposal */}
       <GeneratorSection index={5} tag="SALES" title="Proposal generator" description="3 proposal templates to pitch your services." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateProposals} selectedKey={savedProposal?._i} onSelect={(opt, i) => setSavedProposal({ ...opt, _i: i })} renderOption={(opt) => (
-        <div style={{ padding: 14, display: "grid", gap: 8 }}>
+        <div style={optPad}>
           <strong style={{ fontSize: 15 }}>{opt.title}</strong>
-          <span style={{ fontSize: 11, color: "var(--vx-accent)", textTransform: "uppercase", letterSpacing: ".04em" }}>{opt.angle}</span>
+          <span style={{ fontSize: 11, color: "var(--vx-accent)", textTransform: "uppercase", letterSpacing: ".05em", fontWeight: 700 }}>{opt.angle}</span>
+          <div style={divider} />
           {(opt.sections || []).map((s, j) => (
             <div key={j}>
-              <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "var(--vx-text)" }}>{s.heading}</p>
-              <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.45 }}>{s.body}</p>
+              <p style={{ margin: 0, fontSize: 12.5, fontWeight: 700, color: "var(--vx-text)" }}>{s.heading}</p>
+              <p style={{ margin: "3px 0 0", fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5 }}>{s.body}</p>
             </div>
           ))}
         </div>
@@ -410,22 +319,24 @@ ${ctx()}`;
 
       {/* Step 6: Emails */}
       <GeneratorSection index={6} tag="OUTREACH" title="Email template generator" description="3 cold outreach email drafts." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateEmails} selectedKey={savedEmail?._i} onSelect={(opt, i) => setSavedEmail({ ...opt, _i: i })} renderOption={(opt) => (
-        <div style={{ padding: 14, display: "grid", gap: 6 }}>
-          <strong style={{ fontSize: 13, color: "var(--vx-accent)" }}>{opt.subject}</strong>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{opt.body}</p>
+        <div style={optPad}>
+          <strong style={{ fontSize: 13.5, color: "var(--vx-accent)" }}>{opt.subject}</strong>
+          <div style={divider} />
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{opt.body}</p>
         </div>
       )} />
 
       {/* Step 7: Website / PWA */}
       <GeneratorSection index={7} tag="WEB" title="Desktop / PWA website generator" description="3 homepage concepts, mobile-first." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateWebsites} selectedKey={savedWebsite?._i} onSelect={(opt, i) => setSavedWebsite({ ...opt, _i: i })} renderOption={(opt) => (
-        <div style={{ padding: 14, display: "grid", gap: 8 }}>
-          <strong style={{ fontSize: 17 }}>{opt.hero_headline}</strong>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}>{opt.hero_sub}</p>
-          <span style={{ fontSize: 11, color: "var(--vx-accent)" }}>CTA: {opt.cta}</span>
+        <div style={optPad}>
+          <strong style={{ fontSize: 17, letterSpacing: "-.02em" }}>{opt.hero_headline}</strong>
+          <p style={{ margin: 0, fontSize: 12.5, color: "var(--vx-muted)", lineHeight: 1.45 }}>{opt.hero_sub}</p>
+          <span style={{ fontSize: 11, color: "var(--vx-accent)", fontWeight: 700 }}>CTA: {opt.cta}</span>
+          <div style={divider} />
           {(opt.sections || []).map((s, j) => (
             <div key={j}>
-              <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "var(--vx-text)" }}>{s.title}</p>
-              <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.45 }}>{s.copy}</p>
+              <p style={{ margin: 0, fontSize: 12.5, fontWeight: 700, color: "var(--vx-text)" }}>{s.title}</p>
+              <p style={{ margin: "3px 0 0", fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5 }}>{s.copy}</p>
             </div>
           ))}
         </div>
@@ -433,43 +344,41 @@ ${ctx()}`;
 
       {/* Step 8: Digital card + brochure */}
       <GeneratorSection index={8} tag="PRINT" title="Digital business card & brochure generator" description="3 brochure/card designs." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateCards} selectedKey={savedCard?._i} onSelect={(opt, i) => setSavedCard({ ...opt, _i: i })} renderOption={(opt) => (
-        <div style={{ aspectRatio: "3/4", background: "#0b0b0b" }}>
+        <div style={{ ...imgBox, aspectRatio: "3/4" }}>
           <img src={opt.url} alt="brochure option" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       )} />
 
       {/* Step 9: App concept */}
       <GeneratorSection index={9} tag="PRODUCT" title="App generator" description="3 mobile app concepts for your customers." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateApps} selectedKey={savedApp?._i} onSelect={(opt, i) => setSavedApp({ ...opt, _i: i })} renderOption={(opt) => (
-        <div style={{ padding: 14, display: "grid", gap: 6 }}>
+        <div style={optPad}>
           <strong style={{ fontSize: 15 }}>{opt.app_name}</strong>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-accent)" }}>{opt.value_prop}</p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}><strong style={{ color: "var(--vx-text)" }}>Features:</strong> {(opt.core_features || []).join(", ")}</p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}><strong style={{ color: "var(--vx-text)" }}>Screens:</strong> {(opt.primary_screens || []).join(", ")}</p>
+          <p style={{ margin: 0, fontSize: 12.5, color: "var(--vx-accent)" }}>{opt.value_prop}</p>
+          <div style={divider} />
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5 }}><span style={subLabel}>Features </span>{(opt.core_features || []).join(", ")}</p>
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5 }}><span style={subLabel}>Screens </span>{(opt.primary_screens || []).join(", ")}</p>
         </div>
       )} />
 
       {/* Step 10: Social + video */}
       <GeneratorSection index={10} tag="CONTENT" title="Social media content & video generator" description="3 social post concepts; render a 4s video from your pick." canGenerate={!!savedBrand} lockedMessage="Save a brand package first." generate={generateSocial} selectedKey={savedSocial?._i} onSelect={(opt, i) => { setSavedSocial({ ...opt, _i: i }); setVideoUrl(null); }} renderOption={(opt) => (
-        <div style={{ padding: 14, display: "grid", gap: 6 }}>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--vx-text)", whiteSpace: "pre-wrap" }}>{opt.caption}</p>
+        <div style={optPad}>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--vx-text)", whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{opt.caption}</p>
           <p style={{ margin: 0, fontSize: 12, color: "var(--vx-accent)" }}>{(opt.hashtags || []).join(" ")}</p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)" }}><strong style={{ color: "var(--vx-text)" }}>Video script:</strong> {opt.video_script}</p>
+          <div style={divider} />
+          <p style={{ margin: 0, fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5 }}><span style={subLabel}>Video script </span>{opt.video_script}</p>
         </div>
       )} />
 
       {savedSocial && (
-        <section className="vx-card" style={{ padding: 18, display: "grid", gap: 12 }}>
-          <div>
-            <span className="vx-kicker">VIDEO</span>
-            <h2 style={{ margin: "4px 0 0", fontSize: 18 }}>Render your social video</h2>
-            <p style={{ margin: "6px 0 0", color: "var(--vx-muted)", fontSize: 13 }}>Generates a 4-second vertical clip from your selected post concept.</p>
-          </div>
+        <section className="vx-card" style={{ padding: 20, display: "grid", gap: 14 }}>
+          <SectionHead index={"▶"} tag="VIDEO" title="Render your social video" description="Generates a 4-second vertical clip from your selected post concept." />
           <button className="vx-btn primary" onClick={renderVideo} disabled={videoLoading} style={{ alignSelf: "flex-start" }}>
             {videoLoading ? <Loader2 className="vx-icon" /> : <Film className="vx-icon" />}
             {videoLoading ? "Rendering video…" : "Render 4s video"}
           </button>
           {videoUrl && (
-            <video src={videoUrl} controls playsInline style={{ width: "100%", maxWidth: 300, borderRadius: 14, border: "1px solid var(--vx-border-soft)", margin: "0 auto" }} />
+            <video src={videoUrl} controls playsInline style={{ width: "100%", maxWidth: 300, borderRadius: 16, border: "1px solid var(--vx-border-soft)", margin: "0 auto", display: "block", boxShadow: "var(--vx-shadow)" }} />
           )}
         </section>
       )}
