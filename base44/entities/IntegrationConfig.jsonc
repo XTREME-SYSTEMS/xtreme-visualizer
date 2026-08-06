@@ -1,0 +1,47 @@
+{
+  "name": "IntegrationConfig",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Identifier e.g. twilio"
+    },
+    "twilio_sid": {
+      "type": "string"
+    },
+    "twilio_auth_token": {
+      "type": "string"
+    },
+    "twilio_phone": {
+      "type": "string"
+    },
+    "twilio_sic_code": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
