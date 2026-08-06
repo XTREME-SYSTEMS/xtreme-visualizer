@@ -107,7 +107,12 @@ export default function Home() {
         </div>
         <div className="hx-project-list">
           {recent.length === 0 ? (
-            <div className="hx-empty">No projects yet. Start a new visualization to see them here.</div>
+            <div className="hx-empty">
+              <div>
+                <span>0</span>
+                No recent bids yet. Start a new visualization to see them here.
+              </div>
+            </div>
           ) : (
             recent.map((l) => {
               const badge = STATUS_MAP[l.status] || { label: l.status, cls: "ready" };
