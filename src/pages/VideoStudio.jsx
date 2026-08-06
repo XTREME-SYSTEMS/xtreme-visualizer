@@ -7,6 +7,7 @@ import VideoShareBar from "@/components/video/VideoShareBar";
 import {
   Sparkles, Globe, Factory, Search, Image as ImageIcon, Wand2, Film,
   Loader2, Download, RefreshCw, Check, Type, Palette, Clock, Stamp,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 
 const FONT_PRESETS = [
@@ -16,10 +17,12 @@ const FONT_PRESETS = [
   { key: "rounded", label: "Rounded", stack: "\"Avenir Next\", sans-serif" },
 ];
 
-const LENGTHS = [
-  { value: 4, label: "4s", blurb: "Teaser" },
-  { value: 6, label: "6s", blurb: "Standard" },
-  { value: 8, label: "8s", blurb: "Story" },
+const SEGMENT_MAX = 8;
+const DURATIONS = [
+  { value: 8, segments: 1, blurb: "1 scene" },
+  { value: 16, segments: 2, blurb: "2 scenes" },
+  { value: 24, segments: 3, blurb: "3 scenes" },
+  { value: 32, segments: 4, blurb: "4 scenes" },
 ];
 
 const ASPECTS = [
@@ -34,6 +37,8 @@ const SOURCES = [
   { key: "gallery", label: "Gallery", icon: ImageIcon, blurb: "Use your saved gallery images" },
 ];
 
+const emptyScene = () => ({ hook: "", script: "", visualPrompt: "" });
+
 export default function VideoStudio() {
   const [step, setStep] = useState(1);
   const [source, setSource] = useState("website");
@@ -41,23 +46,25 @@ export default function VideoStudio() {
   const [industryText, setIndustryText] = useState("");
   const [scraperQuery, setScraperQuery] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
-  const [scriptData, setScriptData] = useState(null);
-  const [chosenHook, setChosenHook] = useState(0);
-  const [videoPrompt, setVideoPrompt] = useState("");
-  const [length, setLength] = useState(6);
+  const [summary, setSummary] = useState("");
+  const [scenes, setScenes] = useState([emptyScene()]);
+  const [activeScene, setActiveScene] = useState(0);
+  const [totalDuration, setTotalDuration] = useState(16);
   const [aspect, setAspect] = useState("9:16");
   const [fontKey, setFontKey] = useState("display");
   const [fontColor, setFontColor] = useState("#FFFFFF");
   const [accentColor, setAccentColor] = useState("#FFD60A");
   const [includeLogo, setIncludeLogo] = useState(true);
   const [coverUrl, setCoverUrl] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
+  const [clips, setClips] = useState([]);
+  const [activeClip, setActiveClip] = useState(0);
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState("");
   const [error, setError] = useState("");
 
   const logo = getLoadingLogo();
   const brandName = getHeroTextConfig().headingLine1 || "Xtreme";
+  const segments = DURATIONS.find((d) => d.value === totalDuration)?.segments || 1;
 
   const gatherSourceAndAdvance = async () => {
     if (source === "website" && !websiteUrl.trim()) return setError("Enter your website URL.");
@@ -81,6 +88,7 @@ export default function VideoStudio() {
       } else {
         prompt = `A surface coatings contractor wants a viral short-form video using these finished project photos as the visual basis. Describe the aesthetic and craft a viral angle around premium floor transformations.`;
       }
+      prompt += ` Build a ${totalDuration}-second video split into exactly ${segments} scene(s) of ~${SEGMENT_MAX} seconds each, with a clear narrative arc across scenes. Return JSON with a summary and a scenes array (one entry per scene), each containing a punchy on-screen hook (under 12 words), a short script line, and a detailed visual prompt for an AI video generator describing that scene's footage.`;
       const res = await base44.integrations.Core.InvokeLLM({
         prompt,
         add_context_from_internet: useWeb,
@@ -89,14 +97,25 @@ export default function VideoStudio() {
           type: "object",
           properties: {
             summary: { type: "string" },
-            hooks: { type: "array", items: { type: "string" } },
-            script: { type: "string" },
-            visualPrompt: { type: "string" },
+            scenes: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  hook: { type: "string" },
+                  script: { type: "string" },
+                  visualPrompt: { type: "string" },
+                },
+              },
+            },
           },
         },
       });
-      setScriptData(res);
-      setVideoPrompt(res.visualPrompt || "");
+      const built = (res.scenes && res.scenes.length ? res.scenes : Array.from({ length: segments }, emptyScene)).slice(0, segments);
+      while (built.length < segments) built.push(emptyScene());
+      setSummary(res.summary || "");
+      setScenes(built);
+      setActiveScene(0);
       setStep(2);
     } catch (e) {
       setError(e?.message || "Failed to gather content.");
@@ -106,30 +125,35 @@ export default function VideoStudio() {
     }
   };
 
-  const regenerateHooks = async () => {
+  const regenerateScene = async (idx) => {
     setBusy(true);
-    setBusyLabel("Generating fresh hooks…");
+    setBusyLabel(`Rewriting scene ${idx + 1}…`);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Based on this content summary: "${scriptData?.summary || ""}". Generate 5 NEW viral hook options for a short-form video, each under 12 words, punchy and scroll-stopping. Return JSON {hooks: [...]}.`,
-        response_json_schema: { type: "object", properties: { hooks: { type: "array", items: { type: "string" } } } },
+        prompt: `Rewrite ONLY scene ${idx + 1} of a ${totalDuration}-second viral surface-coatings video as a fresh ~${SEGMENT_MAX}-second scene. Context: "${summary}". Return JSON {hook, script, visualPrompt}.`,
+        response_json_schema: {
+          type: "object",
+          properties: { hook: { type: "string" }, script: { type: "string" }, visualPrompt: { type: "string" } },
+        },
       });
-      setScriptData((p) => ({ ...p, hooks: res.hooks }));
-      setChosenHook(0);
+      setScenes((p) => p.map((s, i) => (i === idx ? { hook: res.hook || s.hook, script: res.script || s.script, visualPrompt: res.visualPrompt || s.visualPrompt } : s)));
     } catch (e) {
-      setError(e?.message || "Failed to regenerate hooks.");
+      setError(e?.message || "Failed to rewrite scene.");
     } finally {
       setBusy(false);
       setBusyLabel("");
     }
   };
 
+  const patchScene = (idx, field, value) =>
+    setScenes((p) => p.map((s, i) => (i === idx ? { ...s, [field]: value } : s)));
+
   const generateCover = async () => {
     setBusy(true);
     setBusyLabel("Generating cover image…");
     try {
       const { url } = await base44.integrations.Core.GenerateImage({
-        prompt: `${videoPrompt}. Bold promotional cover frame, ${brandName} branding, cinematic lighting, high detail.`,
+        prompt: `${scenes[0]?.visualPrompt || ""}. Bold promotional cover frame, ${brandName} branding, cinematic lighting, high detail.`,
       });
       setCoverUrl(url);
     } catch (e) {
@@ -141,26 +165,32 @@ export default function VideoStudio() {
   };
 
   const generateVideo = async () => {
-    if (!videoPrompt.trim()) return setError("Video prompt is empty.");
+    if (scenes.some((s) => !s.visualPrompt.trim())) return setError("Every scene needs a visual prompt.");
     setError("");
     setBusy(true);
-    setBusyLabel(`Rendering ${length}s video…`);
+    setClips([]);
+    setActiveClip(0);
+    const font = FONT_PRESETS.find((f) => f.key === fontKey)?.label || "Display";
     try {
-      const font = FONT_PRESETS.find((f) => f.key === fontKey)?.label || "Display";
-      const hook = scriptData?.hooks?.[chosenHook] || "";
-      const fullPrompt = [
-        videoPrompt,
-        `On-screen text hook: "${hook}" rendered in bold ${font} typography, color ${fontColor}, with ${accentColor} accent highlights.`,
-        includeLogo ? `Subtly feature the brand logo (${brandName}) as a lower-third watermark.` : "",
-        "Cinematic, high-end, viral short-form style, smooth motion, professional color grade.",
-      ].filter(Boolean).join(" ");
-      const res = await base44.integrations.Core.GenerateVideo({
-        prompt: fullPrompt,
-        duration: length,
-        aspect_ratio: aspect,
-        generate_audio: true,
-      });
-      setVideoUrl(res.url);
+      const urls = [];
+      for (let i = 0; i < scenes.length; i++) {
+        const s = scenes[i];
+        setBusyLabel(`Rendering scene ${i + 1}/${scenes.length}…`);
+        const fullPrompt = [
+          s.visualPrompt,
+          `On-screen text hook: "${s.hook}" rendered in bold ${font} typography, color ${fontColor}, with ${accentColor} accent highlights.`,
+          includeLogo ? `Subtly feature the brand logo (${brandName}) as a lower-third watermark.` : "",
+          "Cinematic, high-end, viral short-form style, smooth motion, professional color grade.",
+        ].filter(Boolean).join(" ");
+        const res = await base44.integrations.Core.GenerateVideo({
+          prompt: fullPrompt,
+          duration: SEGMENT_MAX,
+          aspect_ratio: aspect,
+          generate_audio: true,
+        });
+        urls.push(res.url);
+        setClips([...urls]);
+      }
       setStep(4);
     } catch (e) {
       setError(e?.message || "Video generation failed.");
@@ -173,6 +203,8 @@ export default function VideoStudio() {
   const toggleImage = (url) =>
     setSelectedImages((p) => (p.includes(url) ? p.filter((x) => x !== url) : [...p, url]));
 
+  const currentClip = clips[activeClip];
+
   return (
     <div className="page hx-page" style={{ padding: "20px 16px 40px" }}>
       <div className="hx-page-head" style={{ marginBottom: 16 }}>
@@ -180,7 +212,7 @@ export default function VideoStudio() {
           <h1 style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Film size={22} style={{ color: "var(--vx-accent)" }} /> Video Studio
           </h1>
-          <p>AI viral video generator — script, storyboard, render, and share.</p>
+          <p>AI viral video generator — multi-scene scripts up to 32s, rendered and shareable.</p>
         </div>
       </div>
 
@@ -257,6 +289,22 @@ export default function VideoStudio() {
             </div>
           )}
 
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><Clock size={14} style={{ color: "var(--vx-accent)" }} />Total length</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+              {DURATIONS.map((d) => (
+                <button key={d.value} onClick={() => setTotalDuration(d.value)}
+                  style={{ padding: 12, borderRadius: 10, textAlign: "center",
+                    border: `1px solid ${totalDuration === d.value ? "var(--vx-accent)" : "var(--vx-border-soft)"}`,
+                    background: totalDuration === d.value ? "var(--vx-accent-soft)" : "var(--vx-panel-2)" }}>
+                  <strong style={{ fontSize: 15, color: "var(--vx-text)" }}>{d.value}s</strong>
+                  <span style={{ display: "block", fontSize: 10, color: "var(--vx-faint)" }}>{d.blurb}</span>
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: "var(--vx-faint)", marginTop: 6 }}>Each scene renders as an 8s clip; longer videos stitch multiple scenes into a playlist.</p>
+          </div>
+
           <button className="vx-btn primary" disabled={busy} onClick={gatherSourceAndAdvance}
             style={{ width: "100%", marginTop: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
             {busy ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
@@ -265,38 +313,38 @@ export default function VideoStudio() {
         </div>
       )}
 
-      {step === 2 && scriptData && (
+      {step === 2 && (
         <div className="vx-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {scenes.map((_, i) => (
+              <button key={i} onClick={() => setActiveScene(i)}
+                style={{ padding: "6px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700,
+                  border: `1px solid ${activeScene === i ? "var(--vx-accent)" : "var(--vx-border-soft)"}`,
+                  background: activeScene === i ? "var(--vx-accent)" : "var(--vx-panel-2)",
+                  color: activeScene === i ? "#0A0A0A" : "var(--vx-text)" }}>
+                Scene {i + 1}
+              </button>
+            ))}
+          </div>
+
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)" }}><Sparkles size={14} style={{ verticalAlign: "middle", marginRight: 4, color: "var(--vx-accent)" }} />Recommended hooks</p>
-              <button onClick={regenerateHooks} disabled={busy} style={{ fontSize: 11, color: "var(--vx-accent)", display: "flex", alignItems: "center", gap: 4 }}>
-                {busy ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} New hooks
+              <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)" }}><Sparkles size={14} style={{ verticalAlign: "middle", marginRight: 4, color: "var(--vx-accent)" }} />Hook (scene {activeScene + 1})</p>
+              <button onClick={() => regenerateScene(activeScene)} disabled={busy} style={{ fontSize: 11, color: "var(--vx-accent)", display: "flex", alignItems: "center", gap: 4 }}>
+                {busy ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} Rewrite scene
               </button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {scriptData.hooks?.map((h, i) => (
-                <button key={i} onClick={() => setChosenHook(i)}
-                  style={{
-                    textAlign: "left", padding: "10px 12px", borderRadius: 10, fontSize: 13,
-                    border: `1px solid ${chosenHook === i ? "var(--vx-accent)" : "var(--vx-border-soft)"}`,
-                    background: chosenHook === i ? "var(--vx-accent-soft)" : "var(--vx-panel-2)",
-                    color: "var(--vx-text)",
-                  }}>
-                  <span style={{ fontWeight: 700, color: "var(--vx-accent)", marginRight: 6 }}>{i + 1}.</span>{h}
-                </button>
-              ))}
-            </div>
+            <input className="vx-input" value={scenes[activeScene]?.hook || ""} onChange={(e) => patchScene(activeScene, "hook", e.target.value)} />
           </div>
 
           <div>
             <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)", marginBottom: 6 }}>Script</p>
-            <p style={{ fontSize: 12, color: "var(--vx-muted)", lineHeight: 1.5, background: "var(--vx-panel-2)", padding: 10, borderRadius: 8 }}>{scriptData.script}</p>
+            <textarea className="vx-input" rows={2} value={scenes[activeScene]?.script || ""} onChange={(e) => patchScene(activeScene, "script", e.target.value)} />
           </div>
 
           <div>
             <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)", marginBottom: 6 }}>Visual prompt (editable)</p>
-            <textarea className="vx-input" rows={4} value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} />
+            <textarea className="vx-input" rows={4} value={scenes[activeScene]?.visualPrompt || ""} onChange={(e) => patchScene(activeScene, "visualPrompt", e.target.value)} />
           </div>
 
           <div style={{ display: "flex", gap: 8 }}>
@@ -309,17 +357,11 @@ export default function VideoStudio() {
       {step === 3 && (
         <div className="vx-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><Clock size={14} style={{ color: "var(--vx-accent)" }} />Length</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-              {LENGTHS.map((l) => (
-                <button key={l.value} onClick={() => setLength(l.value)}
-                  style={{ padding: 12, borderRadius: 10, textAlign: "center",
-                    border: `1px solid ${length === l.value ? "var(--vx-accent)" : "var(--vx-border-soft)"}`,
-                    background: length === l.value ? "var(--vx-accent-soft)" : "var(--vx-panel-2)" }}>
-                  <strong style={{ fontSize: 16, color: "var(--vx-text)" }}>{l.label}</strong>
-                  <span style={{ display: "block", fontSize: 10, color: "var(--vx-faint)" }}>{l.blurb}</span>
-                </button>
-              ))}
+            <p style={{ fontSize: 13, fontWeight: 700, color: "var(--vx-text)", marginBottom: 8 }}>Video length</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "var(--vx-panel-2)", border: "1px solid var(--vx-border-soft)" }}>
+              <Clock size={16} style={{ color: "var(--vx-accent)" }} />
+              <strong style={{ fontSize: 15, color: "var(--vx-text)" }}>{totalDuration}s</strong>
+              <span style={{ fontSize: 12, color: "var(--vx-faint)" }}>· {segments} scene{segments > 1 ? "s" : ""} · {segments * SEGMENT_MAX}s total</span>
             </div>
           </div>
 
@@ -380,29 +422,38 @@ export default function VideoStudio() {
             <button className="vx-btn" onClick={() => setStep(2)} style={{ flex: 1 }}>Back</button>
             <button className="vx-btn primary" disabled={busy} onClick={generateVideo} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               {busy ? <Loader2 size={16} className="animate-spin" /> : <Film size={16} />}
-              {busy ? busyLabel : `Render ${length}s video`}
+              {busy ? busyLabel : `Render ${totalDuration}s video`}
             </button>
           </div>
-          <p style={{ fontSize: 11, color: "var(--vx-faint)", textAlign: "center" }}>Video rendering uses AI credits (~{length * 5} credits) and takes 30–60s.</p>
+          <p style={{ fontSize: 11, color: "var(--vx-faint)", textAlign: "center" }}>~{segments * SEGMENT_MAX * 5} credits · {segments} clip{segments > 1 ? "s" : ""} · 30–60s per scene</p>
         </div>
       )}
 
-      {step === 4 && videoUrl && (
+      {step === 4 && clips.length > 0 && currentClip && (
         <div className="vx-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
-          <video src={videoUrl} controls autoPlay loop style={{ width: "100%", borderRadius: 12, background: "#000" }} />
+          <video key={currentClip} src={currentClip} controls autoPlay loop style={{ width: "100%", borderRadius: 12, background: "#000" }} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <button className="vx-btn" disabled={activeClip === 0} onClick={() => setActiveClip((i) => Math.max(0, i - 1))} style={{ padding: "6px 10px" }}>
+              <ChevronLeft size={14} /> Prev
+            </button>
+            <span style={{ fontSize: 12, color: "var(--vx-muted)" }}>Scene {activeClip + 1} of {clips.length}</span>
+            <button className="vx-btn" disabled={activeClip === clips.length - 1} onClick={() => setActiveClip((i) => Math.min(clips.length - 1, i + 1))} style={{ padding: "6px 10px" }}>
+              Next <ChevronRight size={14} />
+            </button>
+          </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <a href={videoUrl} download style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 10, background: "var(--vx-panel-2)", border: "1px solid var(--vx-border-soft)", color: "var(--vx-text)", fontSize: 12 }}>
-              <Download size={14} /> Download
+            <a href={currentClip} download style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 10, background: "var(--vx-panel-2)", border: "1px solid var(--vx-border-soft)", color: "var(--vx-text)", fontSize: 12 }}>
+              <Download size={14} /> Download scene
             </a>
             <button className="vx-btn" onClick={generateCover} disabled={busy} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
               {busy ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />} {coverUrl ? "Regenerate cover" : "Generate cover image"}
             </button>
           </div>
           {coverUrl && <img src={coverUrl} alt="cover" style={{ width: "100%", borderRadius: 10 }} />}
-          <VideoShareBar url={videoUrl} title={scriptData?.hooks?.[chosenHook] || brandName} />
+          <VideoShareBar url={currentClip} title={`${brandName} — Scene ${activeClip + 1}`} />
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="vx-btn" onClick={() => { setStep(3); setVideoUrl(""); }} style={{ flex: 1 }}>Re-style</button>
-            <button className="vx-btn primary" onClick={() => { setStep(1); setVideoUrl(""); setScriptData(null); }} style={{ flex: 1 }}>New video</button>
+            <button className="vx-btn" onClick={() => { setStep(3); setClips([]); }} style={{ flex: 1 }}>Re-style</button>
+            <button className="vx-btn primary" onClick={() => { setStep(1); setClips([]); setScenes([emptyScene()]); }} style={{ flex: 1 }}>New video</button>
           </div>
         </div>
       )}
