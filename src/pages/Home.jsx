@@ -1,20 +1,35 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Camera,
-  Palette,
-  Layers,
-  Calculator,
+  Plus,
   ChevronRight,
-  TrendingUp,
+  ScanLine,
+  GitCompare,
+  Calculator,
+  Share2,
+  Box,
+  FileText,
+  Send,
+  Image as ImageIcon,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { useUI } from "@/lib/uiContext";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
+
+const HERO_IMG =
+  "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png";
+
+const STATUS_MAP = {
+  new: { label: "New", cls: "ready" },
+  qualified: { label: "Ready to Quote", cls: "ready" },
+  estimate_sent: { label: "Estimate Sent", cls: "progress" },
+  proposal_sent: { label: "Proposal Sent", cls: "progress" },
+  won: { label: "Won", cls: "ready" },
+  lost: { label: "Lost", cls: "blocked" },
+  follow_up: { label: "Draft", cls: "draft" },
+};
 
 export default function Home() {
   const navigate = useNavigate();
-  const { query } = useUI();
   const [leads, setLeads] = useState([]);
 
   useEffect(() => {
@@ -24,104 +39,133 @@ export default function Home() {
   }, []);
 
   const stats = useMemo(() => {
-    const count = (status) => leads.filter((l) => l.status === status).length;
-    return {
-      new: count("new"),
-      qualified: count("qualified"),
-      won: count("won"),
-      total: leads.length,
-    };
+    const activeVisuals = leads.filter((l) => l.photo_url).length;
+    const draftQuotes = leads.filter(
+      (l) => l.status === "new" || l.status === "qualified" || l.status === "follow_up"
+    ).length;
+    const sharesSent = leads.filter(
+      (l) => l.status === "estimate_sent" || l.status === "proposal_sent" || l.status === "won"
+    ).length;
+    return { activeVisuals, draftQuotes, sharesSent };
   }, [leads]);
 
+  const recent = leads.slice(0, 3);
+
+  const fmtDate = (d) =>
+    d
+      ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+      : "";
+
   return (
-    <div className="home-full">
+    <div className="home-full hx-home">
       {/* Hero */}
-      <div className="home-hero home-hero-large">
-        <img
-          src="https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/da4c57643_generated_image.png"
-          alt=""
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
-        />
-        <div className="home-hero-content">
-          <span className="vx-kicker">VISUAL X · COMMAND CENTER</span>
+      <div className="hx-hero">
+        <img src={HERO_IMG} alt="" className="hx-hero-img" />
+        <div className="hx-hero-sweep" />
+        <div className="hx-hero-content">
           <h1>
-            Design, quote,
-            <span>and win floors.</span>
+            Visualize Floors.
+            <br />
+            <span>Close Jobs Faster.</span>
           </h1>
-          <p>Scan spaces, visualize finishes, generate quotes, and share proposals — all from one verified workspace.</p>
+          <p>Stunning floor previews. Accurate quotes. More wins.</p>
         </div>
+        <button className="hx-hero-btn" onClick={() => navigate("/visualizer")}>
+          <Plus size={18} />
+          <span>New Visualization</span>
+          <ChevronRight size={18} />
+        </button>
       </div>
 
-      {/* Primary CTA */}
-      <button className="home-cta-card" onClick={() => navigate("/visualizer")}>
-        <span className="home-cta-icon">
-          <Camera size={22} />
-        </span>
-        <span className="home-cta-text">
-          <strong>Start New Bid</strong>
-          <small>Take a photo, pick a color, adjust for blemishes, and share an instant estimate.</small>
-        </span>
-        <ChevronRight size={20} className="home-cta-arrow" />
-      </button>
-
-      {/* Pipeline stats */}
-      <div className="home-pipeline">
-        <div className="home-pipeline-card">
-          <strong>{stats.new}</strong>
-          <span>New</span>
-        </div>
-        <div className="home-pipeline-card">
-          <strong>{stats.qualified}</strong>
-          <span>Qualified</span>
-        </div>
-        <div className="home-pipeline-card">
-          <strong>{stats.won}</strong>
-          <span>Won</span>
-        </div>
-        <div className="home-pipeline-card">
-          <strong>{stats.total}</strong>
-          <span>Total</span>
-        </div>
+      {/* Quick Actions */}
+      <div className="hx-quick-grid">
+        <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
+          <ScanLine size={22} />
+          <span>Scan Space</span>
+        </button>
+        <button className="hx-quick-card" onClick={() => navigate("/visualizer")}>
+          <GitCompare size={22} />
+          <span>Compare Finishes</span>
+        </button>
+        <button className="hx-quick-card" onClick={() => navigate("/pricing")}>
+          <Calculator size={22} />
+          <span>Quote Range</span>
+        </button>
+        <button className="hx-quick-card" onClick={() => navigate("/close")}>
+          <Share2 size={22} />
+          <span>Share Proposal</span>
+        </button>
       </div>
 
-      {/* Quick reference */}
-      <section className="home-section">
-        <div className="home-section-head">
-          <h2>Quick reference</h2>
+      {/* Recent Projects */}
+      <section className="hx-section">
+        <div className="hx-section-head">
+          <h2>Recent Projects</h2>
+          <button onClick={() => navigate("/leads")}>
+            View All <ChevronRight size={14} />
+          </button>
         </div>
-        <div className="home-ref-grid">
-          <button className="home-ref-card" onClick={() => navigate("/colors")}>
-            <span className="home-ref-icon">
-              <Palette size={18} />
-            </span>
-            <strong>Color Charts</strong>
-            <small>Manufacturer swatches</small>
-          </button>
-          <button className="home-ref-card" onClick={() => navigate("/systems")}>
-            <span className="home-ref-icon">
-              <Layers size={18} />
-            </span>
-            <strong>Floor Systems</strong>
-            <small>System catalog & rates</small>
-          </button>
-          <button className="home-ref-card" onClick={() => navigate("/pricing")}>
-            <span className="home-ref-icon">
-              <Calculator size={18} />
-            </span>
-            <strong>Pricing</strong>
-            <small>Rate profiles</small>
-          </button>
-          <button className="home-ref-card" onClick={() => navigate("/competitive-pricing")}>
-            <span className="home-ref-icon">
-              <TrendingUp size={18} />
-            </span>
-            <strong>Market Intel</strong>
-            <small>Competitive rates</small>
-          </button>
+        <div className="hx-project-list">
+          {recent.length === 0 ? (
+            <div className="hx-empty">No projects yet. Start a new visualization to see them here.</div>
+          ) : (
+            recent.map((l) => {
+              const badge = STATUS_MAP[l.status] || { label: l.status, cls: "ready" };
+              return (
+                <button
+                  key={l.id}
+                  className="hx-project-row"
+                  onClick={() => navigate(`/leads/${l.id}`)}
+                >
+                  <div className="hx-project-thumb">
+                    {l.photo_url ? (
+                      <img src={l.photo_url} alt="" />
+                    ) : (
+                      <ImageIcon size={18} />
+                    )}
+                  </div>
+                  <div className="hx-project-info">
+                    <strong>{l.customer_name || "Untitled Project"}</strong>
+                    <small>{l.project_address || "No address"}</small>
+                    <small className="hx-sqft">
+                      {l.square_feet ? `${l.square_feet.toLocaleString()} sq ft` : "—"}
+                    </small>
+                  </div>
+                  <div className="hx-project-side">
+                    <span className={`vx-chip ${badge.cls}`}>{badge.label}</span>
+                    <time>{fmtDate(l.created_date)}</time>
+                  </div>
+                  <ChevronRight size={16} className="hx-project-arrow" />
+                </button>
+              );
+            })
+          )}
         </div>
       </section>
 
-      <p className="home-disclosure">{PRICE_DISCLOSURE}</p>
+      {/* Stats Bar */}
+      <div className="hx-stats">
+        <div className="hx-stat">
+          <Box size={18} />
+          <strong>{stats.activeVisuals}</strong>
+          <span>Active Visuals</span>
+          <small>↑ 12% this month</small>
+        </div>
+        <div className="hx-stat">
+          <FileText size={18} />
+          <strong>{stats.draftQuotes}</strong>
+          <span>Draft Quotes</span>
+          <small>↑ 18% this month</small>
+        </div>
+        <div className="hx-stat">
+          <Send size={18} />
+          <strong>{stats.sharesSent}</strong>
+          <span>Shares Sent</span>
+          <small>↑ 22% this month</small>
+        </div>
+      </div>
+
+      <p className="hx-disclosure">{PRICE_DISCLOSURE}</p>
     </div>
   );
 }
