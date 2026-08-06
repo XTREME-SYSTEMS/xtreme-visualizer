@@ -13,6 +13,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/5fd5921f9_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/e1608e566_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/8cb915b79_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/5d4fc9092_generated_image.png",
     ],
   },
   {
@@ -25,6 +26,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/6a1c44e3e_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/b6914d4f4_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/ffc94708d_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/94f565346_generated_image.png",
     ],
   },
   {
@@ -37,6 +39,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/438712f74_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/fff31fbf3_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/6e51ab44c_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/bddd496db_generated_image.png",
     ],
   },
   {
@@ -49,6 +52,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/572c13ce7_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/523ee15c6_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/db75e5588_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/b9ad98489_generated_image.png",
     ],
   },
   {
@@ -61,6 +65,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/cb441cd54_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/f865e4ad0_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/0c027fd3f_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/fd2642cdc_generated_image.png",
     ],
   },
   {
@@ -73,6 +78,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/63055aee5_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/52db44c43_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/f1eb454bf_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/afd31ae33_generated_image.png",
     ],
   },
   {
@@ -85,6 +91,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/302f6728c_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/b5266b5ef_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/62d895dd5_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/cc85b7268_generated_image.png",
     ],
   },
   {
@@ -97,6 +104,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/b19a984f0_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/67f749cdf_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/2a7e47509_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/bf74d077f_generated_image.png",
     ],
   },
   {
@@ -109,6 +117,7 @@ const CATEGORIES = [
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/e94fc155a_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/a0009c7e8_generated_image.png",
       "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/bf0b08b5d_generated_image.png",
+      "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/8ea1a83df_generated_image.png",
     ],
   },
 ];
