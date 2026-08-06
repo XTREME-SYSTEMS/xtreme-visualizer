@@ -8,6 +8,7 @@ const PRESETS = [
   { name: "Blue", value: "#3b82f6" },
   { name: "Violet", value: "#a855f7" },
   { name: "Magenta", value: "#ec4899" },
+  { name: "Yellow", value: "#fde047" },
   { name: "Amber", value: "#f59e0b" },
   { name: "Emerald", value: "#10b981" },
   { name: "Red", value: "#ef4444" },
