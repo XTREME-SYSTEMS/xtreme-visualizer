@@ -15,18 +15,20 @@ import {
   CreditCard,
 } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
-import { getHeroImage } from "@/components/settings/HeroImagePicker";
+import { getHeroImage, getHeroFilters, heroFilterString } from "@/components/settings/HeroImagePicker";
 
 export default function Home() {
   const navigate = useNavigate();
   const HERO_IMG = getHeroImage();
+  const heroFilters = getHeroFilters();
 
   return (
     <div className="home-full hx-home">
       {/* Hero */}
       <div className="hx-hero">
-        <img src={HERO_IMG} alt="" className="hx-hero-img" />
+        <img src={HERO_IMG} alt="" className="hx-hero-img" style={{ filter: heroFilterString(heroFilters) }} />
         <div className="hx-hero-sweep" />
+        <div style={{ position: "absolute", inset: 0, background: "#000", opacity: heroFilters.darken / 100, pointerEvents: "none" }} />
         <div className="hx-hero-content">
           <h1>
             Visualize Floors.
