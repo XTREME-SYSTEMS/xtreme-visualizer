@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
   Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
-  Camera, DollarSign, Sparkles,
+  Camera, Sparkles,
 } from "lucide-react";
 
 const SURFACES = [
