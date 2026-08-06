@@ -40,9 +40,6 @@ export function DeviceShell() {
       const stored = localStorage.getItem('vx-theme');
       if (stored === 'dark' || stored === 'light') return stored;
     } catch {}
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
     return 'dark';
   });
   const [isNativeMobile] = useState(() => {
