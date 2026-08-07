@@ -39,10 +39,10 @@ export default function Guardrails() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-5">
-        <SectionCard index="03" title="Vizzy limits" tag="Assistant policy" tagTone="gold">
+        <SectionCard index="03" title="Xtreme AI limits" tag="Assistant policy" tagTone="gold">
           <p className="text-[13px] text-slate-600 leading-relaxed">
-            Vizzy explains floor systems, guides photo capture, helps correct masks, compares finishes, explains quote
-            assumptions, summarizes leads, and prepares communication drafts. Vizzy never commits to:
+            Xtreme AI explains floor systems, guides photo capture, helps correct masks, compares finishes, explains quote
+            assumptions, summarizes leads, and prepares communication drafts. Xtreme AI never commits to:
           </p>
           <ul className="mt-3 space-y-2">
             {VIZZY_NEVER.map((v) => (

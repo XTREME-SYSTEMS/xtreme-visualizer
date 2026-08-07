@@ -68,7 +68,7 @@ export default function VizzyChat() {
     try {
       const conv = await base44.agents.createConversation({
         agent_name: AGENT_NAME,
-        metadata: { name: "New Chat", description: "New conversation with Vizzy" },
+        metadata: { name: "New Chat", description: "New conversation with Xtreme AI" },
       });
       setActiveId(conv.id);
       setActiveConversation(conv);
@@ -98,7 +98,7 @@ export default function VizzyChat() {
       try {
         conv = await base44.agents.createConversation({
           agent_name: AGENT_NAME,
-          metadata: { name: text.slice(0, 40), description: "New conversation with Vizzy" },
+          metadata: { name: text.slice(0, 40), description: "New conversation with Xtreme AI" },
         });
         setActiveId(conv.id);
         setActiveConversation(conv);
