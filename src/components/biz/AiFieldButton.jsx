@@ -49,13 +49,13 @@ export default function AiFieldButton({ field, onboarding, onApply }) {
         display: "flex",
         alignItems: "center",
         gap: 6,
-        padding: "0 14px",
-        height: 42,
-        borderRadius: 12,
+        padding: "0 8px",
+        height: 32,
+        borderRadius: 9,
         border: "1px solid var(--vx-accent)",
         background: "var(--vx-accent-soft)",
         color: "var(--vx-accent)",
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: 800,
         letterSpacing: ".03em",
         whiteSpace: "nowrap",
@@ -65,11 +65,11 @@ export default function AiFieldButton({ field, onboarding, onApply }) {
       }}
     >
       {loading ? (
-        <Loader2 style={{ width: 15, height: 15 }} className="animate-spin" />
+        <Loader2 style={{ width: 12, height: 12 }} className="animate-spin" />
       ) : (
-        <Wand2 style={{ width: 15, height: 15 }} />
+        <Wand2 style={{ width: 12, height: 12 }} />
       )}
-      {loading ? "AI…" : "AI"}
+      {loading ? "…" : "AI"}
     </button>
   );
 }
