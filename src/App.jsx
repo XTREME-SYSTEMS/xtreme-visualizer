@@ -54,10 +54,12 @@ import GalleryPage from '@/pages/Gallery';
 import CustomerPortal from '@/pages/CustomerPortal';
 import VideoStudio from '@/pages/VideoStudio';
 import BusinessGenerator from '@/pages/BusinessGenerator';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import TermsOfService from '@/pages/TermsOfService';
 import RootRoute from '@/components/RootRoute';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
-const PUBLIC_PATHS = ['/ThankYou', '/portal', '/'];
+const PUBLIC_PATHS = ['/ThankYou', '/portal', '/', '/privacy', '/terms'];
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -134,6 +136,8 @@ const AuthenticatedApp = () => {
           <Route path="/business-generator" element={<BusinessGenerator />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
         <Route path="/portal/:leadId" element={<CustomerPortal />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
