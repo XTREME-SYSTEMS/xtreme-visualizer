@@ -108,10 +108,10 @@ export default function Home() {
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>
-          <button className="hx-portal-card" onClick={() => navigate("/crm")}>
-            <div className="hx-portal-icon"><CreditCard size={20} /></div>
+          <button className="hx-portal-card" onClick={() => navigate("/generators")}>
+            <div className="hx-portal-icon"><Wand2 size={20} /></div>
             <div className="hx-portal-text">
-              <strong>Digital Card</strong>
+              <strong>Generators</strong>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>

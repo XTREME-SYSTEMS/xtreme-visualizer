@@ -54,6 +54,7 @@ import GalleryPage from '@/pages/Gallery';
 import CustomerPortal from '@/pages/CustomerPortal';
 import VideoStudio from '@/pages/VideoStudio';
 import BusinessGenerator from '@/pages/BusinessGenerator';
+import Generators from '@/pages/Generators';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import VizzyChat from '@/pages/VizzyChat';
@@ -137,6 +138,7 @@ const AuthenticatedApp = () => {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/video-studio" element={<VideoStudio />} />
           <Route path="/business-generator" element={<BusinessGenerator />} />
+          <Route path="/generators" element={<Generators />} />
           <Route path="/vizzy" element={<VizzyChat />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
