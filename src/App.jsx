@@ -56,6 +56,7 @@ import VideoStudio from '@/pages/VideoStudio';
 import BusinessGenerator from '@/pages/BusinessGenerator';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
+import VizzyChat from '@/pages/VizzyChat';
 import RootRoute from '@/components/RootRoute';
 
 const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
@@ -134,6 +135,7 @@ const AuthenticatedApp = () => {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/video-studio" element={<VideoStudio />} />
           <Route path="/business-generator" element={<BusinessGenerator />} />
+          <Route path="/vizzy" element={<VizzyChat />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />

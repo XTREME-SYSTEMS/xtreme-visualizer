@@ -9,13 +9,13 @@ import PWAInstallButton from '@/components/PWAInstallButton';
 import RemindersBell from '@/components/RemindersBell';
 import { base44 } from '@/api/base44Client';
 
-import { ClipboardList, Camera as CameraIcon, Users as UsersIcon, MessageSquare as InboxIcon, BarChart3, Share2, Globe, Calendar, Settings as SettingsIcon } from 'lucide-react';
+import { ClipboardList, Camera as CameraIcon, Users as UsersIcon, MessageSquare as InboxIcon, BarChart3, Share2, Globe, Calendar, Settings as SettingsIcon, Sparkles } from 'lucide-react';
 
 const NAV = [
   { to: '/app', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
-  { to: '/inbox', label: 'Inbox', icon: MessageSquare },
+  { to: '/vizzy', label: 'Vizzy AI', icon: Sparkles },
 ];
 const MORE = [
   { to: '/voice', label: 'Voice Assistant' },
@@ -39,6 +39,7 @@ const MORE = [
   { to: '/billing', label: 'Billing & Invoices' },
   { to: '/receipts', label: 'Activity Receipts' },
   { to: '/guardrails', label: 'Guardrails' },
+  { to: '/inbox', label: 'Inbox' },
   { to: '/settings', label: 'Settings' },
 ];
 
@@ -47,19 +48,20 @@ const CREW_NAV = [
   { to: '/app', label: 'Home', icon: Home },
   { to: '/operations', label: 'Operations', icon: ClipboardList },
   { to: '/field', label: 'Field', icon: CameraIcon },
-  { to: '/inbox', label: 'Inbox', icon: InboxIcon },
+  { to: '/vizzy', label: 'Vizzy AI', icon: Sparkles },
 ];
 const CREW_MORE = [
   { to: '/field', label: 'Field Dashboard' },
   { to: '/appointments', label: 'Schedule' },
   { to: '/gallery', label: 'Gallery' },
+  { to: '/inbox', label: 'Inbox' },
   { to: '/settings', label: 'Settings' },
 ];
 const SALES_NAV = [
   { to: '/app', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
-  { to: '/inbox', label: 'Inbox', icon: MessageSquare },
+  { to: '/vizzy', label: 'Vizzy AI', icon: Sparkles },
 ];
 const SALES_MORE = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -70,9 +72,10 @@ const SALES_MORE = [
   { to: '/video-studio', label: 'Video Studio' },
   { to: '/appointments', label: 'Schedule' },
   { to: '/gallery', label: 'Gallery' },
+  { to: '/inbox', label: 'Inbox' },
   { to: '/settings', label: 'Settings' },
 ];
-const TAB_PATHS = ['/app', '/visualizer', '/leads', '/inbox', '/more'];
+const TAB_PATHS = ['/app', '/visualizer', '/leads', '/vizzy', '/more'];
 const MORE_TAB = '/more';
 
 export function DeviceShell() {
