@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import GeneratorSection from "@/components/biz/GeneratorSection";
+import AiFieldButton from "@/components/biz/AiFieldButton";
 import { Loader2, Search, Check, Globe, Film, Wand2, ClipboardList, Palette, FileText, Mail, MonitorSmartphone, CreditCard, Smartphone, Share2, Image } from "lucide-react";
 
 const VIBES = ["Modern", "Premium / Luxury", "Rugged / Industrial", "Friendly / Approachable", "Bold / Energetic", "Minimalist"];
@@ -68,6 +69,7 @@ export default function BusinessGenerator() {
   const [videoLoading, setVideoLoading] = useState(false);
 
   const set = (k) => (e) => setOnboarding((o) => ({ ...o, [k]: e.target.value }));
+  const setVal = (k, v) => setOnboarding((o) => ({ ...o, [k]: v }));
   const onboardingReady = onboarding.city.trim() && onboarding.industry.trim() && onboarding.specialties.trim();
 
   const ctx = () => "Business name: " + (savedName || "(not chosen yet)") +
@@ -230,17 +232,17 @@ export default function BusinessGenerator() {
       <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16 }}>
         <SectionHead icon={ClipboardList} tag="ONBOARDING" title="Tell us about the business" description="The more detail you give, the better the AI can tailor every name and asset." />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 13 }}>
-          <div className="vx-field"><label>City</label><input className="vx-input" value={onboarding.city} onChange={set("city")} placeholder="Austin" /></div>
-          <div className="vx-field"><label>State</label><input className="vx-input" value={onboarding.state} onChange={set("state")} placeholder="TX" /></div>
+          <div className="vx-field"><label>City</label><div style={{ display: "flex", gap: 8 }}><input className="vx-input" style={{ flex: 1 }} value={onboarding.city} onChange={set("city")} placeholder="Austin" /><AiFieldButton field="city" onboarding={onboarding} onApply={(v) => setVal("city", v)} /></div></div>
+          <div className="vx-field"><label>State</label><div style={{ display: "flex", gap: 8 }}><input className="vx-input" style={{ flex: 1 }} value={onboarding.state} onChange={set("state")} placeholder="TX" /><AiFieldButton field="state" onboarding={onboarding} onApply={(v) => setVal("state", v)} /></div></div>
         </div>
-        <div className="vx-field"><label>Industry</label><input className="vx-input" value={onboarding.industry} onChange={set("industry")} placeholder="Epoxy floor coatings" /></div>
-        <div className="vx-field"><label>Specialties</label><input className="vx-input" value={onboarding.specialties} onChange={set("specialties")} placeholder="garage floors, commercial polished concrete" /><span className="vx-help">Comma-separated services or differentiators</span></div>
+        <div className="vx-field"><label>Industry</label><div style={{ display: "flex", gap: 8 }}><input className="vx-input" style={{ flex: 1 }} value={onboarding.industry} onChange={set("industry")} placeholder="Epoxy floor coatings" /><AiFieldButton field="industry" onboarding={onboarding} onApply={(v) => setVal("industry", v)} /></div></div>
+        <div className="vx-field"><label>Specialties</label><div style={{ display: "flex", gap: 8 }}><input className="vx-input" style={{ flex: 1 }} value={onboarding.specialties} onChange={set("specialties")} placeholder="garage floors, commercial polished concrete" /><AiFieldButton field="specialties" onboarding={onboarding} onApply={(v) => setVal("specialties", v)} /></div><span className="vx-help">Comma-separated services or differentiators</span></div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 13 }}>
           <div className="vx-field"><label>Brand vibe</label><select className="vx-input" value={onboarding.vibe} onChange={set("vibe")}>{VIBES.map((v) => <option key={v} value={v}>{v}</option>)}</select></div>
           <div className="vx-field"><label>Name style</label><select className="vx-input" value={onboarding.nameStyle} onChange={set("nameStyle")}>{NAME_STYLES.map((v) => <option key={v} value={v}>{v}</option>)}</select></div>
         </div>
-        <div className="vx-field"><label>Target customer</label><input className="vx-input" value={onboarding.targetCustomer} onChange={set("targetCustomer")} placeholder="homeowners, property managers" /><span className="vx-help">Who you serve most</span></div>
-        <div className="vx-field"><label>Anything else?</label><textarea className="vx-input" rows={2} value={onboarding.notes} onChange={set("notes")} placeholder="Keywords to include, names to avoid, founders' initials, etc." /></div>
+        <div className="vx-field"><label>Target customer</label><div style={{ display: "flex", gap: 8 }}><input className="vx-input" style={{ flex: 1 }} value={onboarding.targetCustomer} onChange={set("targetCustomer")} placeholder="homeowners, property managers" /><AiFieldButton field="targetCustomer" onboarding={onboarding} onApply={(v) => setVal("targetCustomer", v)} /></div><span className="vx-help">Who you serve most</span></div>
+        <div className="vx-field"><label>Anything else?</label><div style={{ display: "flex", gap: 8 }}><textarea className="vx-input" style={{ flex: 1 }} rows={2} value={onboarding.notes} onChange={set("notes")} placeholder="Keywords to include, names to avoid, founders' initials, etc." /><AiFieldButton field="notes" onboarding={onboarding} onApply={(v) => setVal("notes", v)} /></div></div>
       </section>
 
       {/* Step 2: Names + validation */}
