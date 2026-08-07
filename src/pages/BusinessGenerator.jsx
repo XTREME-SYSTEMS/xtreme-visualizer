@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import GeneratorSection from "@/components/biz/GeneratorSection";
 import AiFieldButton from "@/components/biz/AiFieldButton";
+import LeadGeneratorModule from "@/components/biz/LeadGeneratorModule";
 import { Loader2, Search, Check, Globe, Film, Wand2, ClipboardList, Palette, FileText, Mail, MonitorSmartphone, CreditCard, Smartphone, Share2, Image } from "lucide-react";
 
 const VIBES = ["Modern", "Premium / Luxury", "Rugged / Industrial", "Friendly / Approachable", "Bold / Energetic", "Minimalist"];
@@ -67,6 +68,7 @@ export default function BusinessGenerator() {
   const [savedSocial, setSavedSocial] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
   const [videoLoading, setVideoLoading] = useState(false);
+  const [leadsDone, setLeadsDone] = useState(false);
 
   const set = (k) => (e) => setOnboarding((o) => ({ ...o, [k]: e.target.value }));
   const setVal = (k, v) => setOnboarding((o) => ({ ...o, [k]: v }));
@@ -179,6 +181,7 @@ export default function BusinessGenerator() {
     { key: "card", label: "Card", done: !!savedCard },
     { key: "app", label: "App", done: !!savedApp },
     { key: "social", label: "Social", done: !!savedSocial },
+    { key: "leads", label: "Leads", done: leadsDone },
   ];
 
   const imgBox = { background: "#0b0b0b", overflow: "hidden" };
@@ -401,6 +404,11 @@ export default function BusinessGenerator() {
             <video src={videoUrl} controls playsInline style={{ width: "100%", maxWidth: 300, borderRadius: 16, border: "1px solid var(--vx-border-soft)", margin: "0 auto", display: "block", boxShadow: "var(--vx-shadow)" }} />
           )}
         </section>
+      )}
+
+      {/* Step 11: Lead Generator */}
+      {savedBrand && (
+        <LeadGeneratorModule savedName={savedName} savedBrand={savedBrand} onboarding={onboarding} onComplete={() => setLeadsDone(true)} />
       )}
     </div>
   );
