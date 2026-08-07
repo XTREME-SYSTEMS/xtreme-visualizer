@@ -6,8 +6,8 @@ export default function TermsOfService() {
     <div className="min-h-screen bg-[var(--vx-bg)] text-[var(--vx-text)]" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif' }}>
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-11 h-11 rounded-xl grid place-items-center" style={{ background: 'rgba(255,214,10,.08)', border: '1px solid #8A7300' }}>
-            <FileText className="w-5 h-5" style={{ color: '#FFD60A' }} />
+          <div className="w-11 h-11 rounded-xl grid place-items-center" style={{ background: 'rgba(240,244,11,.08)', border: '1px solid #7a7e08' }}>
+            <FileText className="w-5 h-5" style={{ color: '#f0f40b' }} />
           </div>
           <div>
             <p className="text-[11px] font-bold tracking-[0.18em] uppercase" style={{ color: 'var(--vx-faint)' }}>Legal</p>

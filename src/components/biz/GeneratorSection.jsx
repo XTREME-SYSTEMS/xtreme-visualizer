@@ -35,7 +35,7 @@ export default function GeneratorSection({
   };
 
   const numColor = canGenerate ? "var(--vx-accent)" : "var(--vx-faint)";
-  const numBorder = canGenerate ? "#8A7300" : "var(--vx-border-soft)";
+  const numBorder = canGenerate ? "#7a7e08" : "var(--vx-border-soft)";
   const numBg = canGenerate ? "var(--vx-accent-soft)" : "var(--vx-panel)";
   const numShadow = canGenerate ? "var(--vx-glow)" : "none";
 

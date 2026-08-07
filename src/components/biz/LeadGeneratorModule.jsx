@@ -7,7 +7,7 @@ const obj = (props, required = []) => ({ type: "object", properties: props, requ
 function SectionHead({ icon: Icon, tag, title, description }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-      <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid #8A7300", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>
+      <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid #7a7e08", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>
         {Icon ? <Icon style={{ width: 22, height: 22 }} /> : null}
       </span>
       <div style={{ minWidth: 0 }}>
@@ -194,7 +194,7 @@ export default function LeadGeneratorModule({ savedName, savedBrand, onboarding,
   const subLabel = { fontSize: 11, fontWeight: 800, letterSpacing: ".05em", textTransform: "uppercase", color: "var(--vx-faint)" };
 
   return (
-    <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16, borderColor: "#8A7300" }}>
+    <section className="vx-card" style={{ padding: 20, display: "grid", gap: 16, borderColor: "#7a7e08" }}>
       <SectionHead icon={Target} tag="LEAD ENGINE" title="Autonomous lead generator" description="Generate branded emails, scrape your territory for high-potential customers, send campaigns, log to CRM, and auto-follow-up — then expand to new territories." />
 
       {/* Phase 0: Generate templates */}
@@ -293,7 +293,7 @@ export default function LeadGeneratorModule({ savedName, savedBrand, onboarding,
       {/* Phase 3: Results & expand */}
       {phase === 3 && (
         <>
-          <div style={{ display: "grid", gap: 10, padding: 18, borderRadius: 14, border: "1px solid var(--vx-accent)", background: "linear-gradient(135deg, rgba(255,214,10,.10), var(--vx-panel))", boxShadow: "var(--vx-glow)" }}>
+          <div style={{ display: "grid", gap: 10, padding: 18, borderRadius: 14, border: "1px solid var(--vx-accent)", background: "linear-gradient(135deg, rgba(240,244,11,.10), var(--vx-panel))", boxShadow: "var(--vx-glow)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--vx-accent)", color: "#0A0A0A", display: "grid", placeItems: "center" }}><Check style={{ width: 17, height: 17 }} /></span>
               <strong style={{ fontSize: 15 }}>Campaign complete for {activeCity}, {activeState}</strong>

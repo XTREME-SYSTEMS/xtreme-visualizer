@@ -75,8 +75,8 @@ const AuthenticatedApp = () => {
     const loadingLogo = getLoadingLogo();
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center" style={{ background: "#030303", gap: 22 }}>
-        <img src={loadingLogo} alt="Xtreme Floor Visualizer" style={{ height: 92, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 20px rgba(255,214,10,.25))' }} />
-        <div className="w-7 h-7 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(255,214,10,.18)", borderTopColor: "#FFD60A" }} />
+        <img src={loadingLogo} alt="Xtreme Floor Visualizer" style={{ height: 92, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 0 20px rgba(240,244,11,.25))' }} />
+        <div className="w-7 h-7 border-4 rounded-full animate-spin" style={{ borderColor: "rgba(240,244,11,.18)", borderTopColor: "#f0f40b" }} />
       </div>
     );
   }

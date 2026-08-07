@@ -7,8 +7,8 @@ const DEFAULTS = {
   label: "Install Xtreme",
   style: "gradient", // gradient | solid | outline | pill
   colorMode: "accent", // accent | custom
-  customFrom: "#FFD60A",
-  customTo: "#FFB800",
+  customFrom: "#f0f40b",
+  customTo: "#d4d80a",
 };
 
 export function getPWAButtonConfig() {
@@ -42,9 +42,9 @@ function buildStyle(cfg) {
       return { ...base, background: "transparent", color: "var(--vx-accent)", border: "1px solid var(--vx-accent)", boxShadow: "none" };
     }
     if (cfg.style === "solid" || cfg.style === "pill") {
-      return { ...base, background: "var(--vx-accent)", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(255,214,10,.28)" };
+      return { ...base, background: "var(--vx-accent)", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(240,244,11,.28)" };
     }
-    return { ...base, background: "linear-gradient(135deg, var(--vx-accent), var(--vx-accent-2))", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(255,214,10,.28), 0 8px 24px rgba(0,0,0,.5)" };
+    return { ...base, background: "linear-gradient(135deg, var(--vx-accent), var(--vx-accent-2))", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(240,244,11,.28), 0 8px 24px rgba(0,0,0,.5)" };
   }
   // custom
   if (cfg.style === "outline") {

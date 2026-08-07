@@ -31,7 +31,7 @@ export default function CRM() {
   const [images, setImages] = useState([]);
   const [qrData, setQrData] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#0A0A0A");
-  const [accentColor, setAccentColor] = useState("#9cff00");
+  const [accentColor, setAccentColor] = useState("#f0f40b");
   const [font, setFont] = useState(FONTS[0]);
   const [layout, setLayout] = useState("modern");
   const [serviceInput, setServiceInput] = useState("");
@@ -114,13 +114,13 @@ export default function CRM() {
     setImages(a.images || []);
     setQrData(a.qr_data || "");
     setPrimaryColor(a.primary_color || "#0A0A0A");
-    setAccentColor(a.accent_color || "#9cff00");
+    setAccentColor(a.accent_color || "#f0f40b");
     setFont(a.config?.font || FONTS[0]);
     setLayout(a.config?.layout || "modern");
   };
 
   const newAsset = () => {
-    setEditingId(null); setCfg(empty); setLogoUrl(""); setImages([]); setQrData(""); setPrimaryColor("#0A0A0A"); setAccentColor("#9cff00");
+    setEditingId(null); setCfg(empty); setLogoUrl(""); setImages([]); setQrData(""); setPrimaryColor("#0A0A0A"); setAccentColor("#f0f40b");
   };
 
   const removeAsset = async (a) => {

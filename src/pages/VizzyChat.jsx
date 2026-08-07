@@ -137,7 +137,7 @@ export default function VizzyChat() {
   if (loading) {
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%", alignItems: "center", justifyContent: "center", gap: 14 }}>
-        <div style={{ width: 48, height: 48, borderRadius: 14, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #8A7300" }}>
+        <div style={{ width: 48, height: 48, borderRadius: 14, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #7a7e08" }}>
           <Sparkles style={{ width: 24, height: 24, color: "var(--vx-accent)" }} />
         </div>
         <div style={{ width: 28, height: 28, borderRadius: "50%", border: "3px solid var(--vx-border)", borderTopColor: "var(--vx-accent)", animation: "spin 0.8s linear infinite" }} />
@@ -151,7 +151,7 @@ export default function VizzyChat() {
       <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 0, padding: "0 12px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 4px 14px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #8A7300" }}>
+            <div style={{ width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #7a7e08" }}>
               <Sparkles style={{ width: 19, height: 19, color: "var(--vx-accent)" }} />
             </div>
             <div>
@@ -171,7 +171,7 @@ export default function VizzyChat() {
             minHeight: 48,
             borderRadius: 12,
             border: "1px solid var(--vx-accent)",
-            background: "linear-gradient(180deg, #FFB800, #FFD60A)",
+            background: "linear-gradient(180deg, #d4d80a, #f0f40b)",
             color: "#1A1A1A",
             fontWeight: 700,
             fontSize: 14,
@@ -226,7 +226,7 @@ export default function VizzyChat() {
         >
           <ArrowLeft style={{ width: 18, height: 18 }} />
         </button>
-        <div style={{ width: 36, height: 36, borderRadius: 10, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #8A7300", flexShrink: 0 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #7a7e08", flexShrink: 0 }}>
           <Sparkles style={{ width: 18, height: 18, color: "var(--vx-accent)" }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -257,7 +257,7 @@ export default function VizzyChat() {
       >
         {messages.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 14, textAlign: "center", padding: "0 20px" }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #8A7300" }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #7a7e08" }}>
               <Sparkles style={{ width: 28, height: 28, color: "var(--vx-accent)" }} />
             </div>
             <div>
@@ -339,7 +339,7 @@ export default function VizzyChat() {
             height: 44,
             borderRadius: 12,
             border: "1px solid var(--vx-accent)",
-            background: "linear-gradient(180deg, #FFB800, #FFD60A)",
+            background: "linear-gradient(180deg, #d4d80a, #f0f40b)",
             color: "#1A1A1A",
             display: "grid",
             placeItems: "center",

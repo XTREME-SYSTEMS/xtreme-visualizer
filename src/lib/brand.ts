@@ -5,8 +5,8 @@ export const BRAND_DIRECTIONS = [
   {
     key: "xtreme_gold",
     name: "Xtreme Gold",
-    description: "Dark canvas, metallic gold #FFD60A accents and highlights, silver-grey metallics, industrial extreme aesthetic.",
-    swatches: ["#1A1A1A", "#FFD60A", "#FFB800", "#C0C0C0"],
+    description: "Dark canvas, metallic gold #f0f40b accents and highlights, silver-grey metallics, industrial extreme aesthetic.",
+    swatches: ["#1A1A1A", "#f0f40b", "#d4d80a", "#C0C0C0"],
     status: "active",
   },
 ];

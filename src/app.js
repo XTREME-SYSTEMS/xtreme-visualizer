@@ -125,7 +125,7 @@ function totalArea(){return measurementAreas.reduce((sum,a)=>sum+(Number(a.lengt
 function quoteTotals(q=quoteDraft||visualQuote()){if(!q)return{subtotal:0,margin:0,total:0};const subtotal=(q.lineItems||[]).reduce((s,x)=>s+Number(x.quantity||0)*Number(x.rate||0),0);const margin=subtotal*(Number(q.marginPercent||0)/100);return{subtotal,margin,total:subtotal+margin};}
 function findColor(code){return state?.colors?.find(c=>c.code===code)||null;}
 function colorImage(code){return findColor(code)?.local_image||'/assets/colors/031-fb-807.png';}
-function colorHex(code){return findColor(code)?.hex||'#9cff00';}
+function colorHex(code){return findColor(code)?.hex||'#f0f40b';}
 function colorName(code){const c=findColor(code);return c?.color_name||c?.name||code;}
 function systemName(slug){return state?.systems?.find(s=>s.slug===slug)?.name||slug.replaceAll('-',' ');}
 

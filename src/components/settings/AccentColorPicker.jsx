@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Save, Check, RotateCcw } from "lucide-react";
 
 const STORAGE_KEY = "vx-accent-color";
-const DEFAULT_COLOR = "#FFD60A";
+const DEFAULT_COLOR = "#f0f40b";
 
 const PRESETS = [
-  { name: "Gold", value: "#FFD60A" },
+  { name: "Gold", value: "#f0f40b" },
   { name: "Cyan", value: "#22d3ee" },
   { name: "Blue", value: "#3b82f6" },
   { name: "Violet", value: "#a855f7" },
@@ -171,7 +171,7 @@ export default function AccentColorPicker() {
               setDraft(saved);
             }
           }}
-          placeholder="#FFD60A"
+          placeholder="#f0f40b"
           className="w-24 px-2 py-1.5 text-[12px] font-mono rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
         />
       </div>

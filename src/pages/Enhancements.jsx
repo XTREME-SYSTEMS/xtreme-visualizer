@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Loader2, CheckCircle2, AlertTriangle, Clock, Zap, RefreshCw } from "lucide-react";
 
 const CATEGORIES = [
-  { id: "revenue", label: "Revenue", color: "#9cff00" },
+  { id: "revenue", label: "Revenue", color: "#f0f40b" },
   { id: "operations", label: "Operations", color: "#43a9ff" },
   { id: "intelligence", label: "Intelligence", color: "#ffd000" },
   { id: "customer", label: "Customer", color: "#ff5258" },
@@ -14,9 +14,9 @@ const STATUS_ICONS = {
   logged: { icon: Clock, color: "#707070" },
   planned: { icon: Clock, color: "#43a9ff" },
   in_progress: { icon: Loader2, color: "#ffd000" },
-  implemented: { icon: CheckCircle2, color: "#9cff00" },
+  implemented: { icon: CheckCircle2, color: "#f0f40b" },
   audited: { icon: CheckCircle2, color: "#43a9ff" },
-  validated: { icon: CheckCircle2, color: "#9cff00" },
+  validated: { icon: CheckCircle2, color: "#f0f40b" },
   deferred: { icon: AlertTriangle, color: "#707070" },
 };
 

@@ -16,7 +16,7 @@ export function LogoMark({ size = 36, dark = false }) {
         width: "auto",
         objectFit: "contain",
         flexShrink: 0,
-        filter: "drop-shadow(0 0 10px rgba(255,214,10,.25))",
+        filter: "drop-shadow(0 0 10px rgba(240,244,11,.25))",
       }}
     />
   );
@@ -31,7 +31,7 @@ export function LogoFull({ size = 36, dark = false }) {
         height: size,
         width: "auto",
         objectFit: "contain",
-        filter: "drop-shadow(0 0 12px rgba(255,214,10,.28))",
+        filter: "drop-shadow(0 0 12px rgba(240,244,11,.28))",
       }}
     />
   );

@@ -49,7 +49,7 @@ export default function Landing() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 -z-10" style={{ background: "radial-gradient(60% 50% at 50% 0%, rgba(255,214,10,.10), transparent 70%)" }} />
+        <div className="pointer-events-none absolute inset-0 -z-10" style={{ background: "radial-gradient(60% 50% at 50% 0%, rgba(240,244,11,.10), transparent 70%)" }} />
         <div className="mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>

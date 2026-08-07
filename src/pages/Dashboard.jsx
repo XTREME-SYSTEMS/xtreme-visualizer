@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import AiChat from "@/components/dashboard/AiChat";
 import ProposalInsights from "@/components/dashboard/ProposalInsights";
 
-const STATUS_COLORS = { new: "#ffd200", qualified: "#43a9ff", estimate_sent: "#9cff00", proposal_sent: "#c4ff3f", won: "#9cff00", lost: "#ff5258", follow_up: "#ffd000" };
+const STATUS_COLORS = { new: "#ffd200", qualified: "#43a9ff", estimate_sent: "#f0f40b", proposal_sent: "#c4ff3f", won: "#f0f40b", lost: "#ff5258", follow_up: "#ffd000" };
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -213,7 +213,7 @@ export default function Dashboard() {
           <ResponsiveContainer>
             <PieChart>
               <Pie data={apptData.filter((a) => a.value > 0)} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} label={({ name, value }) => `${name}: ${value}`} labelLine={false} style={{ fontSize: 9 }}>
-                {apptData.map((_, i) => <Cell key={i} fill={["#ffd200", "#9cff00", "#43a9ff", "#ff5258"][i % 4]} />)}
+                {apptData.map((_, i) => <Cell key={i} fill={["#ffd200", "#f0f40b", "#43a9ff", "#ff5258"][i % 4]} />)}
               </Pie>
               <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
             </PieChart>
@@ -225,12 +225,12 @@ export default function Dashboard() {
         <ChartCard title="Revenue Won by Month">
           <ResponsiveContainer>
             <AreaChart data={revenueByMonth} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <defs><linearGradient id="rev" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#9cff00" stopOpacity={0.6} /><stop offset="100%" stopColor="#9cff00" stopOpacity={0.05} /></linearGradient></defs>
+              <defs><linearGradient id="rev" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f0f40b" stopOpacity={0.6} /><stop offset="100%" stopColor="#f0f40b" stopOpacity={0.05} /></linearGradient></defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#2f2f2f" />
               <XAxis dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 10 }} />
               <YAxis tick={{ fill: "#A0A0A0", fontSize: 10 }} />
               <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
-              <Area type="monotone" dataKey="value" stroke="#9cff00" strokeWidth={2} fill="url(#rev)" />
+              <Area type="monotone" dataKey="value" stroke="#f0f40b" strokeWidth={2} fill="url(#rev)" />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -244,7 +244,7 @@ export default function Dashboard() {
               <XAxis type="number" tick={{ fill: "#A0A0A0", fontSize: 10 }} allowDecimals={false} />
               <YAxis type="category" dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 9 }} width={80} />
               <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
-              <Bar dataKey="count" fill="#9cff00" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="count" fill="#f0f40b" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -259,7 +259,7 @@ export default function Dashboard() {
               <YAxis tick={{ fill: "#A0A0A0", fontSize: 10 }} allowDecimals={false} />
               <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} formatter={(v, n) => n === "rate" ? `${v}%` : v} />
               <Bar dataKey="total" name="Total Leads" fill="#43a9ff" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="won" name="Won" fill="#9cff00" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="won" name="Won" fill="#f0f40b" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -286,7 +286,7 @@ export default function Dashboard() {
               <YAxis tick={{ fill: "#A0A0A0", fontSize: 10 }} />
               <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
               <Bar dataKey="estimate" name="Estimate Mid" fill="#43a9ff" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="proposal" name="Proposal Total" fill="#9cff00" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="proposal" name="Proposal Total" fill="#f0f40b" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

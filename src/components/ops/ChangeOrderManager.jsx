@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Loader2, Plus, Trash2, X, FileDiff, Send } from "lucide-react";
 
 const STATUSES = ["draft", "sent", "approved", "rejected"];
-const STATUS_COLORS = { draft: "#707070", sent: "#43a9ff", approved: "#9cff00", rejected: "#ff5258" };
+const STATUS_COLORS = { draft: "#707070", sent: "#43a9ff", approved: "#f0f40b", rejected: "#ff5258" };
 
 const empty = { project_id: "", title: "", description: "", price_change: 0 };
 

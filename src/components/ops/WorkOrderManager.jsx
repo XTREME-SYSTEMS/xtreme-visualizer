@@ -4,7 +4,7 @@ import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink
 import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const STATUSES = ["draft", "assigned", "in_progress", "completed", "cancelled"];
-const STATUS_COLORS = { draft: "#707070", assigned: "#43a9ff", in_progress: "#ffd000", completed: "#9cff00", cancelled: "#ff5258" };
+const STATUS_COLORS = { draft: "#707070", assigned: "#43a9ff", in_progress: "#ffd000", completed: "#f0f40b", cancelled: "#ff5258" };
 const PHOTO_CATEGORIES = ["site_before", "prep", "primer", "base_coat", "color_install", "topcoat", "site_after"];
 
 const empty = { project_id: "", customer_name: "", customer_email: "", customer_phone: "", project_address: "", crew_leader_name: "", scheduled_date: "", notes: "", scope_items: [], materials_list: [] };

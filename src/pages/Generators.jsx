@@ -38,7 +38,7 @@ export default function Generators() {
               onClick={() => navigate(g.route)}
               style={{ display: "flex", alignItems: "center", gap: 12, width: "100%" }}
             >
-              <div className="hx-portal-icon" style={{ background: "var(--vx-accent-soft)", border: "1px solid #8A7300", color: "var(--vx-accent)" }}>
+              <div className="hx-portal-icon" style={{ background: "var(--vx-accent-soft)", border: "1px solid #7a7e08", color: "var(--vx-accent)" }}>
                 <Icon size={20} />
               </div>
               <div className="hx-portal-text" style={{ flex: 1, textAlign: "left" }}>

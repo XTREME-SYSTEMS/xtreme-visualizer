@@ -11,7 +11,7 @@ export default function RootRoute() {
       <div className="fixed inset-0 grid place-items-center" style={{ background: "#030303" }}>
         <div
           className="w-7 h-7 border-4 rounded-full animate-spin"
-          style={{ borderColor: "rgba(255,214,10,.18)", borderTopColor: "#FFD60A" }}
+          style={{ borderColor: "rgba(240,244,11,.18)", borderTopColor: "#f0f40b" }}
         />
       </div>
     );

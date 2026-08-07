@@ -98,7 +98,7 @@ export default function Tracking() {
                 <XAxis dataKey="name" tick={{ fill: "#A0A0A0", fontSize: 9 }} interval={0} angle={-25} textAnchor="end" height={50} />
                 <YAxis tick={{ fill: "#A0A0A0", fontSize: 10 }} allowDecimals={false} />
                 <Tooltip contentStyle={{ background: "#1A1A1A", border: "1px solid #4a4a4a", borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="count" fill="#9cff00" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="#f0f40b" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

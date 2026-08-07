@@ -53,7 +53,7 @@ export default function VideoStudio() {
   const [aspect, setAspect] = useState("9:16");
   const [fontKey, setFontKey] = useState("display");
   const [fontColor, setFontColor] = useState("#FFFFFF");
-  const [accentColor, setAccentColor] = useState("#FFD60A");
+  const [accentColor, setAccentColor] = useState("#f0f40b");
   const [includeLogo, setIncludeLogo] = useState(true);
   const [coverUrl, setCoverUrl] = useState("");
   const [clips, setClips] = useState([]);

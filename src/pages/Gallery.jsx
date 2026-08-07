@@ -36,9 +36,9 @@ function CategorySection({ category, onImageClick }) {
 
 function GeneratedSection({ images, onImageClick, onDelete }) {
   return (
-    <div className="hx-sys-card" style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10, borderColor: "#8A7300" }}>
+    <div className="hx-sys-card" style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10, borderColor: "#7a7e08" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: "var(--vx-accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--vx-accent)", border: "1px solid #8A7300" }}>
+        <div style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: "var(--vx-accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--vx-accent)", border: "1px solid #7a7e08" }}>
           <Sparkles size={16} />
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>

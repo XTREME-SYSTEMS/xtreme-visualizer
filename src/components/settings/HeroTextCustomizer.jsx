@@ -50,7 +50,7 @@ function Preview({ cfg }) {
         background: "linear-gradient(135deg, #1a1a1a, #050505)",
       }}
     >
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 30% 20%, rgba(255,214,10,.12), transparent 60%)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 30% 20%, rgba(240,244,11,.12), transparent 60%)" }} />
       <div style={{ position: "absolute", left: 18, top: 22, right: 18 }}>
         <h1 style={{ fontFamily: family, color: cfg.headingColor || "#fff", fontSize: 22, lineHeight: 1.1, fontWeight: 800, margin: 0, letterSpacing: "-0.02em" }}>
           {cfg.headingLine1 || "—"}

@@ -16,9 +16,9 @@ function buildStyle(cfg) {
       return { ...base, background: "transparent", color: "var(--vx-accent)", border: "1px solid var(--vx-accent)", boxShadow: "none" };
     }
     if (cfg.style === "solid" || cfg.style === "pill") {
-      return { ...base, background: "var(--vx-accent)", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(255,214,10,.28)" };
+      return { ...base, background: "var(--vx-accent)", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(240,244,11,.28)" };
     }
-    return { ...base, background: "linear-gradient(135deg, var(--vx-accent), var(--vx-accent-2))", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(255,214,10,.28), 0 8px 24px rgba(0,0,0,.5)" };
+    return { ...base, background: "linear-gradient(135deg, var(--vx-accent), var(--vx-accent-2))", color: "#0A0A0A", border: "1px solid var(--vx-accent)", boxShadow: "0 0 24px rgba(240,244,11,.28), 0 8px 24px rgba(0,0,0,.5)" };
   }
   if (cfg.style === "outline") {
     return { ...base, background: "transparent", color: cfg.customFrom, border: `1px solid ${cfg.customFrom}`, boxShadow: "none" };

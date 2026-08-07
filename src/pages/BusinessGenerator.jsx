@@ -38,7 +38,7 @@ function isTaken(name, existing) {
 function SectionHead({ icon: Icon, tag, title, description }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-      <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid #8A7300", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>
+      <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid #7a7e08", background: "var(--vx-accent-soft)", boxShadow: "var(--vx-glow)" }}>
         {Icon ? <Icon style={{ width: 22, height: 22 }} /> : null}
       </span>
       <div style={{ minWidth: 0 }}>
@@ -192,11 +192,11 @@ export default function BusinessGenerator() {
   return (
     <div style={{ display: "grid", gap: 16, padding: "8px 0 36px" }}>
       {/* Hero header */}
-      <div className="vx-card" style={{ padding: 24, position: "relative", overflow: "hidden", borderColor: "#8A7300" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(130% 100% at 0% 0%, rgba(255,214,10,.14), transparent 55%), radial-gradient(120% 120% at 100% 100%, rgba(255,184,0,.08), transparent 60%)", pointerEvents: "none" }} />
+      <div className="vx-card" style={{ padding: 24, position: "relative", overflow: "hidden", borderColor: "#7a7e08" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(130% 100% at 0% 0%, rgba(240,244,11,.14), transparent 55%), radial-gradient(120% 120% at 100% 100%, rgba(255,184,0,.08), transparent 60%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, var(--vx-accent), transparent)", opacity: 0.7 }} />
         <div style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 16 }}>
-          <span style={{ flexShrink: 0, width: 56, height: 56, borderRadius: 15, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid var(--vx-accent)", background: "rgba(255,214,10,.10)", boxShadow: "var(--vx-glow)" }}>
+          <span style={{ flexShrink: 0, width: 56, height: 56, borderRadius: 15, display: "grid", placeItems: "center", color: "var(--vx-accent)", border: "1px solid var(--vx-accent)", background: "rgba(240,244,11,.10)", boxShadow: "var(--vx-glow)" }}>
             <Wand2 style={{ width: 28, height: 28 }} />
           </span>
           <div style={{ minWidth: 0 }}>
@@ -216,7 +216,7 @@ export default function BusinessGenerator() {
           <span style={{ fontSize: 12, fontWeight: 800, color: "var(--vx-accent)" }}>{steps.filter((s) => s.done).length} / {steps.length}</span>
         </div>
         <div style={{ position: "relative", height: 8, borderRadius: 6, background: "var(--vx-panel-3)", overflow: "hidden", border: "1px solid var(--vx-border-soft)" }}>
-          <div style={{ position: "absolute", inset: 0, width: (steps.filter((s) => s.done).length / steps.length * 100) + "%", background: "linear-gradient(90deg, #FFB800, #FFD60A)", boxShadow: "var(--vx-glow)", borderRadius: 6, transition: "width .3s ease" }} />
+          <div style={{ position: "absolute", inset: 0, width: (steps.filter((s) => s.done).length / steps.length * 100) + "%", background: "linear-gradient(90deg, #d4d80a, #f0f40b)", boxShadow: "var(--vx-glow)", borderRadius: 6, transition: "width .3s ease" }} />
         </div>
         <div style={{ display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none" }}>
           {steps.map((s, i) => (
@@ -269,7 +269,7 @@ export default function BusinessGenerator() {
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                       <strong style={{ fontSize: 16 }}>{n.name}</strong>
-                      <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".05em", textTransform: "uppercase", padding: "3px 9px", borderRadius: 8, border: n.taken ? "1px solid #7f1a20" : "1px solid #8A7300", color: n.taken ? "#ff858b" : "var(--vx-accent)", background: n.taken ? "rgba(255,82,88,.08)" : "rgba(255,214,10,.06)" }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".05em", textTransform: "uppercase", padding: "3px 9px", borderRadius: 8, border: n.taken ? "1px solid #7f1a20" : "1px solid #7a7e08", color: n.taken ? "#ff858b" : "var(--vx-accent)", background: n.taken ? "rgba(255,82,88,.08)" : "rgba(240,244,11,.06)" }}>
                         {n.taken ? "Possibly taken" : "Likely available"}
                       </span>
                     </div>
@@ -284,7 +284,7 @@ export default function BusinessGenerator() {
         )}
 
         {savedName && (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14, border: "1px solid var(--vx-accent)", background: "linear-gradient(135deg, rgba(255,214,10,.10), var(--vx-panel))", boxShadow: "var(--vx-glow)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14, border: "1px solid var(--vx-accent)", background: "linear-gradient(135deg, rgba(240,244,11,.10), var(--vx-panel))", boxShadow: "var(--vx-glow)" }}>
             <span style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--vx-accent)", color: "#0A0A0A", display: "grid", placeItems: "center", flexShrink: 0 }}><Check style={{ width: 17, height: 17 }} /></span>
             <span style={{ fontSize: 13, color: "var(--vx-muted)" }}>Approved name: <strong style={{ color: "var(--vx-accent)", fontSize: 16 }}>{savedName}</strong></span>
           </div>
@@ -394,7 +394,7 @@ export default function BusinessGenerator() {
       )} />
 
       {savedSocial && (
-        <section className="vx-card" style={{ padding: 20, display: "grid", gap: 14, borderColor: "#8A7300", background: "linear-gradient(145deg, var(--vx-panel-2), var(--vx-panel))" }}>
+        <section className="vx-card" style={{ padding: 20, display: "grid", gap: 14, borderColor: "#7a7e08", background: "linear-gradient(145deg, var(--vx-panel-2), var(--vx-panel))" }}>
           <SectionHead icon={Film} tag="VIDEO" title="Render your social video" description="Generates a 4-second vertical clip from your selected post concept." />
           <button className="vx-btn primary" onClick={renderVideo} disabled={videoLoading} style={{ alignSelf: "flex-start" }}>
             {videoLoading ? <Loader2 className="vx-icon" /> : <Film className="vx-icon" />}

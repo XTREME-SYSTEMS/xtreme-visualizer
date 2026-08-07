@@ -138,13 +138,13 @@ export default function GalleryImageGenerator({ onGenerated }) {
           padding: "16px 18px",
           borderRadius: 14,
           border: "1px solid var(--vx-accent)",
-          background: "linear-gradient(135deg, rgba(255,214,10,.10), var(--vx-panel))",
+          background: "linear-gradient(135deg, rgba(240,244,11,.10), var(--vx-panel))",
           boxShadow: "var(--vx-glow)",
           color: "var(--vx-text)",
           cursor: "pointer",
         }}
       >
-        <span style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 10, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #8A7300" }}>
+        <span style={{ flexShrink: 0, width: 40, height: 40, borderRadius: 10, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #7a7e08" }}>
           <Wand2 style={{ width: 20, height: 20, color: "var(--vx-accent)" }} />
         </span>
         <div style={{ flex: 1, textAlign: "left" }}>
@@ -157,9 +157,9 @@ export default function GalleryImageGenerator({ onGenerated }) {
   }
 
   return (
-    <div className="hx-sys-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14, borderColor: "#8A7300" }}>
+    <div className="hx-sys-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14, borderColor: "#7a7e08" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #8A7300" }}>
+        <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, display: "grid", placeItems: "center", background: "var(--vx-accent-soft)", border: "1px solid #7a7e08" }}>
           <Wand2 size={16} style={{ color: "var(--vx-accent)" }} />
         </span>
         <div style={{ flex: 1 }}>
