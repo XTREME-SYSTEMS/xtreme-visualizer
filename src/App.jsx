@@ -57,9 +57,10 @@ import BusinessGenerator from '@/pages/BusinessGenerator';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import VizzyChat from '@/pages/VizzyChat';
+import OAuthConsent from '@/pages/OAuthConsent';
 import RootRoute from '@/components/RootRoute';
 
-const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
+const AUTH_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/oauth/consent'];
 const PUBLIC_PATHS = ['/ThankYou', '/portal', '/', '/privacy', '/terms'];
 
 const AuthenticatedApp = () => {
@@ -96,6 +97,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/oauth/consent" element={<OAuthConsent />} />
       {/* Public marketing landing */}
       <Route path="/" element={<RootRoute />} />
 
