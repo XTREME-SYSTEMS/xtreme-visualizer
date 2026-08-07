@@ -19,7 +19,7 @@ const DEFAULTS = {
   buttonLabel: "New Visualization",
   fontFamily: "system",
   headingColor: "",
-  subheadingColor: "",
+  subheadingColor: "#ffffff",
   buttonColor: "",
 };
 
