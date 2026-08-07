@@ -111,7 +111,7 @@ export default function Home() {
           <button className="hx-portal-card" onClick={() => navigate("/generators")}>
             <div className="hx-portal-icon"><Wand2 size={20} /></div>
             <div className="hx-portal-text">
-              <strong>Generators</strong>
+              <strong>Creative Hub</strong>
             </div>
             <ChevronRight size={16} className="hx-portal-arrow" />
           </button>

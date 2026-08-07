@@ -23,7 +23,7 @@ export default function Generators() {
     <div className="page hx-page" style={{ gap: 12 }}>
       <div className="hx-page-head">
         <div>
-          <h1>Generators</h1>
+          <h1>Creative Hub</h1>
           <p>{GENERATORS.length} AI-powered tools to build your brand & marketing</p>
         </div>
       </div>
