@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Sparkles, Plus, Send, ArrowLeft, MessageSquare } from "lucide-react";
 import MessageBubble from "@/components/vizzy/MessageBubble";
 
-const AGENT_NAME = "vizzy";
+const AGENT_NAME = "xtreme-ai";
 
 export default function VizzyChat() {
   const [conversations, setConversations] = useState([]);
@@ -141,7 +141,7 @@ export default function VizzyChat() {
           <Sparkles style={{ width: 24, height: 24, color: "var(--vx-accent)" }} />
         </div>
         <div style={{ width: 28, height: 28, borderRadius: "50%", border: "3px solid var(--vx-border)", borderTopColor: "var(--vx-accent)", animation: "spin 0.8s linear infinite" }} />
-        <p style={{ fontSize: 13, color: "var(--vx-muted)" }}>Starting Vizzy…</p>
+        <p style={{ fontSize: 13, color: "var(--vx-muted)" }}>Starting Xtreme AI…</p>
       </div>
     );
   }
@@ -155,7 +155,7 @@ export default function VizzyChat() {
               <Sparkles style={{ width: 19, height: 19, color: "var(--vx-accent)" }} />
             </div>
             <div>
-              <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: "-0.03em" }}>Vizzy AI</h1>
+              <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: "-0.03em" }}>Xtreme AI</h1>
               <p style={{ fontSize: 12, color: "var(--vx-muted)", margin: 0 }}>Your autonomous copilot</p>
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function VizzyChat() {
           <Sparkles style={{ width: 18, height: 18, color: "var(--vx-accent)" }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h1 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Vizzy AI</h1>
+          <h1 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Xtreme AI</h1>
           <p style={{ fontSize: 11, color: "var(--vx-muted)", margin: 0 }}>
             {sending ? "Thinking…" : "Autonomous copilot"}
           </p>
@@ -261,7 +261,7 @@ export default function VizzyChat() {
               <Sparkles style={{ width: 28, height: 28, color: "var(--vx-accent)" }} />
             </div>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 800, margin: "0 0 6px" }}>Ask Vizzy anything</h2>
+              <h2 style={{ fontSize: 18, fontWeight: 800, margin: "0 0 6px" }}>Ask Xtreme AI anything</h2>
               <p style={{ fontSize: 13, color: "var(--vx-muted)", margin: 0, lineHeight: 1.5 }}>
                 I can manage your leads, create quotes, schedule appointments, send emails, track job costs, and operate your entire app.
               </p>
@@ -314,7 +314,7 @@ export default function VizzyChat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message Vizzy…"
+          placeholder="Message Xtreme AI…"
           rows={1}
           style={{
             flex: 1,

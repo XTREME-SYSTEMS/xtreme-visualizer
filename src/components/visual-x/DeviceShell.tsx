@@ -15,7 +15,7 @@ const NAV = [
   { to: '/app', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
-  { to: '/vizzy', label: 'Vizzy AI', icon: Sparkles },
+  { to: '/vizzy', label: 'Xtreme AI', icon: Sparkles },
 ];
 const MORE = [
   { to: '/voice', label: 'Voice Assistant' },
@@ -48,7 +48,7 @@ const CREW_NAV = [
   { to: '/app', label: 'Home', icon: Home },
   { to: '/operations', label: 'Operations', icon: ClipboardList },
   { to: '/field', label: 'Field', icon: CameraIcon },
-  { to: '/vizzy', label: 'Vizzy AI', icon: Sparkles },
+  { to: '/vizzy', label: 'Xtreme AI', icon: Sparkles },
 ];
 const CREW_MORE = [
   { to: '/field', label: 'Field Dashboard' },
@@ -61,7 +61,7 @@ const SALES_NAV = [
   { to: '/app', label: 'Home', icon: Home },
   { to: '/visualizer', label: 'New Bid', icon: Camera },
   { to: '/leads', label: 'Leads', icon: Users },
-  { to: '/vizzy', label: 'Vizzy AI', icon: Sparkles },
+  { to: '/vizzy', label: 'Xtreme AI', icon: Sparkles },
 ];
 const SALES_MORE = [
   { to: '/dashboard', label: 'Dashboard' },
