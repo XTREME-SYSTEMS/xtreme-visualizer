@@ -44,6 +44,14 @@ export default function VoiceAssistant() {
       {/* Twilio config status */}
       <div className="hx-sys-card" style={{ display: "grid", gap: 12 }}>
         <div className="hx-bid-input-label"><Phone size={15} /> Twilio Phone Integration</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 12, background: "var(--vx-accent-soft)", border: "1px solid #7a7e08" }}>
+          <Phone size={18} style={{ color: "var(--vx-accent)", flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--vx-faint)", textTransform: "uppercase", letterSpacing: ".06em", display: "block" }}>Toll-Free Number</span>
+            <strong style={{ fontSize: 19, letterSpacing: "-.02em", color: "var(--vx-accent)" }}>888-68-RESIN</strong>
+            <span style={{ fontSize: 11, color: "var(--vx-muted)", display: "block", marginTop: 2 }}>Pending final verification · (888) 687-3746</span>
+          </div>
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, background: "rgba(255,210,0,.06)", border: "1px solid #9a7b00" }}>
           <AlertTriangle size={16} style={{ color: "#ffd200", flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: "#ffd200" }}>Configure your Twilio credentials in the <strong style={{ color: "var(--vx-accent)" }}>Admin console</strong> (bookmark <code>/admin</code>). Then point your Twilio number's voice webhook to the URL below.</span>
