@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Plus, Trash2, X, HardHat, Save, Star } from "lucide-react";
+import { Loader2, Plus, Trash2, X, HardHat, Save } from "lucide-react";
 
 const empty = { name: "", company: "", email: "", phone: "", trade: "", rating: 5, active: true, notes: "" };
 

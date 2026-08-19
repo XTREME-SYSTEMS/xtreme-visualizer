@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Image as ImageIcon, Loader2, Wand2, Sparkles, X, Check } from "lucide-react";
+import { Loader2, Wand2, Sparkles, X, Check } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import { GALLERY_CATEGORIES } from "@/data/galleryImages";
 

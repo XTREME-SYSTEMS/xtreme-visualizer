@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Briefcase, ShieldCheck, Settings, FileText, Calculator, Users, Palette,
+  Briefcase, ShieldCheck, Settings, FileText, Calculator, Palette,
   Package, Mail, Target, BookOpen, TrendingUp, CalendarClock, ScrollText,
   Camera, Sparkles, ChevronRight, LayoutDashboard, BarChart3, CreditCard,
   ClipboardList, Image, Film,

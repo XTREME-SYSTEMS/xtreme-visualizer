@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Sparkles, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 export default function ProposalInsights({ leads }) {
   const [insights, setInsights] = useState(null);

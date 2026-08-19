@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink, Calendar, DollarSign, CheckCircle2, AlertTriangle, Camera, Package, Mail } from "lucide-react";
+import { Loader2, Plus, Trash2, X, ClipboardList, Send, FolderTree, ExternalLink, Calendar, DollarSign, Camera, Package, Mail } from "lucide-react";
 import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
 const STATUSES = ["draft", "assigned", "in_progress", "completed", "cancelled"];

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, CheckCircle2, AlertTriangle, Clock, Zap, RefreshCw } from "lucide-react";
+import { Loader2, CheckCircle2, AlertTriangle, Clock, RefreshCw } from "lucide-react";
 
 const CATEGORIES = [
   { id: "revenue", label: "Revenue", color: "#f0f40b" },

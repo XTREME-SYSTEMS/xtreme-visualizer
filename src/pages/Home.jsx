@@ -12,7 +12,6 @@ import {
   ClipboardList,
   Globe,
   Calendar,
-  CreditCard,
 } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 import { getHeroImage, getHeroFilters, heroFilterString } from "@/components/settings/HeroImagePicker";

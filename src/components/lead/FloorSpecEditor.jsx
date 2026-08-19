@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, FileText, Save, RefreshCw } from "lucide-react";
+import { Loader2, Save, RefreshCw } from "lucide-react";
 import { FLOOR_TYPE_OPTIONS, generateSpecs, specsToText } from "@/lib/floorSpecs";
 
 // Lets the contractor type in a general floor type and auto-generates the

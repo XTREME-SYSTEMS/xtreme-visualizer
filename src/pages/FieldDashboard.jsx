@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Clock, Camera, CheckSquare, ClipboardList, MapPin, LogIn, LogOut } from "lucide-react";
+import { Loader2, Clock, Camera, CheckSquare, ClipboardList, MapPin } from "lucide-react";
 import FieldPhotoManager from "@/components/ops/FieldPhotoManager";
 import PunchList from "@/components/ops/PunchList";
 import ClockManager from "@/components/ops/ClockManager";

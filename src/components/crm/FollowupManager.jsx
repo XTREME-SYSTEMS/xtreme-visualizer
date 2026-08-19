@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Send, Plus, Clock, Check, Trash2, Zap } from "lucide-react";
+import { Loader2, Plus, Clock, Check, Trash2, Zap } from "lucide-react";
 
 export default function FollowupManager({ leads }) {
   const [plans, setPlans] = useState(null);

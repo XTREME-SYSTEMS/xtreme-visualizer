@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { Sparkles, CalendarCheck, X, Loader2, Clock, MapPin, Check } from "lucide-react";
+import { Sparkles, CalendarCheck, X, Loader2, Clock, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ResponsiveSelect from "@/components/vq/ResponsiveSelect";
 
