@@ -9,44 +9,19 @@
 // it paid exactly once. It pairs with `create-checkout`, which MUST persist
 // `checkoutSession.id` on the Purchase — Wix has no custom-metadata field, so the checkout
 // id is the ONLY correlation key back to this app's user.
+//
+// Pure logic (envelope parsing, routing, handlers) is extracted to base44/shared/paymentsCore.ts
+// for unit testing. This file is the thin Deno wrapper: JWT verification + dispatch.
 
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.31";
 import { importSPKI, jwtVerify } from "npm:jose@5.9.6";
+import {
+  parseWixEnvelope,
+  createJwtVerifier,
+  routePaymentEvent,
+} from "../../shared/paymentsCore.ts";
 
-// Wix event types (verbatim from Wix docs).
-const ORDER_APPROVED = "wix.ecom.v1.order_approved";
-const SUBSCRIPTION_CANCELED = "wix.ecom.subscription_contracts.v1.subscription_contract_canceled";
-const SUBSCRIPTION_EXPIRED = "wix.ecom.subscription_contracts.v1.subscription_contract_expired";
-
-// Unwrap Wix's triple-nested envelope: the request body is a JWT whose verified
-// payload has a `data` JSON string; that parses to an envelope with `eventType` and
-// another `data` JSON string; that parses to the event data holding the order.
-function parseWixEnvelope(payload: Record<string, unknown>): { eventType: string; eventData: any } {
-  const outer = typeof payload.data === "string" ? JSON.parse(payload.data) : payload.data;
-  // eventType lives on the parsed envelope; newer DomainEvent envelopes may also carry it as a
-  // top-level JWT claim — fall back to that so the event isn't misrouted to the ignore branch.
-  const eventType: string = outer?.eventType ?? (payload.eventType as string) ?? "";
-  const eventData = typeof outer?.data === "string" ? JSON.parse(outer.data) : outer?.data;
-  return { eventType, eventData };
-}
-
-// For order_approved, the order is at eventData.order (per Wix Payments docs:
-// `eventData.order.checkoutId === checkoutSession.id`).
-function extractOrder(eventData: any): any | null {
-  return eventData?.order ?? null;
-}
-
-// The buyer's email, as entered on Wix's hosted checkout page. This is the ONLY identity for an
-// anonymous buyer (one who wasn't signed in when create-checkout ran, so appUserId is null). Wix
-// exposes it in a few places depending on the flow; check the common ones.
-function extractBuyerEmail(order: any): string | null {
-  return (
-    order?.buyerInfo?.email ??
-    order?.billingInfo?.contactDetails?.email ??
-    order?.billingInfo?.email ??
-    null
-  );
-}
+const verifyWebhookToken = createJwtVerifier(importSPKI, jwtVerify);
 
 Deno.serve(async (req: Request) => {
   try {
@@ -68,9 +43,7 @@ Deno.serve(async (req: Request) => {
 
     let payload: Record<string, unknown>;
     try {
-      const key = await importSPKI(WEBHOOK_PUBLIC_KEY, "RS256");
-      const verified = await jwtVerify(token, key);
-      payload = verified.payload as Record<string, unknown>;
+      payload = await verifyWebhookToken(token, WEBHOOK_PUBLIC_KEY);
     } catch (err) {
       // Signature invalid / malformed. Reject — do NOT grant anything.
       console.error("payments-webhook: JWT verification failed", err);
@@ -81,17 +54,7 @@ Deno.serve(async (req: Request) => {
     const base44 = createClientFromRequest(req);
     const db = base44.asServiceRole; // No end user is authenticated on a webhook call.
 
-    if (eventType === ORDER_APPROVED) {
-      return await handleOrderApproved(db, eventData);
-    }
-
-    if (eventType === SUBSCRIPTION_CANCELED || eventType === SUBSCRIPTION_EXPIRED) {
-      return await handleSubscriptionEnded(db, eventData, eventType);
-    }
-
-    // Unknown/irrelevant event — acknowledge so Wix stops retrying.
-    console.log(`payments-webhook: ignoring event ${eventType}`);
-    return new Response("OK", { status: 200 });
+    return await routePaymentEvent(db, eventType, eventData);
   } catch (err) {
     // Unexpected failure: 500 tells Wix to retry later (the handler is idempotent, so a
     // retry after a partial failure is safe).
@@ -99,162 +62,3 @@ Deno.serve(async (req: Request) => {
     return new Response("Internal error", { status: 500 });
   }
 });
-
-async function handleOrderApproved(db: any, eventData: any): Promise<Response> {
-  const order = extractOrder(eventData);
-  const checkoutId: string | undefined = order?.checkoutId;
-  const orderId: string | undefined = order?.id;
-  // Subscription id (if any) — persisted below so SUBSCRIPTION_CANCELED/EXPIRED can later
-  // resolve this purchase by subscriptionId and revoke access.
-  const subscriptionId: string | undefined = (order?.lineItems ?? [])
-    .map((li: any) => li?.subscriptionInfo?.id)
-    .find((id: any) => !!id);
-
-  if (!checkoutId) {
-    // Nothing to correlate on. Acknowledge to stop retries; log for investigation.
-    console.error("payments-webhook: ORDER_APPROVED missing order.checkoutId", { orderId });
-    return new Response("OK", { status: 200 });
-  }
-
-  // Resolve the pending purchase created by `create-checkout` (join key: checkoutSessionId).
-  const matches = await db.entities.Base44Purchase.filter({ checkoutSessionId: checkoutId });
-  const purchase = matches?.[0];
-
-  if (!purchase) {
-    // The pending Base44Purchase is written by create-checkout before the buyer pays, so a miss
-    // here is a transient race (entity not yet visible) — return 500 so Wix retries, rather
-    // than ACKing a paid order we can't fulfill. (Wix stops after its retry window.)
-    console.warn("payments-webhook: no Base44Purchase for checkoutId yet, asking Wix to retry", { checkoutId, orderId });
-    return new Response("Purchase not found yet", { status: 500 });
-  }
-
-  // IDEMPOTENCY + terminal states: Wix delivers ORDER_APPROVED more than once, and may deliver
-  // a stale approval after a cancellation. Skip if already "paid" (prevents double-grant) or
-  // "canceled" (a late approval must not resurrect a revoked subscription).
-  if (purchase.status === "paid" || purchase.status === "canceled") {
-    console.log("payments-webhook: purchase already terminal, skipping", { checkoutId, status: purchase.status });
-    return new Response("OK", { status: 200 });
-  }
-
-  // The buyer's email: from create-checkout if they were signed in, otherwise from the Wix order
-  // (the only identity an anonymous buyer has). Persisted below and used by the grant block.
-  const buyerEmail: string | null = purchase.buyerEmail ?? extractBuyerEmail(order);
-
-  // ===== APP-SPECIFIC =====
-  // Visual-X billing: fulfill based on product type. The purchase.productId tells us what was bought.
-  // - "deposit" | "final": mark the Invoice (correlated by checkoutSessionId) as paid. On FINAL,
-  //   also mark the linked Work Order as completed.
-  // - "maintenance": activate the MaintenanceSubscription (correlated by checkoutSessionId) and
-  //   attach the subscriptionInfo.id so future cancel/expire events can resolve it.
-  try {
-    if (purchase.productId === "maintenance") {
-      const subMatches = await db.entities.MaintenanceSubscription.filter({ checkout_session_id: checkoutId });
-      const sub = subMatches?.[0];
-      if (sub && sub.status !== "active") {
-        await db.entities.MaintenanceSubscription.update(sub.id, {
-          status: "active",
-          subscription_id: subscriptionId ?? null,
-          activated_at: new Date().toISOString(),
-        });
-        console.log("payments-webhook: maintenance subscription activated", { subId: sub.id, subscriptionId });
-      }
-    } else {
-      // Invoice payment (deposit or final)
-      const invMatches = await db.entities.Invoice.filter({ checkout_session_id: checkoutId });
-      const invoice = invMatches?.[0];
-      if (invoice && invoice.status !== "paid") {
-        await db.entities.Invoice.update(invoice.id, {
-          status: "paid",
-          paid_at: new Date().toISOString(),
-        });
-        if (invoice.type === "final" && invoice.work_order_id) {
-          const wo = await db.entities.WorkOrder.filter({ id: invoice.work_order_id });
-          if (wo?.[0] && wo[0].status !== "completed") {
-            await db.entities.WorkOrder.update(wo[0].id, { status: "completed" });
-          }
-        }
-        console.log("payments-webhook: invoice marked paid", { invoiceId: invoice.id, type: invoice.type });
-      }
-    }
-  } catch (err) {
-    console.error("payments-webhook: grant failed", err);
-    throw err; // stay "pending" so Wix retries
-  }
-  // ===== END APP-SPECIFIC =====
-
-  // Mark paid LAST, so "paid" always implies the grant above completed. The idempotency
-  // check at the top short-circuits on this status, so it must only be set after fulfillment.
-  // subscriptionId is stored here so SUBSCRIPTION_CANCELED/EXPIRED can resolve this purchase.
-  await db.entities.Base44Purchase.update(purchase.id, {
-    status: "paid",
-    orderId: orderId ?? purchase.orderId ?? null,
-    subscriptionId: subscriptionId ?? purchase.subscriptionId ?? null,
-    // Persist the buyer email (backfilled from the Wix order for anonymous buyers) so the record
-    // always shows who paid, even when create-checkout had no signed-in user.
-    buyerEmail: buyerEmail ?? purchase.buyerEmail ?? null,
-    paidAt: new Date().toISOString(),
-  });
-
-  console.log("payments-webhook: fulfilled purchase", { purchaseId: purchase.id, checkoutId, orderId });
-  return new Response("OK", { status: 200 });
-}
-
-async function handleSubscriptionEnded(db: any, eventData: any, eventType: string): Promise<Response> {
-  // Canceled = ended early; Expired = ran all billing cycles. Both revoke access.
-  // Mirrors the order path (eventData.<entity>); keep a fallback since the subscription
-  // contract webhook body isn't as tightly documented as order_approved.
-  const contract = eventData?.subscriptionContract ?? eventData?.entity ?? null;
-  const subscriptionId: string | undefined = contract?.id;
-
-  if (!subscriptionId) {
-    console.error("payments-webhook: subscription event missing contract id");
-    return new Response("OK", { status: 200 });
-  }
-
-  const matches = await db.entities.Base44Purchase.filter({ subscriptionId });
-  const purchase = matches?.[0];
-  if (!purchase) {
-    // The subscriptionId is written on the Purchase by the ORDER_APPROVED handler. If a
-    // cancel/expire arrives before (or racing) that approval, no Purchase matches yet —
-    // return 500 so Wix retries until the approval has linked it, instead of losing the
-    // revoke by acking a not-yet-linkable event.
-    console.warn("payments-webhook: no Purchase for subscription yet, asking Wix to retry", { subscriptionId });
-    return new Response("Purchase not linkable yet", { status: 500 });
-  }
-
-  if (purchase.status === "canceled") {
-    return new Response("OK", { status: 200 }); // Idempotent.
-  }
-
-  // ===== APP-SPECIFIC =====
-  // Revoke whatever access the subscription granted (mirror of the grant). Runs BEFORE we
-  // mark the purchase canceled: if it throws, the status stays as-is so Wix's retry re-runs
-  // the revoke rather than hitting the "already canceled" short-circuit and leaving access on.
-  // Must be idempotent.
-  try {
-    if (purchase.productId === "maintenance") {
-      const subMatches = await db.entities.MaintenanceSubscription.filter({ subscription_id: subscriptionId });
-      const sub = subMatches?.[0];
-      if (sub && sub.status === "active") {
-        await db.entities.MaintenanceSubscription.update(sub.id, {
-          status: eventType === SUBSCRIPTION_CANCELED ? "canceled" : "expired",
-          canceled_at: new Date().toISOString(),
-        });
-        console.log("payments-webhook: maintenance subscription revoked", { subId: sub.id, subscriptionId });
-      }
-    }
-  } catch (err) {
-    console.error("payments-webhook: subscription revoke failed", err);
-    throw err;
-  }
-  // ===== END APP-SPECIFIC =====
-
-  // Mark canceled LAST, so "canceled" always implies access was actually revoked.
-  await db.entities.Base44Purchase.update(purchase.id, {
-    status: "canceled",
-    canceledAt: new Date().toISOString(),
-  });
-
-  console.log("payments-webhook: revoked subscription", { purchaseId: purchase.id, subscriptionId });
-  return new Response("OK", { status: 200 });
-}

@@ -13,23 +13,14 @@
 // the ONLY thing that ties this payment back to this purchase. We persist it on a pending
 // Base44Purchase BEFORE redirecting; the webhook resolves the purchase by that same id
 // (order.checkoutId === checkoutSession.id). Skipping this write makes fulfillment impossible.
+//
+// Pure logic (URL resolution, product resolution) is extracted to base44/shared/checkoutCore.ts
+// for unit testing. This file is the thin Deno wrapper: Wix API call + persistence.
 
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.31";
+import { resolveAppUrl, resolveCheckoutProduct } from "../../shared/checkoutCore.ts";
 
 const CONSTRUCT_URL = "https://www.wixapis.com/payments/platform/v1/checkout-sessions/construct";
-
-// The app's public base URL for the buyer's return links. Use the platform-injected
-// `X-Base44-App-Url` header (server-set from app state — correct behind custom domains), then the
-// server-owned `WIX_CHECKOUT_APP_URL` secret. We do NOT fall back to the request `Origin`: it's
-// caller-controlled, so a spoofed Origin would make Wix send the paid buyer to an attacker page
-// (open redirect). Both sources above are always present for a connected payments app.
-function resolveAppUrl(req: Request): string {
-  return (
-    req.headers.get("x-base44-app-url") ||
-    Deno.env.get("WIX_CHECKOUT_APP_URL") ||
-    ""
-  );
-}
 
 Deno.serve(async (req: Request) => {
   try {
@@ -45,12 +36,14 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Payments not configured" }), { status: 500 });
     }
 
-    const appUrl = resolveAppUrl(req);
+    const appUrl = resolveAppUrl(
+      req.headers.get("x-base44-app-url"),
+      Deno.env.get("WIX_CHECKOUT_APP_URL")
+    );
     if (!appUrl) {
       // Fail closed: with no server-owned app URL (both the X-Base44-App-Url header AND the
-      // WIX_CHECKOUT_APP_URL secret are absent — e.g. a slug-less or partially-wired app) we'd build
-      // relative return links like `/ThankYou` and strand the paid buyer. Never fall back to the
-      // caller-controlled Origin (open redirect). Reconnecting payments repopulates the secret.
+      // WIX_CHECKOUT_APP_URL secret are absent) we'd build relative return links like `/ThankYou`
+      // and strand the paid buyer. Never fall back to the caller-controlled Origin (open redirect).
       console.error("create-checkout: no app URL (X-Base44-App-Url header and WIX_CHECKOUT_APP_URL both empty)");
       return new Response(JSON.stringify({ error: "Payments not configured" }), { status: 500 });
     }
@@ -62,113 +55,39 @@ Deno.serve(async (req: Request) => {
     let appUser = null;
     try {
       appUser = await base44.auth.me();
-    } catch (_) {
+    } catch {
       appUser = null;
     }
 
     const body = await req.json().catch(() => ({}));
+    const db = base44.asServiceRole;
 
     // ===== APP-SPECIFIC =====
     // Visual-X billing: the client sends an Invoice id as `productId` (one-time charge) or
     // a MaintenanceSubscription id with `productType: "maintenance"` (recurring subscription).
     // We resolve SERVER-SIDE so a buyer can't tamper the amount.
-    const db = base44.asServiceRole;
-    const productType = body.productType ?? "invoice";
-    let quantity = 1;
-    let productName = "";
-    let price = "0";
-    let currency = "USD";
-    let subscriptionInfo: any = null;
-    let customerEmail: string | null = null;
-    let thankYouPath = "/ThankYou";
-    let postFlowPath = "/";
-    let purchaseProductId = "";
-    let maintenanceSub: any = null;
-
-    if (productType === "maintenance") {
-      // #8: Recurring maintenance subscription via Wix Payments
-      const subId = String(body.productId ?? "");
-      if (!subId) {
-        return new Response(JSON.stringify({ error: "Missing subscription id" }), { status: 400 });
-      }
-      try {
-        const subs = await db.entities.MaintenanceSubscription.filter({ id: subId });
-        maintenanceSub = subs?.[0] ?? null;
-      } catch (_) {
-        return new Response(JSON.stringify({ error: "Unknown subscription" }), { status: 400 });
-      }
-      if (!maintenanceSub) {
-        return new Response(JSON.stringify({ error: "Unknown subscription" }), { status: 400 });
-      }
-      if (maintenanceSub.status === "active") {
-        return new Response(JSON.stringify({ error: "Subscription already active" }), { status: 400 });
-      }
-      productName = maintenanceSub.plan_name || "Maintenance Plan";
-      price = Number(maintenanceSub.price).toFixed(2);
-      if (parseFloat(price) < 0.5) {
-        return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
-      }
-      currency = "USD";
-      customerEmail = maintenanceSub.customer_email || appUser?.email || null;
-      purchaseProductId = "maintenance";
-      // Build subscriptionInfo for recurring billing
-      const freq = maintenanceSub.frequency || "YEAR";
-      subscriptionInfo = {
-        subscriptionSettings: {
-          frequency: freq,
-          autoRenewal: true,
-        },
-        title: maintenanceSub.plan_name,
-        description: `Annual maintenance and sealer coat service for ${maintenanceSub.customer_name}`,
-      };
-      thankYouPath = "/ThankYou";
-      postFlowPath = "/billing";
-    } else {
-      // Default: one-time invoice payment
-      const invoiceId = String(body.productId ?? "");
-      if (!invoiceId) {
-        return new Response(JSON.stringify({ error: "Missing invoice id" }), { status: 400 });
-      }
-      let invoice: any = null;
-      try {
-        const invoices = await db.entities.Invoice.filter({ id: invoiceId });
-        invoice = invoices?.[0] ?? null;
-      } catch (_) {
-        return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
-      }
-      if (!invoice) {
-        return new Response(JSON.stringify({ error: "Unknown invoice" }), { status: 400 });
-      }
-      if (invoice.status === "paid") {
-        return new Response(JSON.stringify({ error: "Invoice already paid" }), { status: 400 });
-      }
-      productName = `${invoice.type === "final" ? "Final Invoice" : "Deposit"} — ${invoice.customer_name}`;
-      price = Number(invoice.amount).toFixed(2);
-      if (parseFloat(price) < 0.5) {
-        return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
-      }
-      currency = invoice.currency || "USD";
-      customerEmail = invoice.customer_email || appUser?.email || null;
-      purchaseProductId = invoice.type;
-      thankYouPath = "/ThankYou";
-      postFlowPath = "/";
+    const resolved = await resolveCheckoutProduct(db, body, appUser);
+    if (resolved.status !== 200 || !resolved.product) {
+      return new Response(JSON.stringify({ error: resolved.error }), { status: resolved.status });
     }
+    const p = resolved.product;
     // ===== END APP-SPECIFIC =====
 
-    const total = parseFloat(price) * quantity;
+    const total = parseFloat(p.price) * p.quantity;
     if (!(total >= 0.5)) {
       // Wix rejects charges under 0.50 in the charged currency (major units, not cents).
       return new Response(JSON.stringify({ error: "Amount must be at least 0.50" }), { status: 400 });
     }
 
+    const productType = body.productType ?? "invoice";
     const constructBody = {
       cart: {
-        items: [{ name: productName, quantity, price, ...(subscriptionInfo ? { subscriptionInfo } : {}) }],
-        ...(customerEmail ? { customerInfo: { email: customerEmail } } : {}),
+        items: [{ name: p.productName, quantity: p.quantity, price: p.price, ...(p.subscriptionInfo ? { subscriptionInfo: p.subscriptionInfo } : {}) }],
+        ...(p.customerEmail ? { customerInfo: { email: p.customerEmail } } : {}),
       },
       callbackUrls: {
-        thankYouPageUrl: `${appUrl}${thankYouPath}${productType === "maintenance" ? `?sub=${body.productId}` : `?invoice=${body.productId}`}`,
-        postFlowUrl: `${appUrl}${postFlowPath}`,
+        thankYouPageUrl: `${appUrl}${p.thankYouPath}${productType === "maintenance" ? `?sub=${body.productId}` : `?invoice=${body.productId}`}`,
+        postFlowUrl: `${appUrl}${p.postFlowPath}`,
       },
     };
 
@@ -202,17 +121,17 @@ Deno.serve(async (req: Request) => {
       checkoutSessionId,
       status: "pending",
       appUserId: appUser?.id ?? null,
-      buyerEmail: customerEmail ?? appUser?.email ?? null,
-      productId: purchaseProductId, // "deposit" | "final" | "maintenance" — the webhook reads this
-      productName,
-      quantity,
+      buyerEmail: p.customerEmail ?? appUser?.email ?? null,
+      productId: p.purchaseProductId, // "deposit" | "final" | "maintenance" — the webhook reads this
+      productName: p.productName,
+      quantity: p.quantity,
       amount: total.toFixed(2),
-      currency,
+      currency: p.currency,
     });
 
     // Link the product to this checkout session so the webhook can fulfill it.
-    if (productType === "maintenance" && maintenanceSub) {
-      await db.entities.MaintenanceSubscription.update(maintenanceSub.id, {
+    if (productType === "maintenance" && p.maintenanceSub) {
+      await db.entities.MaintenanceSubscription.update(p.maintenanceSub.id, {
         checkout_session_id: checkoutSessionId,
         purchase_id: purchase.id,
         status: "pending",

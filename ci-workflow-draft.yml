@@ -1,0 +1,58 @@
+# CI Workflow — DRAFT ARTIFACT
+# The Base44 platform blocks writing to .github/workflows/.
+# To activate CI, manually create this file in your GitHub repo at:
+#   .github/workflows/ci.yml
+# and paste the content below.
+#
+# This workflow runs all mandatory validation gates:
+# lint → typecheck (frontend + backend) → test → build → audit
+# It fails when any mandatory gate fails.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Lint + Typecheck + Test + Build + Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+
+  e2e:
+    name: Playwright E2E (desktop + mobile)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          npm run dev &
+          sleep 8
+      - run: npx playwright test
+        env:
+          E2E_BASE_URL: http://localhost:5173
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-screenshots
+          path: e2e/screenshots/
