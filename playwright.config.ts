@@ -17,15 +17,15 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: process.env.E2E_BASE_URL || "http://localhost:5179",
+    baseURL: process.env.E2E_BASE_URL || "http://localhost:5173",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     timeout: 30000,
   },
   webServer: {
-    command: "npm run dev -- --port 5179 --strictPort",
-    url: "http://localhost:5179",
-    reuseExistingServer: !process.env.CI,
+    command: "npx vite",
+    url: "http://localhost:5173",
+    reuseExistingServer: true,
     timeout: 60000,
   },
   projects: [
