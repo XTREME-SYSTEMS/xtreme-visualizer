@@ -1,12 +1,13 @@
 import { defineConfig } from "@playwright/test";
 
 /**
- * Playwright E2E config — development-only browser validation harness.
- * Tests route loads, uncaught exceptions, console errors, and responsive rendering
- * at two viewports: desktop (1440x1100) and mobile (390x844).
+ * Playwright E2E config — deterministic browser validation harness.
  *
- * Requires a running dev server (E2E_BASE_URL) and Playwright browser binaries.
- * If browsers cannot be installed, report COULD NOT VERIFY — do not claim PASS.
+ * webServer lifecycle: auto-starts Vite, waits for health, shuts down reliably.
+ * No stale server dependence — reproducible from: fresh checkout → npm ci → playwright test.
+ *
+ * Visual baselines: e2e/visual.spec.ts-snapshots/ (project-prefixed, committed).
+ * Transient artifacts (test-results/, e2e/screenshots/) are gitignored.
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -16,10 +17,16 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: process.env.E2E_BASE_URL || "http://localhost:5173",
+    baseURL: process.env.E2E_BASE_URL || "http://localhost:5179",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    timeout: 15000,
+    timeout: 30000,
+  },
+  webServer: {
+    command: "npm run dev -- --port 5179 --strictPort",
+    url: "http://localhost:5179",
+    reuseExistingServer: !process.env.CI,
+    timeout: 60000,
   },
   projects: [
     {

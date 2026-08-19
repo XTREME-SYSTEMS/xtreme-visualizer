@@ -12,6 +12,7 @@
     "typecheck:backend": "tsc -p ./tsconfig.backend.json",
     "typecheck": "npm run typecheck:frontend && npm run typecheck:backend",
     "test:e2e": "playwright test",
+    "e2e": "playwright test",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview"

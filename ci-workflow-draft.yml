@@ -4,9 +4,9 @@
 #   .github/workflows/ci.yml
 # and paste the content below.
 #
-# This workflow runs all mandatory validation gates:
-# lint → typecheck (frontend + backend) → test → build → audit
-# It fails when any mandatory gate fails.
+# Mandatory gates: lint → typecheck → test → build → audit
+# E2E gate: Playwright with webServer lifecycle (no manual server management)
+# A failing E2E job makes CI red — no continue-on-error.
 
 name: CI
 
@@ -36,7 +36,6 @@ jobs:
   e2e:
     name: Playwright E2E (desktop + mobile)
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,14 +44,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: |
-          npm run dev &
-          sleep 8
       - run: npx playwright test
         env:
-          E2E_BASE_URL: http://localhost:5173
+          CI: "true"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-screenshots
-          path: e2e/screenshots/
+          name: playwright-results
+          path: |
+            test-results/
+            playwright-report/
+            e2e/visual.spec.ts-snapshots/
