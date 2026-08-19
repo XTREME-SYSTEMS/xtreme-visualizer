@@ -57,7 +57,7 @@ export default function Admin() {
     try {
       const rows = await base44.entities.IntegrationConfig.filter({ key: "twilio" });
       if (rows.length > 0) {
-        setTwilio(rows[0]);
+        setTwilio(/** @type {any} */ (rows[0]));
         setTwilioId(rows[0].id);
       }
     } catch {}

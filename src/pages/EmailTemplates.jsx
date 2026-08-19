@@ -37,8 +37,8 @@ export default function EmailTemplates() {
         prompt,
         response_json_schema: EMAIL_JSON_SCHEMA,
       });
-      setSubject(res.subject || "");
-      setBody(res.body || "");
+      setSubject((/** @type {Record<string, any>} */ (res)).subject || "");
+      setBody((/** @type {Record<string, any>} */ (res)).body || "");
     } catch (e) {
       setErr("Could not generate email. Try again.");
     } finally {

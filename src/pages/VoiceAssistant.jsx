@@ -21,7 +21,7 @@ export default function VoiceAssistant() {
     if (!testText.trim()) return;
     setPreviewing(true);
     try {
-      const res = await base44.integrations.Core.GenerateSpeech({ text: testText.slice(0, 500), voice, language_code: "en" });
+      const res = await (/** @type {any} */ (base44.integrations.Core)).GenerateSpeech({ text: testText.slice(0, 500), voice, language_code: "en" });
       setAudioUrl(res.url);
     } catch {
       setAudioUrl("");

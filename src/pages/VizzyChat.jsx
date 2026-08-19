@@ -24,7 +24,7 @@ export default function VizzyChat() {
   const loadConversations = useCallback(async () => {
     setLoading(true);
     try {
-      const list = await base44.agents.listConversations({ agent_name: AGENT_NAME });
+      const list = await (/** @type {any} */ (base44.agents)).listConversations({ agent_name: AGENT_NAME });
       setConversations(list || []);
       if (list && list.length > 0) {
         const latest = list[0];
@@ -48,7 +48,7 @@ export default function VizzyChat() {
       setMessages(data.messages || []);
       if (data.messages && data.messages.length > 0) {
         const last = data.messages[data.messages.length - 1];
-        if (last.role === "assistant" && last.content && !last.tool_calls?.some((tc) => tc.status === "pending" || tc.status === "running" || tc.status === "in_progress")) {
+        if (last.role === "assistant" && last.content && !last.tool_calls?.some((tc) => { const st = /** @type {string} */ (tc.status); return st === "pending" || st === "running" || st === "in_progress"; })) {
           setSending(false);
         }
       }

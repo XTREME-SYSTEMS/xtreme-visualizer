@@ -72,6 +72,7 @@ function buildSrcSet(parsed, options) {
   ).join(", ")
 }
 
+/** @type {React.ForwardRefExoticComponent<React.HTMLAttributes<HTMLSpanElement> & { aspectRatio?: string } & React.RefAttributes<HTMLSpanElement>>} */
 const ImageWrapper = React.forwardRef(({ aspectRatio, className, style, children }, ref) => (
   <span
     ref={ref}
@@ -83,6 +84,8 @@ const ImageWrapper = React.forwardRef(({ aspectRatio, className, style, children
 ))
 ImageWrapper.displayName = "ImageWrapper"
 
+/** @typedef {{ parsed: any; fittingType?: string; focalPoint?: { x: number; y: number }; quality?: number; className?: string; style?: React.CSSProperties; aspectRatio?: string; onLoad?: React.ReactEventHandler<HTMLImageElement> } & React.ImgHTMLAttributes<HTMLImageElement>} ResponsiveImageProps */
+/** @type {React.ForwardRefExoticComponent<ResponsiveImageProps & React.RefAttributes<HTMLImageElement>>} */
 const ResponsiveImage = React.forwardRef(
   ({ parsed, fittingType, focalPoint, quality, className, style, aspectRatio, onLoad, ...props }, parentRef) => {
     const wrapperRef = React.useRef(null)
@@ -172,6 +175,10 @@ ResponsiveImage.displayName = "ResponsiveImage"
  * server-side, optionally anchored at a focal point. Other URLs render as a
  * plain <img>. Failed loads swap to a fallback image.
  */
+/**
+ * @typedef {React.ImgHTMLAttributes<HTMLImageElement> & { fittingType?: string; focalPointX?: number; focalPointY?: number; originWidth?: number; originHeight?: number; quality?: number }} ImageProps
+ */
+/** @type {React.ForwardRefExoticComponent<ImageProps & React.RefAttributes<HTMLImageElement>>} */
 const Image = React.forwardRef(
   (
     {

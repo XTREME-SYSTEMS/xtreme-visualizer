@@ -57,7 +57,7 @@ export default function Generator() {
     base44.entities.ColorChart.filter({ system: { $in: systems } }).then((rows) => {
       setXpsColors(rows);
       if (rows.length) {
-        setColor({ name: rows[0].color_name, hex: rows[0].hex, code: rows[0].code });
+        setColor(/** @type {any} */ ({ name: rows[0].color_name, hex: rows[0].hex, code: rows[0].code }));
         setCustomHex("");
       }
     });
@@ -206,7 +206,7 @@ export default function Generator() {
                     key={c.id}
                     type="button"
                     title={`${c.color_name} · ${c.code} · ${c.collection}${c.sheen ? ` · ${c.sheen}` : ""}`}
-                    onClick={() => { setColor({ name: c.color_name, hex: c.hex, code: c.code }); setCustomHex(""); }}
+                    onClick={() => { setColor(/** @type {any} */ ({ name: c.color_name, hex: c.hex, code: c.code })); setCustomHex(""); }}
                     className={`flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border text-[12px] transition-all ${
                       color.name === c.color_name && !customHex ? "border-slate-900 shadow-sm" : "border-slate-200 hover:border-slate-400"
                     }`}

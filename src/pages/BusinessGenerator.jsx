@@ -161,7 +161,7 @@ export default function BusinessGenerator() {
     setVideoLoading(true); setVideoUrl(null);
     try {
       const prompt = "A 4-second vertical promotional video for a business named \"" + savedName + "\" in the " + onboarding.industry + " industry. Scene: " + savedSocial.video_script + ". " + onboarding.vibe + " mood, cinematic, high quality, branded.";
-      const r = await base44.integrations.Core.GenerateVideo({ prompt, duration: 4, aspect_ratio: "9:16", generate_audio: false });
+      const r = await (/** @type {any} */ (base44.integrations.Core)).GenerateVideo({ prompt, duration: 4, aspect_ratio: "9:16", generate_audio: false });
       setVideoUrl(r.url);
     } catch (e) {
       setVideoUrl(null);

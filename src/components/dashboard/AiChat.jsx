@@ -23,7 +23,7 @@ export default function AiChat({ contextSummary }) {
       const history = next.map((m) => `${m.role}: ${m.content}`).join("\n");
       const prompt = `You are an AI business analyst for a floor coating contractor app. Here is the current business data:\n${contextSummary}\n\nConversation so far:\n${history}\n\nRespond concisely and helpfully as the assistant. Use the data to give specific, actionable insights.`;
       const reply = await base44.integrations.Core.InvokeLLM({ prompt });
-      setMessages((m) => [...m, { role: "assistant", content: reply }]);
+      setMessages((m) => [...m, { role: "assistant", content: String(reply) }]);
     } catch (e) {
       setMessages((m) => [...m, { role: "assistant", content: "Sorry, I couldn't process that right now." }]);
     } finally {

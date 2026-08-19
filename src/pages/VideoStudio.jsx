@@ -111,9 +111,10 @@ export default function VideoStudio() {
           },
         },
       });
-      const built = (res.scenes && res.scenes.length ? res.scenes : Array.from({ length: segments }, emptyScene)).slice(0, segments);
+      const r = /** @type {Record<string, any>} */ (res);
+      const built = (r.scenes && r.scenes.length ? r.scenes : Array.from({ length: segments }, emptyScene)).slice(0, segments);
       while (built.length < segments) built.push(emptyScene());
-      setSummary(res.summary || "");
+      setSummary(r.summary || "");
       setScenes(built);
       setActiveScene(0);
       setStep(2);
@@ -136,7 +137,8 @@ export default function VideoStudio() {
           properties: { hook: { type: "string" }, script: { type: "string" }, visualPrompt: { type: "string" } },
         },
       });
-      setScenes((p) => p.map((s, i) => (i === idx ? { hook: res.hook || s.hook, script: res.script || s.script, visualPrompt: res.visualPrompt || s.visualPrompt } : s)));
+      const r = /** @type {Record<string, any>} */ (res);
+      setScenes((p) => p.map((s, i) => (i === idx ? { hook: r.hook || s.hook, script: r.script || s.script, visualPrompt: r.visualPrompt || s.visualPrompt } : s)));
     } catch (e) {
       setError(e?.message || "Failed to rewrite scene.");
     } finally {
@@ -182,7 +184,7 @@ export default function VideoStudio() {
           includeLogo ? `Subtly feature the brand logo (${brandName}) as a lower-third watermark.` : "",
           "Cinematic, high-end, viral short-form style, smooth motion, professional color grade.",
         ].filter(Boolean).join(" ");
-        const res = await base44.integrations.Core.GenerateVideo({
+        const res = await (/** @type {any} */ (base44.integrations.Core)).GenerateVideo({
           prompt: fullPrompt,
           duration: SEGMENT_MAX,
           aspect_ratio: aspect,

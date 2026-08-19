@@ -51,7 +51,7 @@ export default function Tracking() {
       const summary = byType.map((t) => `${TYPE_META[t.key]?.label || t.key}: ${t.count}`).join(", ");
       const prompt = `You are a marketing analytics expert for a floor coating contractor. Here are their tracking event counts: ${summary}. Total events: ${events.length}. Analyze engagement, identify what's working, what's underperforming, and give 3 specific actionable recommendations to improve lead engagement and conversions. Be concise and specific.`;
       const res = await base44.integrations.Core.InvokeLLM({ prompt });
-      setAnalysis(res);
+      setAnalysis(String(res));
     } catch (e) {
       setAnalysis("Analysis failed. Try again.");
     } finally {

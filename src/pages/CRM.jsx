@@ -77,7 +77,8 @@ export default function CRM() {
         prompt: `Improve this business card/brochure copy for a floor coating company. Make the tagline punchy, the bio compelling (2-3 sentences), and refine services. Current: company="${cfg.company}", tagline="${cfg.tagline}", bio="${cfg.bio}", services=[${cfg.services.join(", ")}]. Return JSON with tagline, bio, services (array).`,
         response_json_schema: { type: "object", properties: { tagline: { type: "string" }, bio: { type: "string" }, services: { type: "array", items: { type: "string" } } } },
       });
-      setCfg((p) => ({ ...p, tagline: res.tagline || p.tagline, bio: res.bio || p.bio, services: res.services || p.services }));
+      const r = /** @type {Record<string, any>} */ (res);
+      setCfg((p) => ({ ...p, tagline: r.tagline || p.tagline, bio: r.bio || p.bio, services: r.services || p.services }));
       notify("Copy enhanced");
     } catch { notify("Enhance failed"); }
   };

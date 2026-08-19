@@ -122,7 +122,7 @@ export default function Visualizer() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setImage(reader.result);
+    reader.onload = () => setImage(/** @type {string} */ (reader.result));
     reader.readAsDataURL(file);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
@@ -145,7 +145,7 @@ export default function Visualizer() {
       const colorName = selectedColor?.name || "";
       const sheenDesc = activeFinish === "Matte" ? "flat matte sheen with no reflections" : activeFinish === "Satin" ? "soft satin sheen with gentle subtle reflections" : "high-gloss wet-look sheen with sharp mirror-like reflections";
       const prompt = 'Photorealistic interior design rendering of the uploaded room with a newly installed ' + system + ' floor in the color "' + colorName + '" with a ' + sheenDesc + '. Seamless, professional concrete coating finish. Same room geometry, walls, and lighting as the original photo. High-end real-estate photography, wide angle, natural light.';
-      const res = await base44.integrations.Core.GenerateImage({
+      const res = await (/** @type {any} */ (base44.integrations.Core)).GenerateImage({
         prompt,
         existing_image_urls: fileUrl ? [fileUrl] : undefined,
       });

@@ -12,6 +12,7 @@ const CATEGORIES = [
   { key: "site_after", label: "Site After", required: true },
 ];
 
+/** @param {{ notify: (msg: any) => void; workOrderId?: any }} props */
 export default function FieldPhotoManager({ notify, workOrderId }) {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);

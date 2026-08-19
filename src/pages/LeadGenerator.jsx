@@ -81,8 +81,8 @@ export default function LeadGenerator() {
         prompt: `Write a professional cold outreach email for a commercial flooring/coatings contractor named "${companyName || "our company"}" reaching out to local businesses in the "${form.category}" space. Make it friendly, concise, value-driven, and end with a clear call to action to schedule a free on-site estimate. Return JSON {subject, body}.`,
         response_json_schema: { type: "object", properties: { subject: { type: "string" }, body: { type: "string" } } },
       });
-      setSubject(res.subject || "");
-      setBody(res.body || "");
+      setSubject((/** @type {Record<string, any>} */ (res)).subject || "");
+      setBody((/** @type {Record<string, any>} */ (res)).body || "");
     } catch {
     } finally {
       setEnhancing(false);

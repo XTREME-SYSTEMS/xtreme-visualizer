@@ -40,7 +40,7 @@ export default function LogoGenerator({ logoUrl, setLogoUrl, companyName, notify
     setLoading("enhance");
     try {
       const p = prompt || `Enhance and refine this logo for ${companyName || "a floor coating company"}, keep the core concept and layout, improve clarity, crisp vector lines, professional polish, high contrast, clean modern style`;
-      const { url } = await base44.integrations.Core.GenerateImage({ prompt: p, existing_image_urls: [logoUrl] });
+      const { url } = await (/** @type {any} */ (base44.integrations.Core)).GenerateImage({ prompt: p, existing_image_urls: [logoUrl] });
       setLogoUrl(url);
       notify && notify("Logo enhanced");
     } catch (e) {

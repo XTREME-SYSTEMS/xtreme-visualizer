@@ -44,7 +44,8 @@ export default function MarketPriceLookup({ onResult }) {
           },
         },
       });
-      onResult({ ...res, trade, zip });
+      const r = /** @type {Record<string, any>} */ (res);
+      onResult({ ...r, trade, zip });
     } catch (e) {
       setError("Could not fetch market pricing. Try again.");
     } finally {

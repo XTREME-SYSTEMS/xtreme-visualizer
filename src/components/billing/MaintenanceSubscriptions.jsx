@@ -50,7 +50,7 @@ export default function MaintenanceSubscriptions({ leads, workOrders, notify }) 
         customer_email: form.customer_email,
         lead_id: form.lead_id || null,
         plan_name: form.plan_name,
-        price: parseFloat(form.price),
+        price: Number(form.price),
         frequency: form.frequency,
         status: "pending",
       });

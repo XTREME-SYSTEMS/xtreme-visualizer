@@ -59,7 +59,7 @@ export default function AppointmentEditor({ appointment, existingAppts, onClose,
           },
         },
       });
-      setSuggestions(res.suggestions || []);
+      setSuggestions((/** @type {Record<string, any>} */ (res)).suggestions || []);
     } catch (e) {
       notify && notify("AI suggestion failed");
     } finally {

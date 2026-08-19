@@ -61,7 +61,7 @@ export default function LeadGeneratorModule({ savedName, savedBrand, onboarding,
     try {
       const prompt = `Generate 10 distinct cold outreach email templates for this business. Each must use a different angle: (1) direct introduction, (2) value proposition, (3) social proof, (4) question-based, (5) free consultation, (6) industry insight, (7) limited-time offer, (8) compliment opener, (9) problem-solution, (10) partnership. Each template: a compelling subject line and a 2-3 paragraph body. Use the business name and brand voice. Sign with the business name. Keep professional and concise.\n\nContext:\n${brandCtx()}`;
       const schema = obj({ templates: { type: "array", items: obj({ angle: { type: "string" }, subject: { type: "string" }, body: { type: "string" } }) } }, ["templates"]);
-      const res = await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema });
+      const res = /** @type {Record<string, any>} */ (await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema }));
       setTemplates(res?.templates || []);
     } catch (e) {
       setTemplates([]);
@@ -80,10 +80,10 @@ export default function LeadGeneratorModule({ savedName, savedBrand, onboarding,
     setPhase(1);
     try {
       const catPrompt = `A business in the "${onboarding.industry}" industry wants to find potential B2B customers in ${city}, ${state}. What types of local businesses or organizations would be the best potential customers? Return 3-5 specific, searchable business categories (e.g. "property management companies", "warehouse facilities", "auto repair shops"). Return as a JSON object with a "categories" array.`;
-      const catRes = await base44.integrations.Core.InvokeLLM({
+      const catRes = /** @type {Record<string, any>} */ (await base44.integrations.Core.InvokeLLM({
         prompt: catPrompt,
         response_json_schema: obj({ categories: { type: "array", items: { type: "string" } } }, ["categories"]),
-      });
+      }));
       const categories = catRes?.categories || [];
       setTargetCategories(categories);
 

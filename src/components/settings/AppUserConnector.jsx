@@ -77,7 +77,7 @@ export default function AppUserConnector({
     return (
       <div className="space-y-3">
         <p className="text-[13px] text-[var(--vx-muted)]">Sign in to connect your {label}.</p>
-        <Button onClick={() => base44.auth.redirectToLogin()}>Sign in</Button>
+        <Button onClick={() => (/** @type {any} */ (base44.auth)).redirectToLogin()}>Sign in</Button>
       </div>
     );
   }

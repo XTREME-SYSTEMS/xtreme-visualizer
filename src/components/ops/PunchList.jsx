@@ -13,6 +13,7 @@ const DEFAULT_ITEMS = [
   "Customer walkthrough complete",
 ];
 
+/** @param {{ notify: (msg: any) => void; workOrder?: any }} props */
 export default function PunchList({ notify, workOrder }) {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -55,7 +56,7 @@ export default function PunchList({ notify, workOrder }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const dataUrl = canvas.toDataURL("image/png");
-    const { file_url } = await base44.integrations.Core.UploadFile({ file: await (await fetch(dataUrl)).blob() });
+    const { file_url } = await base44.integrations.Core.UploadFile({ file: /** @type {File} */ (await (await fetch(dataUrl)).blob()) });
     const me = await base44.auth.me();
     await Promise.all(items.map((i) => i.signed_url ? null : base44.entities.PunchItem.update(i.id, { signed_url: file_url, signed_date: new Date().toISOString(), signed_by: me?.full_name || "Crew" })));
     setSigning(false);

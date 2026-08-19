@@ -20,9 +20,9 @@ function initials(name = "") {
 function formatDate(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  if (isNaN(d)) return dateStr;
+  if (isNaN(d.getTime())) return dateStr;
   const now = new Date();
-  const diff = (now - d) / 1000;
+  const diff = (now.getTime() - d.getTime()) / 1000;
   if (diff < 60) return "now";
   if (diff < 3600) return `${Math.floor(diff / 60)}m`;
   const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);

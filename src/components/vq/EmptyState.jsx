@@ -1,5 +1,6 @@
 import React from "react";
 
+/** @param {{ icon?: React.ComponentType<any>; title: string; hint?: React.ReactNode; children?: React.ReactNode }} props */
 export default function EmptyState({ icon: Icon, title, hint, children }) {
   return (
     <div className="vx-empty">

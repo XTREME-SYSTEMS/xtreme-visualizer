@@ -25,10 +25,10 @@ export default function EmailTemplateGenerator({ lead, brand }) {
     setSentOk(false);
     setErr("");
     try {
-      const out = await base44.integrations.Core.InvokeLLM({
+      const out = /** @type {Record<string, any>} */ (await base44.integrations.Core.InvokeLLM({
         prompt: emailPrompt(lead, type, brand),
         response_json_schema: EMAIL_JSON_SCHEMA,
-      });
+      }));
       setSubject(out.subject || "");
       setBody(out.body || "");
     } finally {

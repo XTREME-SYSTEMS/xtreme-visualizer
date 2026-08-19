@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, MapPin, LogIn, LogOut } from "lucide-react";
 
+/** @param {{ notify: (msg: any) => void; workOrder?: any }} props */
 export default function ClockManager({ notify, workOrder }) {
   const [orders, setOrders] = useState([]);
   const [events, setEvents] = useState({});

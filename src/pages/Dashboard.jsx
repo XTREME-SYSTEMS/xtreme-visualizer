@@ -164,6 +164,7 @@ export default function Dashboard() {
 
   const contextSummary = `Business metrics — Leads: ${metrics.leads} total, ${metrics.won} won. Revenue won: $${metrics.revenue.toLocaleString()}. Active projects: ${metrics.activeProjects}. Confirmed appointments: ${metrics.appts}. Proposals: ${metrics.proposals}. Marketing assets: ${metrics.assets}. Tracking events: ${metrics.events}. Pipeline: ${pipelineData.map((p) => `${p.name}=${p.count}`).join(", ")}.`;
 
+  /** @param {{ icon: React.ComponentType<any>; label: React.ReactNode; value: React.ReactNode; sub?: React.ReactNode }} props */
   const StatCard = ({ icon: Icon, label, value, sub }) => (
     <div className="hx-stat"><Icon size={16} /><strong>{value}</strong><span>{label}</span>{sub && <small>{sub}</small>}</div>
   );
