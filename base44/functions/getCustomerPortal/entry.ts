@@ -39,29 +39,29 @@ export default async function (req: Request): Promise<Response> {
     };
 
     const workOrders = await db.entities.WorkOrder.filter({ lead_id }).catch(() => []);
-    const woIds = workOrders.map((w) => w.id);
+    const woIds = workOrders.map((w: any) => w.id);
     let photos = [];
     if (woIds.length > 0) {
       const allPhotos = await db.entities.FieldPhoto.list("-created_date", 100).catch(() => []);
-      photos = allPhotos.filter((p) => woIds.includes(p.work_order_id));
+      photos = allPhotos.filter((p: any) => woIds.includes(p.work_order_id));
     }
 
     const invoices = await db.entities.Invoice.filter({ lead_id }).catch(() => []);
 
     return Response.json({
       lead: publicLead,
-      workOrders: workOrders.map((w) => ({
+      workOrders: workOrders.map((w: any) => ({
         id: w.id,
         status: w.status,
         scheduled_date: w.scheduled_date,
         scope_items: w.scope_items || [],
       })),
-      photos: photos.map((p) => ({
+      photos: photos.map((p: any) => ({
         category: p.category,
         file_url: p.file_url,
         taken_at: p.taken_at,
       })),
-      invoices: invoices.map((i) => ({
+      invoices: invoices.map((i: any) => ({
         id: i.id,
         type: i.type,
         amount: i.amount,

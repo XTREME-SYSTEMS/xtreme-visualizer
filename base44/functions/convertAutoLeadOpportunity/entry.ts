@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 
-export default async function(req) {
+export default async function(req: Request) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me().catch(() => null);
@@ -27,7 +27,7 @@ export default async function(req) {
     }
 
     const leads = await base44.entities.Lead.list('-created_date', 500).catch(() => []);
-    const duplicate = (leads || []).find((lead) =>
+    const duplicate = (leads || []).find((lead: any) =>
       String(lead.notes || '').includes(`AutoLead Opportunity: ${opportunity.id}`) ||
       String(lead.notes || '').includes(`Source: ${opportunity.source_url}`) ||
       (String(lead.project_address || '').toLowerCase() === String(opportunity.jurisdiction || '').toLowerCase() &&
@@ -78,7 +78,7 @@ export default async function(req) {
     }).catch(() => null);
 
     return Response.json({ ok: true, duplicate: false, lead });
-  } catch (error) {
+  } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }

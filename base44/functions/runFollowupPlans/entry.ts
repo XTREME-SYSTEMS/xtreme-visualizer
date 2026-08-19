@@ -80,7 +80,7 @@ export default async function (req: Request): Promise<Response> {
       });
     }
 
-    return Response.json({ ok: true, ...tally, gmail_connected: !!accessToken });
+    return Response.json({ ...tally, gmail_connected: !!accessToken, ok: true });
   } catch (error) {
     return Response.json({ error: (error as Error).message }, { status: 500 });
   }

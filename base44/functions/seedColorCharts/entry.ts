@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import { COLOR_DATA, FLOOR_SYSTEM_DATA } from "./colorData.js";
 
-export default async function(req) {
+export default async function(req: Request) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -12,12 +12,12 @@ export default async function(req) {
     const oldColors = await base44.asServiceRole.entities.ColorChart.list(undefined, 1000);
     if (oldColors.length) {
       await base44.asServiceRole.entities.ColorChart.deleteMany(
-        { id: { $in: oldColors.map((c) => c.id) } }
+        { id: { $in: oldColors.map((c: any) => c.id) } }
       );
     }
 
     // 2. Seed new ColorChart records (real XPS official swatch data)
-    const colorRecords = COLOR_DATA.map((c) => ({
+    const colorRecords = COLOR_DATA.map((c: any) => ({
       system: c.system,
       color_name: c.color_name,
       code: c.code,
@@ -41,12 +41,12 @@ export default async function(req) {
     const oldSystems = await base44.asServiceRole.entities.FloorSystem.list(undefined, 100);
     if (oldSystems.length) {
       await base44.asServiceRole.entities.FloorSystem.deleteMany(
-        { id: { $in: oldSystems.map((s) => s.id) } }
+        { id: { $in: oldSystems.map((s: any) => s.id) } }
       );
     }
 
     // 4. Seed new FloorSystem records (aligned with real products, colors, sheen, pricing)
-    const systemRecords = FLOOR_SYSTEM_DATA.map((s) => ({
+    const systemRecords = FLOOR_SYSTEM_DATA.map((s: any) => ({
       name: s.name,
       slug: s.slug,
       category: s.category,
@@ -65,10 +65,10 @@ export default async function(req) {
       ok: true,
       colorsSeeded: createdColors.length,
       systemsSeeded: createdSystems.length,
-      colorSystems: [...new Set(COLOR_DATA.map((c) => c.system))],
-      floorSystems: FLOOR_SYSTEM_DATA.map((s) => s.name),
+      colorSystems: [...new Set(COLOR_DATA.map((c: any) => c.system))],
+      floorSystems: FLOOR_SYSTEM_DATA.map((s: any) => s.name),
     });
-  } catch (error) {
+  } catch (error: any) {
     return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 }

@@ -10,10 +10,14 @@ declare const Deno: {
 };
 
 declare module "npm:@base44/sdk@*" {
-  export function createClientFromRequest(req: Request): {
-    asServiceRole: any;
-    auth: { me(): Promise<any> };
-  };
+  // The SDK client is complex and platform-owned; returning any lets tsc validate
+  // the app's own logic without false-positive "property does not exist" errors.
+  export function createClientFromRequest(req: Request): any;
+}
+
+declare module "base44:runtime" {
+  export function createClientFromRequest(req: Request): any;
+  export const secrets: any;
 }
 
 declare module "npm:jose@*" {

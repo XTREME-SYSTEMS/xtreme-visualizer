@@ -1,7 +1,7 @@
 // Shared Gmail MIME helpers — used by the gmail backend function and the
 // sendLeadFollowup backend function. Extracted to avoid duplication.
 
-export function rfc2047(str) {
+export function rfc2047(str: string): string {
   if (/[^\x20-\x7E]/.test(str)) {
     const bytes = new TextEncoder().encode(str);
     let bin = "";
@@ -11,25 +11,25 @@ export function rfc2047(str) {
   return str;
 }
 
-export function base64Url(bytes) {
+export function base64Url(bytes: Uint8Array): string {
   let bin = "";
   const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
   }
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-export function base64Std(bytes) {
+export function base64Std(bytes: Uint8Array): string {
   let bin = "";
   const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
   }
   return btoa(bin);
 }
 
-export function buildMime({ from, to, subject, text, attachment }) {
+export function buildMime({ from, to, subject, text, attachment }: { from: string; to: string; subject: string; text: string; attachment?: { type: string; name: string; data: string } | null }): Uint8Array {
   const boundary = "vq_" + Math.random().toString(36).slice(2);
   const encSubject = rfc2047(subject);
   if (!attachment) {

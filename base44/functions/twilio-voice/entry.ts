@@ -21,7 +21,7 @@ export default async function (req: Request): Promise<Response> {
 
     // Read the body once — Twilio sends form-encoded, the test tool sends JSON
     const form = await safeForm(req);
-    const isBodyPing = form.ping === 'true' || form.ping === true;
+    const isBodyPing = String(form.ping) === 'true';
 
     // UI "Test Voice Endpoint" button sends { ping: true }
     if (isQueryPing || isBodyPing) {

@@ -8,7 +8,7 @@ const TEMPLATES = {
   gov: ['Chosen Color Image', 'Before Photos', 'Prep & Patch', 'Primer', 'Base Coat', 'Color Install', 'Topcoat', 'After Photos', 'Warranty', 'Scope & Proposals', 'Invoices', 'Change Orders', 'COIs', 'Compliance Docs']
 };
 
-export default async function(req) {
+export default async function(req: Request) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -33,8 +33,8 @@ export default async function(req) {
     if (!rootRes.ok) return Response.json({ error: 'Drive API error creating root folder' }, { status: 502 });
     const root = await rootRes.json();
 
-    const subs = TEMPLATES[template] || TEMPLATES.res;
-    const subfolderIds = {};
+    const subs = TEMPLATES[template as keyof typeof TEMPLATES] || TEMPLATES.res;
+    const subfolderIds: Record<string, string> = {};
     for (const name of subs) {
       const r = await fetch('https://www.googleapis.com/drive/v3/files?fields=id', {
         method: 'POST', headers,
@@ -52,7 +52,7 @@ export default async function(req) {
     }
 
     return Response.json({ folderId: root.id, folderUrl, subfolderIds });
-  } catch (error) {
+  } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }

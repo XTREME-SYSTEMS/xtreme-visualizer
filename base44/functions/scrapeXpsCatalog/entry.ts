@@ -33,7 +33,7 @@ const DEFAULT_COLLECTIONS = [
   { slug: "flake-flooring-epoxy-coating", category: "flake" },
 ];
 
-function parsePrice(v) {
+function parsePrice(v: any) {
   if (!v || !v.variants || !v.variants.length) return null;
   let min = null;
   for (const vr of v.variants) {
@@ -43,7 +43,7 @@ function parsePrice(v) {
   return min;
 }
 
-async function fetchCollection(slug, maxPages) {
+async function fetchCollection(slug: string, maxPages: number) {
   const out = [];
   for (let page = 1; page <= maxPages; page++) {
     const url = `${BASE}/collections/${encodeURIComponent(slug)}/products.json?limit=250&page=${page}`;
@@ -63,7 +63,7 @@ async function fetchCollection(slug, maxPages) {
   return out;
 }
 
-export default async function(req) {
+export default async function(req: Request) {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -181,7 +181,7 @@ export default async function(req) {
       updated,
       unchanged: scraped.length - created - updated,
     });
-  } catch (error) {
+  } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }

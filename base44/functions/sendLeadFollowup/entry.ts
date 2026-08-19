@@ -3,10 +3,10 @@ import { base64Url, buildMime } from "../../shared/gmailMime.ts";
 
 const GMAIL_CONNECTOR_ID = "69db200274332486fd28dd7e";
 
-const money = (n) =>
+const money = (n: any) =>
   typeof n === "number" ? `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}` : "—";
 
-function getEmailContent(stage, lead) {
+function getEmailContent(stage: string, lead: any) {
   const name = lead.customer_name || "there";
   const range = `${money(lead.adjusted_low ?? lead.estimate_low)} – ${money(lead.adjusted_high ?? lead.estimate_high)}`;
   const system = lead.system_name || lead.floor_type || "flooring";
@@ -30,12 +30,12 @@ function getEmailContent(stage, lead) {
     },
   };
 
-  return templates[stage] || templates.welcome;
+  return templates[stage as keyof typeof templates] || templates.welcome;
 }
 
 // Resolve a Gmail access token. Tries APP_USER connection first (what the Admin page connects),
 // then falls back to the SHARED connection. Works in both UI and workflow contexts.
-async function getGmailToken(base44, user) {
+async function getGmailToken(base44: any, user: any) {
   // APP_USER: requires a user context (UI calls)
   if (user) {
     try {
@@ -51,7 +51,7 @@ async function getGmailToken(base44, user) {
   return null;
 }
 
-export default async function(req) {
+export default async function(req: Request) {
   try {
     const base44 = createClientFromRequest(req);
     // Auth is OPTIONAL: this function is called from both the UI (user present)
@@ -109,7 +109,7 @@ export default async function(req) {
           const data = await r.json();
           sendError = data.error?.message || "send failed";
         }
-      } catch (e) {
+      } catch (e: any) {
         sendError = e.message;
       }
     } else {
@@ -139,7 +139,7 @@ export default async function(req) {
       send_error: sendError,
       template_id: template.id,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("sendLeadFollowup error", error);
     return Response.json({ error: error.message }, { status: 500 });
   }
