@@ -86,7 +86,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (eventType === SUBSCRIPTION_CANCELED || eventType === SUBSCRIPTION_EXPIRED) {
-      return await handleSubscriptionEnded(db, eventData);
+      return await handleSubscriptionEnded(db, eventData, eventType);
     }
 
     // Unknown/irrelevant event — acknowledge so Wix stops retrying.
@@ -199,7 +199,7 @@ async function handleOrderApproved(db: any, eventData: any): Promise<Response> {
   return new Response("OK", { status: 200 });
 }
 
-async function handleSubscriptionEnded(db: any, eventData: any): Promise<Response> {
+async function handleSubscriptionEnded(db: any, eventData: any, eventType: string): Promise<Response> {
   // Canceled = ended early; Expired = ran all billing cycles. Both revoke access.
   // Mirrors the order path (eventData.<entity>); keep a fallback since the subscription
   // contract webhook body isn't as tightly documented as order_approved.
