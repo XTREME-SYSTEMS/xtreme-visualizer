@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: visual.spec.ts >> Home / Dashboard (/app) >> loads without uncaught exceptions or console errors
-- Location: e2e/visual.spec.ts:24:5
+- Name: visual.spec.ts >> Schedule (/appointments) >> captures screenshot for visual parity
+- Location: e2e/visual.spec.ts:56:5
 
 # Error details
 
