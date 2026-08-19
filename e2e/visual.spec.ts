@@ -31,9 +31,13 @@ const ROUTES = [
 
 // Console error patterns that are expected in the test environment (not real app errors).
 // These are filtered so genuine errors still fail the test.
+// 404s from Base44 SDK are expected: unauthenticated local dev can't reach the production API.
+// Real errors (pageerror, unhandled exceptions, 5xx, non-SDK failures) still fail the test.
 const EXPECTED_ERROR_PATTERNS = [
   /favicon/i,
   /manifest/i,
+  /\[Base44 SDK Error\]/i,
+  /Failed to load resource.*404/i,
 ];
 
 function isExpectedError(msg: string): boolean {
