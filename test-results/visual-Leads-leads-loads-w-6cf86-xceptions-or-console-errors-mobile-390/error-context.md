@@ -6,7 +6,7 @@
 
 # Test info
 
-- Name: visual.spec.ts >> authentication entry (/login) >> loads without uncaught exceptions or console errors
+- Name: visual.spec.ts >> Leads (/leads) >> loads without uncaught exceptions or console errors
 - Location: e2e/visual.spec.ts:24:5
 
 # Error details
@@ -15,7 +15,7 @@
 Error: expect(received).toEqual(expected) // deep equality
 
 - Expected  -  1
-+ Received  + 26
++ Received  + 30
 
 - Array []
 + Array [
@@ -31,49 +31,78 @@ Error: expect(received).toEqual(expected) // deep equality
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "[Base44 SDK Error] 404: Request failed with status code 404",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "App state check failed: Base44Error: Request failed with status code 404
 +     at http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:4308:27
 +     at async Axios.request (http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:3123:14)
 +     at async checkAppState (http://localhost:5173/src/lib/AuthContext.jsx:49:32)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
 + ]
 ```
 
 # Page snapshot
 
 ```yaml
-- generic [ref=e4]:
-  - generic [ref=e5]:
-    - img "Xtreme Floor Visualizer" [ref=e6]
-    - heading "Welcome back" [level=1] [ref=e11]
-    - paragraph [ref=e12]: Log in to your account
-  - generic [ref=e13]:
-    - button "Continue with Google" [ref=e14] [cursor=pointer]
-    - generic [ref=e15]: or
-    - generic [ref=e20]:
-      - generic [ref=e21]:
-        - text: Email
-        - textbox "Email" [active] [ref=e26]:
-          - /placeholder: you@example.com
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - img "Xtreme Floor Visualizer" [ref=e8]
+    - generic [ref=e9]:
+      - button "Reminders" [ref=e11] [cursor=pointer]
+      - button "Search" [ref=e15] [cursor=pointer]
+      - button "Toggle theme" [ref=e19] [cursor=pointer]
+      - button "Account" [ref=e22] [cursor=pointer]: VX
+  - generic [ref=e25]:
+    - generic [ref=e26]:
       - generic [ref=e27]:
-        - generic [ref=e28]:
-          - generic [ref=e29]: Password
-          - link "Forgot password?" [ref=e30] [cursor=pointer]:
-            - /url: /forgot-password
-        - textbox "Password" [ref=e35]:
-          - /placeholder: ••••••••
-      - button "Log in" [ref=e36] [cursor=pointer]
-  - paragraph [ref=e37]:
-    - text: Don't have an account?
-    - link "Create one" [ref=e38] [cursor=pointer]:
-      - /url: /register
+        - heading "Customers" [level=1] [ref=e28]
+        - paragraph [ref=e29]: Every customer from the visualizer, lead generator, and manual entry.
+      - button "Customer" [ref=e30] [cursor=pointer]
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - strong [ref=e35]: "0"
+        - generic [ref=e36]: Total
+      - generic [ref=e37]:
+        - strong [ref=e38]: "0"
+        - generic [ref=e39]: New
+      - generic [ref=e40]:
+        - strong [ref=e41]: "0"
+        - generic [ref=e42]: Active
+      - generic [ref=e43]:
+        - strong [ref=e44]: "0"
+        - generic [ref=e45]: Won
+    - generic [ref=e46]:
+      - button "Sync HubSpot" [ref=e47] [cursor=pointer]
+      - button "Sync Drive" [ref=e54] [cursor=pointer]
+    - generic [ref=e58]:
+      - textbox "Search name, email, address, system…" [ref=e63]
+      - generic [ref=e64]:
+        - button "All" [ref=e65] [cursor=pointer]
+        - button "New" [ref=e66] [cursor=pointer]
+        - button "Qualified" [ref=e67] [cursor=pointer]
+        - button "Estimate" [ref=e68] [cursor=pointer]
+        - button "Proposal" [ref=e69] [cursor=pointer]
+        - button "Follow Up" [ref=e70] [cursor=pointer]
+        - button "Won" [ref=e71] [cursor=pointer]
+        - button "Lost" [ref=e72] [cursor=pointer]
+    - generic [ref=e74]:
+      - generic [ref=e75]: "0"
+      - text: No customers yet. Add one or generate a bid.
+  - navigation [ref=e76]:
+    - button "Home" [ref=e77] [cursor=pointer]
+    - button "New Bid" [ref=e82] [cursor=pointer]
+    - button "Leads" [ref=e87] [cursor=pointer]
+    - button "Xtreme AI" [ref=e94] [cursor=pointer]
+    - button "More" [ref=e98] [cursor=pointer]
 ```
 
 # Test source

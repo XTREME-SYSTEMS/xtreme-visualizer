@@ -6,7 +6,7 @@
 
 # Test info
 
-- Name: visual.spec.ts >> authentication entry (/login) >> loads without uncaught exceptions or console errors
+- Name: visual.spec.ts >> Home / Dashboard (/app) >> loads without uncaught exceptions or console errors
 - Location: e2e/visual.spec.ts:24:5
 
 # Error details
@@ -15,7 +15,7 @@
 Error: expect(received).toEqual(expected) // deep equality
 
 - Expected  -  1
-+ Received  + 26
++ Received  + 28
 
 - Array []
 + Array [
@@ -30,12 +30,10 @@ Error: expect(received).toEqual(expected) // deep equality
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
-+   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
@@ -43,37 +41,57 @@ Error: expect(received).toEqual(expected) // deep equality
 +     at http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:4308:27
 +     at async Axios.request (http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:3123:14)
 +     at async checkAppState (http://localhost:5173/src/lib/AuthContext.jsx:49:32)",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
 + ]
 ```
 
 # Page snapshot
 
 ```yaml
-- generic [ref=e4]:
-  - generic [ref=e5]:
-    - img "Xtreme Floor Visualizer" [ref=e6]
-    - heading "Welcome back" [level=1] [ref=e11]
-    - paragraph [ref=e12]: Log in to your account
-  - generic [ref=e13]:
-    - button "Continue with Google" [ref=e14] [cursor=pointer]
-    - generic [ref=e15]: or
-    - generic [ref=e20]:
-      - generic [ref=e21]:
-        - text: Email
-        - textbox "Email" [active] [ref=e26]:
-          - /placeholder: you@example.com
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - img "Xtreme Floor Visualizer" [ref=e8]
+    - generic [ref=e9]:
+      - button "Reminders" [ref=e11] [cursor=pointer]
+      - button "Search" [ref=e15] [cursor=pointer]
+      - button "Toggle theme" [ref=e19] [cursor=pointer]
+      - button "Account" [ref=e22] [cursor=pointer]: VX
+  - generic [ref=e25]:
+    - generic [ref=e26]:
       - generic [ref=e27]:
-        - generic [ref=e28]:
-          - generic [ref=e29]: Password
-          - link "Forgot password?" [ref=e30] [cursor=pointer]:
-            - /url: /forgot-password
-        - textbox "Password" [ref=e35]:
-          - /placeholder: ••••••••
-      - button "Log in" [ref=e36] [cursor=pointer]
-  - paragraph [ref=e37]:
-    - text: Don't have an account?
-    - link "Create one" [ref=e38] [cursor=pointer]:
-      - /url: /register
+        - heading "Visualize Floors. Close Jobs Faster." [level=1] [ref=e28]: Visualize Floors.Close Jobs Faster.
+        - paragraph [ref=e29]: Stunning floor previews. Accurate quotes. More wins.
+      - button "New Visualization" [ref=e30] [cursor=pointer]
+    - generic [ref=e35]:
+      - button "Visualizer" [ref=e36] [cursor=pointer]
+      - button "Dashboard" [ref=e43] [cursor=pointer]
+      - button "Voice AI" [ref=e50] [cursor=pointer]
+      - button "Business Generator" [ref=e54] [cursor=pointer]
+    - generic [ref=e59]:
+      - heading "Tools" [level=2] [ref=e61]
+      - generic [ref=e62]:
+        - button [ref=e63] [cursor=pointer]:
+          - strong [ref=e70]: Gallery
+        - button [ref=e73] [cursor=pointer]:
+          - strong [ref=e80]: Floor Systems
+        - button [ref=e83] [cursor=pointer]:
+          - strong [ref=e89]: Operations
+        - button [ref=e92] [cursor=pointer]:
+          - strong [ref=e98]: Scraper
+        - button [ref=e101] [cursor=pointer]:
+          - strong [ref=e106]: Schedule
+        - button [ref=e109] [cursor=pointer]:
+          - strong [ref=e115]: Creative Hub
+    - paragraph [ref=e118]: Preliminary range only. Not a final price, schedule, warranty, or engineering approval.
+  - navigation [ref=e119]:
+    - button "Home" [ref=e120] [cursor=pointer]
+    - button "New Bid" [ref=e125] [cursor=pointer]
+    - button "Leads" [ref=e130] [cursor=pointer]
+    - button "Xtreme AI" [ref=e137] [cursor=pointer]
+    - button "More" [ref=e141] [cursor=pointer]
 ```
 
 # Test source

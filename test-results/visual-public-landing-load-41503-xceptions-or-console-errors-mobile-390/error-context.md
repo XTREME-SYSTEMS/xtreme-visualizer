@@ -6,7 +6,7 @@
 
 # Test info
 
-- Name: visual.spec.ts >> authentication entry (/login) >> loads without uncaught exceptions or console errors
+- Name: visual.spec.ts >> public landing (/) >> loads without uncaught exceptions or console errors
 - Location: e2e/visual.spec.ts:24:5
 
 # Error details
@@ -30,11 +30,11 @@ Error: expect(received).toEqual(expected) // deep equality
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -44,36 +44,6 @@ Error: expect(received).toEqual(expected) // deep equality
 +     at async Axios.request (http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:3123:14)
 +     at async checkAppState (http://localhost:5173/src/lib/AuthContext.jsx:49:32)",
 + ]
-```
-
-# Page snapshot
-
-```yaml
-- generic [ref=e4]:
-  - generic [ref=e5]:
-    - img "Xtreme Floor Visualizer" [ref=e6]
-    - heading "Welcome back" [level=1] [ref=e11]
-    - paragraph [ref=e12]: Log in to your account
-  - generic [ref=e13]:
-    - button "Continue with Google" [ref=e14] [cursor=pointer]
-    - generic [ref=e15]: or
-    - generic [ref=e20]:
-      - generic [ref=e21]:
-        - text: Email
-        - textbox "Email" [active] [ref=e26]:
-          - /placeholder: you@example.com
-      - generic [ref=e27]:
-        - generic [ref=e28]:
-          - generic [ref=e29]: Password
-          - link "Forgot password?" [ref=e30] [cursor=pointer]:
-            - /url: /forgot-password
-        - textbox "Password" [ref=e35]:
-          - /placeholder: ••••••••
-      - button "Log in" [ref=e36] [cursor=pointer]
-  - paragraph [ref=e37]:
-    - text: Don't have an account?
-    - link "Create one" [ref=e38] [cursor=pointer]:
-      - /url: /register
 ```
 
 # Test source

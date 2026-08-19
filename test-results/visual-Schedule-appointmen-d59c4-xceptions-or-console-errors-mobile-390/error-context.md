@@ -6,7 +6,7 @@
 
 # Test info
 
-- Name: visual.spec.ts >> authentication entry (/login) >> loads without uncaught exceptions or console errors
+- Name: visual.spec.ts >> Schedule (/appointments) >> loads without uncaught exceptions or console errors
 - Location: e2e/visual.spec.ts:24:5
 
 # Error details
@@ -15,7 +15,7 @@
 Error: expect(received).toEqual(expected) // deep equality
 
 - Expected  -  1
-+ Received  + 26
++ Received  + 31
 
 - Array []
 + Array [
@@ -30,12 +30,12 @@ Error: expect(received).toEqual(expected) // deep equality
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
@@ -43,37 +43,33 @@ Error: expect(received).toEqual(expected) // deep equality
 +     at http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:4308:27
 +     at async Axios.request (http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:3123:14)
 +     at async checkAppState (http://localhost:5173/src/lib/AuthContext.jsx:49:32)",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Request failed with status code 404",
 + ]
 ```
 
 # Page snapshot
 
 ```yaml
-- generic [ref=e4]:
-  - generic [ref=e5]:
-    - img "Xtreme Floor Visualizer" [ref=e6]
-    - heading "Welcome back" [level=1] [ref=e11]
-    - paragraph [ref=e12]: Log in to your account
-  - generic [ref=e13]:
-    - button "Continue with Google" [ref=e14] [cursor=pointer]
-    - generic [ref=e15]: or
-    - generic [ref=e20]:
-      - generic [ref=e21]:
-        - text: Email
-        - textbox "Email" [active] [ref=e26]:
-          - /placeholder: you@example.com
-      - generic [ref=e27]:
-        - generic [ref=e28]:
-          - generic [ref=e29]: Password
-          - link "Forgot password?" [ref=e30] [cursor=pointer]:
-            - /url: /forgot-password
-        - textbox "Password" [ref=e35]:
-          - /placeholder: ••••••••
-      - button "Log in" [ref=e36] [cursor=pointer]
-  - paragraph [ref=e37]:
-    - text: Don't have an account?
-    - link "Create one" [ref=e38] [cursor=pointer]:
-      - /url: /register
+- generic [ref=e5]:
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - button "Go back" [ref=e8] [cursor=pointer]
+      - img "Xtreme Floor Visualizer" [ref=e11]
+    - generic [ref=e12]:
+      - button "Reminders" [ref=e14] [cursor=pointer]
+      - button "Search" [ref=e18] [cursor=pointer]
+      - button "Toggle theme" [ref=e22] [cursor=pointer]
+      - button "Account" [ref=e25] [cursor=pointer]: VX
+  - navigation [ref=e31]:
+    - button "Home" [ref=e32] [cursor=pointer]
+    - button "New Bid" [ref=e37] [cursor=pointer]
+    - button "Leads" [ref=e42] [cursor=pointer]
+    - button "Xtreme AI" [ref=e49] [cursor=pointer]
+    - button "More" [ref=e53] [cursor=pointer]
 ```
 
 # Test source
