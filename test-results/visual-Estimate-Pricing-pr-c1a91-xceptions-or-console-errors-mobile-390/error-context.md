@@ -35,8 +35,6 @@ Error: expect(received).toEqual(expected) // deep equality
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
-+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-+   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "App state check failed: Base44Error: Request failed with status code 404
 +     at http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:4308:27
 +     at async Axios.request (http://localhost:5173/node_modules/.vite/deps/chunk-RZSJCXRY.js?v=8eee800c:3123:14)
@@ -45,9 +43,11 @@ Error: expect(received).toEqual(expected) // deep equality
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
-+   "Request failed with status code 404",
 +   "Failed to load resource: the server responded with a status of 404 (Not Found)",
 +   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Failed to load resource: the server responded with a status of 404 (Not Found)",
++   "[Base44 SDK Error] 404: Request failed with status code 404",
++   "Request failed with status code 404",
 + ]
 ```
 
