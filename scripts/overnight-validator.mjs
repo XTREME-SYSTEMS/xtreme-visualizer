@@ -75,12 +75,15 @@ function parsePlaywrightJson(text) {
 
 function readReview(name) {
   const file = path.join(OUT, `review-${name}.json`);
-  if (!fs.existsSync(file)) return { exists: false, records: [] };
+  if (!fs.existsSync(file)) return { exists: false, records: [], publicLandingVsHomeDistinct: null };
   try {
-    const records = JSON.parse(fs.readFileSync(file, "utf8"));
-    return { exists: true, records };
+    const raw = JSON.parse(fs.readFileSync(file, "utf8"));
+    // Support both legacy array format and new object format with records + metadata
+    const records = Array.isArray(raw) ? raw : (raw.records || []);
+    const publicLandingVsHomeDistinct = Array.isArray(raw) ? null : raw.publicLandingVsHomeDistinct;
+    return { exists: true, records, publicLandingVsHomeDistinct };
   } catch (error) {
-    return { exists: true, records: [], error: String(error) };
+    return { exists: true, records: [], publicLandingVsHomeDistinct: null, error: String(error) };
   }
 }
 
@@ -121,7 +124,12 @@ const mobile = parsePlaywrightJson(mobileRun.stdout);
 const reviewDesktop = readReview("desktop");
 const reviewMobile = readReview("mobile");
 const reviewRecords = [...reviewDesktop.records, ...reviewMobile.records];
-const reviewValid = reviewRecords.length === 12 && reviewRecords.every((r) => r.functionalResult === "PASS");
+// A capture is valid only if BOTH functional health AND route identity pass.
+// A screenshot that renders the wrong page must NEVER receive a passing score.
+const reviewValid =
+  reviewRecords.length === 12 &&
+  reviewRecords.every((r) => r.functionalResult === "PASS" && r.routeIdentityResult === "PASS");
+const publicLandingVsHomeDistinct = reviewMobile.publicLandingVsHomeDistinct === true;
 
 const after = {
   sha: gitValue(["rev-parse", "HEAD"]),
@@ -147,7 +155,7 @@ const gatePass = {
   mobile_functional: mobile.parsed && mobile.functionalPassed === 9 && mobile.functionalTotal === 9,
   module_regression: desktop.parsed && mobile.parsed && desktop.modulePassed === 1 && desktop.moduleTotal === 1 && mobile.modulePassed === 1 && mobile.moduleTotal === 1,
   contract_regression: desktop.parsed && mobile.parsed && desktop.contractPassed === 7 && desktop.contractTotal === 7 && mobile.contractPassed === 7 && mobile.contractTotal === 7,
-  review_capture_integrity: reviewRun.passed && reviewValid,
+  review_capture_integrity: reviewRun.passed && reviewValid && publicLandingVsHomeDistinct,
   receipt_integrity: receipts.every((r) => typeof r.exitCode === "number" || r.signal) && !!before.sha && !!after.sha,
 };
 
@@ -173,6 +181,7 @@ const report = {
     reviewDesktopCount: reviewDesktop.records.length,
     reviewMobileCount: reviewMobile.records.length,
     reviewValid,
+    publicLandingVsHomeDistinct,
   },
   protectedReleaseGates: policy.unscored_protected_release_gates.map((id) => ({ id, status: "WAITING_APPROVAL_OR_EXTERNAL" })),
   receipts: receipts.map(({ stdout, stderr, ...receipt }) => receipt),

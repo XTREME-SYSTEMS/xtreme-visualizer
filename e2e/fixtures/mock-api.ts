@@ -85,11 +85,24 @@ function unmockedResponse(method: string, pathname: string) {
   };
 }
 
-export async function setupBase44Mocks(page: Page): Promise<void> {
-  // Set mock auth token so the SDK considers the user authenticated
-  await page.addInitScript(() => {
-    localStorage.setItem("base44_access_token", "mock-e2e-token");
-  });
+export async function setupBase44Mocks(
+  page: Page,
+  options: { authenticated?: boolean } = {},
+): Promise<void> {
+  const { authenticated = true } = options;
+
+  // Auth state: seed (authenticated) or clear (anonymous) the access token before
+  // app modules initialize. Default remains authenticated=true so all existing
+  // functional E2E tests are unchanged unless explicitly opting into anonymous mode.
+  if (authenticated) {
+    await page.addInitScript(() => {
+      localStorage.setItem("base44_access_token", "mock-e2e-token");
+    });
+  } else {
+    await page.addInitScript(() => {
+      localStorage.removeItem("base44_access_token");
+    });
+  }
 
   // CRITICAL: Use browser-context routing, not page-level routing.
   // Context-level routing intercepts requests from service workers and
