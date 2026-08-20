@@ -1,14 +1,25 @@
 import type { Page, Route } from "@playwright/test";
 
 /**
- * Mock Base44 API for deterministic E2E testing.
+ * Deterministic Base44 API mock for E2E testing.
  *
- * Strategy: only intercept POST requests (entity filter/create/update/delete,
- * function invocations). GET requests (scripts, styles, pages, auth) pass through
- * to Vite. This prevents accidentally serving JSON for JavaScript module requests.
+ * Strategy: intercept ALL requests to /api/ paths (both GET and POST),
+ * returning controlled mock data. Non-API requests (Vite modules, static
+ * assets, page HTML) pass through to the Vite dev server.
  *
- * Expected 404 errors from unauthenticated GET API calls (auth/me, entity list)
- * are filtered in the test as expected test-environment behavior, not real app errors.
+ * This eliminates ALL real API 404s — every Base44 SDK call (auth, entity
+ * filter/list/create, function invoke, integration) receives a deterministic
+ * 200 response with mock data. The test can then enforce strict error
+ * checking: any unexpected console error or page error is a real regression.
+ *
+ * Mocked endpoints:
+ *   /api/auth/*        → mock authenticated admin user (200)
+ *   /api/functions/*   → empty success response (200)
+ *   /api/entities/*    → empty data array (200)
+ *   /api/integrations/* → empty data (200)
+ *   other /api/*       → empty data (200)
+ *
+ * Non-/api/ requests pass through untouched to Vite.
  */
 
 const MOCK_USER = {
@@ -29,16 +40,15 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
   await page.route("**/*", async (route: Route) => {
     const request = route.request();
     const url = request.url();
-    const method = request.method();
 
-    // Only mock POST requests (API calls that submit data).
-    // All GET requests (scripts, styles, pages, auth) pass through to Vite.
-    if (method !== "POST") {
+    // Only intercept Base44 API calls (URLs containing /api/).
+    // All non-API requests (Vite HMR, modules, static assets, page HTML) pass through.
+    if (!url.includes("/api/")) {
       return route.continue();
     }
 
-    // Auth endpoints → mock user
-    if (url.includes("auth")) {
+    // Auth endpoints → mock authenticated admin user
+    if (url.includes("/api/auth")) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -46,7 +56,16 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
       });
     }
 
-    // All other POST API calls → empty data (deterministic empty states)
+    // Function invocations → empty success response
+    if (url.includes("/api/functions")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: {}, ok: true }),
+      });
+    }
+
+    // Entity, integration, and all other API endpoints → empty data
     return route.fulfill({
       status: 200,
       contentType: "application/json",

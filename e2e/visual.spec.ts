@@ -8,9 +8,13 @@ import { setupBase44Mocks } from "./fixtures/mock-api";
  * 1. Verifies HTTP/page load, body render, no uncaught JS errors, no unexpected console errors
  * 2. Captures a visual baseline via toHaveScreenshot() with project-prefixed names
  *
- * API calls are mocked to return deterministic data (empty arrays, mock user),
- * eliminating 404 noise from unauthenticated local dev while still catching real errors
- * (pageerror, unhandled exceptions, unexpected 4xx/5xx, failed critical resources).
+ * API calls are explicitly mocked (see mock-api.ts): every /api/ request receives
+ * a deterministic 200 response. This eliminates ALL SDK 404s, so the test enforces
+ * strict error checking — any console error or page error is a genuine regression.
+ *
+ * Only browser-level requests for missing static assets (favicon, manifest) are
+ * filtered, as these are automatically requested by the browser and their absence
+ * is not an application error.
  *
  * Visual baselines are stored in e2e/visual.spec.ts-snapshots/ and MUST be committed.
  * To create initial baselines: npx playwright test --update-snapshots
@@ -29,17 +33,13 @@ const ROUTES = [
   { path: "/admin", name: "admin" },
 ];
 
-// Console error patterns that are expected in the test environment (not real app errors).
-// These are filtered so genuine errors still fail the test.
-// 404s from Base44 SDK are expected: unauthenticated local dev can't reach the production API.
-// Real errors (pageerror, unhandled exceptions, 5xx, non-SDK failures) still fail the test.
+// Console error patterns that are expected in the test environment.
+// Only browser-level requests for missing static assets are filtered.
+// All Base44 API calls are explicitly mocked, so real API 404s/5xx and
+// SDK errors will fail the test — they indicate a genuine regression.
 const EXPECTED_ERROR_PATTERNS = [
   /favicon/i,
   /manifest/i,
-  /\[Base44 SDK Error\]/i,
-  /Failed to load resource.*404/i,
-  /App state check failed/i,
-  /Request failed with status code 404/i,
 ];
 
 function isExpectedError(msg: string): boolean {
@@ -75,11 +75,10 @@ for (const route of ROUTES) {
       const bodyVisible = await page.locator("body").isVisible();
       expect(bodyVisible).toBe(true);
 
-      // No uncaught JS exceptions (except expected 404s from unauthenticated test env)
-      const unexpectedPageErrors = pageErrors.filter((msg) => !isExpectedError(msg));
-      expect(unexpectedPageErrors).toEqual([]);
+      // No uncaught JS exceptions — all page errors are real regressions
+      expect(pageErrors).toEqual([]);
 
-      // No unexpected console errors
+      // No unexpected console errors — only favicon/manifest are filtered
       expect(consoleErrors).toEqual([]);
     });
 
