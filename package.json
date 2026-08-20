@@ -15,7 +15,9 @@
     "e2e": "playwright test",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "validate:overnight": "node scripts/overnight-validator.mjs",
+    "review:capture": "playwright test --config=playwright.review.config.ts --update-snapshots=none"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.43",
