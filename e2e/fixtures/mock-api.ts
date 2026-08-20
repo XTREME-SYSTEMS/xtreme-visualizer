@@ -139,8 +139,14 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
       });
     }
 
-    // 4. Entity endpoints → shape depends on operation
+    // 4. Entity endpoints → shape depends on method + subPath
     //    Pattern: /api/apps/{APP_ID}/entities/{EntityName}[/{subPath}]
+    //
+    //    CRITICAL: The Base44 SDK response interceptor returns `response.data`
+    //    (the raw HTTP body) directly — NOT the axios response wrapper.
+    //    Frontend consumers call .filter(), .find(), for...of on the result.
+    //    Therefore list/filter MUST return a raw array `[]`, NOT a wrapper
+    //    object like `{ data: [], items: [], total: 0 }`.
     const entityMatch = pathname.match(/^\/api\/apps\/[^/]+\/entities\/([^/]+)(?:\/(.+))?/);
     if (entityMatch) {
       const entityName = entityMatch[1];
@@ -151,17 +157,33 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
         return route.fulfill(unmockedResponse(method, pathname));
       }
 
-      // DELETE → success
-      if (method === "DELETE") {
+      // subPath "bulk" → bulkCreate (POST) or bulkUpdate (PUT) → array
+      if (subPath === "bulk") {
         return route.fulfill({
           status: 200,
           contentType: "application/json",
-          body: JSON.stringify({ ok: true }),
+          body: JSON.stringify([]),
         });
       }
 
-      // Get/create/update by ID (subPath is an ID, not filter/list/bulk/me)
-      if (subPath && subPath !== "filter" && subPath !== "list" && subPath !== "bulk" && subPath !== "me") {
+      // subPath "update-many" → updateMany (PATCH) → modified count
+      if (subPath === "update-many") {
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ modified: 0 }),
+        });
+      }
+
+      // subPath is an ID (not filter/list/me) → get/update/delete → single entity
+      if (subPath && subPath !== "filter" && subPath !== "list" && subPath !== "me") {
+        if (method === "DELETE") {
+          return route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ ok: true }),
+          });
+        }
         return route.fulfill({
           status: 200,
           contentType: "application/json",
@@ -169,11 +191,28 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
         });
       }
 
-      // List/filter (no subPath, or subPath is filter/list/bulk) → empty data
+      // No subPath → list (GET), create (POST), deleteMany (DELETE)
+      if (method === "POST") {
+        // create → single entity object
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ id: "mock-created-id" }),
+        });
+      }
+      if (method === "DELETE") {
+        // deleteMany → count
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ deleted: 0 }),
+        });
+      }
+      // GET → list/filter → RAW ARRAY (SDK interceptor returns response.data directly)
       return route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({ data: [], items: [], total: 0 }),
+        body: JSON.stringify([]),
       });
     }
 

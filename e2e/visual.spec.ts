@@ -141,3 +141,108 @@ test("regression: /src/api/base44Client.js is never mocked (loads as JavaScript)
   expect(moduleContentType).toContain("javascript");
   expect(moduleContentType).not.toContain("application/json");
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Response contract regression tests — prove the mock returns shapes that match
+// the actual Base44 SDK contract. The SDK response interceptor returns
+// response.data (raw HTTP body) directly, so:
+//   - list/filter → raw array [] (consumers call .filter(), .find(), for...of)
+//   - get/create/update → single object { id: "..." }
+//   - unknown entity/function → 599 UNMOCKED_API_PATH
+// ─────────────────────────────────────────────────────────────────────────────
+
+const APP_ID = "6a72dc735df4ab468b4b1441";
+
+test.describe("mock response contract", () => {
+  test.beforeEach(async ({ page }) => {
+    await setupBase44Mocks(page);
+    await page.goto("/", { waitUntil: "networkidle" });
+  });
+
+  test("Lead list returns raw array usable with Array.isArray and .filter()", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const res = await fetch(`/api/apps/${appId}/entities/Lead`);
+      const data = await res.json();
+      return {
+        status: res.status,
+        isArray: Array.isArray(data),
+        filtered: typeof data.filter === "function" ? data.filter(() => true) : null,
+      };
+    }, APP_ID);
+    expect(result.status).toBe(200);
+    expect(result.isArray).toBe(true);
+    expect(result.filtered).toEqual([]);
+  });
+
+  test("Lead filter returns raw array usable with .filter()", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const q = encodeURIComponent(JSON.stringify({ status: "new" }));
+      const res = await fetch(`/api/apps/${appId}/entities/Lead?q=${q}`);
+      const data = await res.json();
+      return {
+        isArray: Array.isArray(data),
+        filtered: typeof data.filter === "function" ? data.filter(() => true) : null,
+      };
+    }, APP_ID);
+    expect(result.isArray).toBe(true);
+    expect(result.filtered).toEqual([]);
+  });
+
+  test("PricingRule list returns array usable with .find()", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const res = await fetch(`/api/apps/${appId}/entities/PricingRule`);
+      const data = await res.json();
+      return {
+        isArray: Array.isArray(data),
+        found: typeof data.find === "function" ? data.find(() => false) : null,
+      };
+    }, APP_ID);
+    expect(result.isArray).toBe(true);
+    expect(result.found).toBeUndefined();
+  });
+
+  test("Appointment list returns iterable array", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const res = await fetch(`/api/apps/${appId}/entities/Appointment`);
+      const data = await res.json();
+      let iterable = true;
+      try { for (const _ of data) break; } catch { iterable = false; }
+      return { isArray: Array.isArray(data), iterable };
+    }, APP_ID);
+    expect(result.isArray).toBe(true);
+    expect(result.iterable).toBe(true);
+  });
+
+  test("unknown entity returns 599 UNMOCKED_API_PATH", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const res = await fetch(`/api/apps/${appId}/entities/UnknownEntity`);
+      const data = await res.json();
+      return { status: res.status, error: data.error };
+    }, APP_ID);
+    expect(result.status).toBe(599);
+    expect(result.error).toBe("UNMOCKED_API_PATH");
+  });
+
+  test("unknown function returns 599 UNMOCKED_API_PATH", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const res = await fetch(`/api/apps/${appId}/functions/unknownFunction`);
+      const data = await res.json();
+      return { status: res.status, error: data.error };
+    }, APP_ID);
+    expect(result.status).toBe(599);
+    expect(result.error).toBe("UNMOCKED_API_PATH");
+  });
+
+  test("known list/filter does NOT return generic wrapper (must be raw array)", async ({ page }) => {
+    const result = await page.evaluate(async (appId) => {
+      const res = await fetch(`/api/apps/${appId}/entities/Lead`);
+      const data = await res.json();
+      return {
+        isArray: Array.isArray(data),
+        isWrapper: !Array.isArray(data) && typeof data === "object" && data !== null,
+      };
+    }, APP_ID);
+    expect(result.isArray).toBe(true);
+    expect(result.isWrapper).toBe(false);
+  });
+});

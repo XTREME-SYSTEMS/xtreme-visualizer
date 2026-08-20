@@ -1,7 +1,7 @@
 # Xtreme Floor Visualizer — Release Evidence Report
 
 **Date:** 2026-08-20
-**Build:** Final E2E harness repair pass
+**Build:** E2E response contract repair pass
 **Validator:** Base44 autonomous agent
 **App ID:** 6a72dc735df4ab468b4b1441
 
@@ -9,212 +9,198 @@
 
 ## CURRENT SHA
 
-**Pre-correction SHA:** `d4b0f0727f4e3ba25a706d3024ccdddd210d57b9`
-**Post-correction SHA:** COULD NOT VERIFY — `git rev-parse` timed out in sandbox after file edits
-**Tree SHA:** COULD NOT VERIFY — `git rev-parse HEAD^{tree}` timed out in sandbox
-**Git status:** COULD NOT VERIFY — `git status --porcelain` timed out in sandbox
+**Pre-correction SHA:** `13b62cac918ffcbc61f0e5d9bb76551eaa7dc6a2`
+**Pre-correction tree:** `9674a7f63a23d1711971d537bde6608b3994eae2`
+**Post-correction SHA:** COULD NOT VERIFY — git commands timeout in sandbox
+**Git status:** COULD NOT VERIFY — git commands timeout in sandbox
 
-**Files changed this pass (E2E harness repair):**
-- `e2e/fixtures/mock-api.ts` — fixed 3 critical defects (substring match, context routing, allowlist)
-- `e2e/visual.spec.ts` — added regression test for base44Client.js, added 599 detection
-- `playwright.config.ts` — added `serviceWorkers: "block"`
-- `ci-workflow-draft.yml` — changed e2e command to `--update-snapshots=none`
+**Files changed this pass (response contract repair):**
+- `e2e/fixtures/mock-api.ts` — entity list/filter now returns raw `[]` (not wrapper object)
+- `e2e/visual.spec.ts` — added 7 response contract regression tests
 - `RELEASE_EVIDENCE_REPORT.md` — updated with current runtime truth
 
 **Operator must run post-correction validation:**
 ```
-git status --porcelain
 git rev-parse HEAD
 git rev-parse HEAD^{tree}
-npm run lint
-npm run typecheck
-npm test
-npm run build
+git status --porcelain
+npm run lint && npm run typecheck && npm test && npm run build
 npm audit --omit=dev --audit-level=high
 npx playwright test --project=desktop-1440 --update-snapshots=none
 npx playwright test --project=mobile-390 --update-snapshots=none
 ```
+**Required:** same SHA, same tree, clean status before and after run.
 
 ---
 
-## CORE GATES (at SHA d4b0f07, pre-correction)
+## CORE CLEAN RUN
 
-| Gate | Result | Evidence |
-|------|--------|----------|
-| Lint | **PASS** | `npm run lint` — 0 errors |
-| Typecheck | **PASS** | `npm run typecheck` — 0 errors (frontend + backend) |
-| Unit Tests | **PASS** | `npm test` — 53/53 (payments=35, pricing=7, promptLibrary=11) |
-| Build | **PASS** | `npm run build` — success |
-| Security | **PASS** | `npm audit --omit=dev --audit-level=high` — 0 HIGH, 0 CRITICAL, 4 MODERATE accepted-risk |
+**At SHA 13b62ca (pre-correction):**
 
-**Core is CURRENT PASS. Do NOT rewrite already-green core code.**
+| Gate | Result |
+|------|--------|
+| `npm ci` | PASS |
+| `npm run lint` | PASS |
+| `npm run typecheck` (frontend + backend) | PASS |
+| `npm test` (unit/regression) | PASS (53/53) |
+| Payment regression | PASS (35/35) |
+| `npm run build` | PASS |
+| `npm audit --omit=dev --audit-level=high` | PASS (0 HIGH, 0 CRITICAL, 4 MODERATE) |
+| Git tree after validation | CLEAN |
 
----
-
-## E2E MOCK ROOT CAUSE
-
-**Three critical defects in the previous mock harness:**
-
-### Defect #1: Source Module Hijack
-```
-Previous: if (!url.includes("/api/")) { return route.continue(); }
-```
-`url.includes("/api/")` matched `/src/api/base44Client.js` (a Vite JavaScript module).
-Playwright served JSON (`application/json`) in place of the JS module.
-
-**Observed browser error:**
-```
-Failed to load module script:
-Expected a JavaScript-or-Wasm module script but server returned application/json.
-```
-
-**Observed DOM:** `<div id="root"></div>` (blank page)
-
-This was the primary cause of blank pages and visual diffs.
-
-### Defect #2: Insufficient Page Routing
-`page.route()` (page-level routing) does not intercept requests from service workers
-or web workers. Several Base44 entity requests bypassed the mock.
-
-### Defect #3: Fail-Open Mocking
-```
-Previous: return route.fulfill({ status: 200, body: JSON.stringify({ data: [], ... }) });
-```
-Every unknown `/api/` request received HTTP 200. This hid broken endpoint names
-and real integration regressions.
+**Core is green. Do not rewrite green production code.**
 
 ---
 
-## E2E MOCK FIX
+## MOCK CONTRACT RECEIPT
 
-### Fix #1: URL Pathname Parsing
-```
-const parsedUrl = new URL(request.url());
-const pathname = parsedUrl.pathname;
-if (!pathname.startsWith("/api/")) { return route.continue(); }
-```
-`pathname.startsWith("/api/")` only matches actual API paths.
-`/src/api/base44Client.js` has pathname `/src/api/base44Client.js` — does NOT start with `/api/`.
+**Root cause of functional failures (`leads.filter is not a function`, `rules?.find is not a function`, `appts is not iterable`):**
 
-### Fix #2: Browser-Context Routing
-```
-const context = page.context();
-await context.route("**/*", async (route) => { ... });
-```
-Combined with `serviceWorkers: "block"` in `playwright.config.ts`, this ensures
-every Base44 API request is deterministically intercepted.
+The Base44 SDK response interceptor returns `response.data` (the raw HTTP body) directly — NOT the axios response wrapper. Frontend consumers call `.filter()`, `.find()`, `for...of` on the result. The previous mock returned `{ data: [], items: [], total: 0 }` (a wrapper object), so consumers received an object where they expected an array.
 
-### Fix #3: Explicit Allowlist + Fail-Closed
-- Known entities (86 names) → deterministic 200 with proper response shape
-- Known functions (32 names) → deterministic 200 with function-specific result
-- Public settings, analytics, integrations, auth → deterministic 200
-- **Unknown API path → HTTP 599 with `UNMOCKED_API_PATH` error**
+**Fix:** Entity list/filter now returns a raw `[]` (empty array). Entity get/create/update returns `{ id: "..." }` (single object). Entity delete returns `{ ok: true }`.
+
+**SDK source evidence:** `node_modules/@base44/sdk/dist/utils/axios-client.js`:
+```javascript
+interceptors.response.use((response) => {
+    return response.data;  // Returns raw HTTP body, not axios wrapper
+}, ...)
+```
+
+**SDK entity methods:** `node_modules/@base44/sdk/dist/modules/entities.js`:
+- `list()` → GET `/apps/{appId}/entities/{entityName}` → returns raw array
+- `filter()` → GET `/apps/{appId}/entities/{entityName}?q=...` → returns raw array
+- `get(id)` → GET `/apps/{appId}/entities/{entityName}/{id}` → returns single object
+- `create()` → POST `/apps/{appId}/entities/{entityName}` → returns single object
+- `update(id)` → PUT `/apps/{appId}/entities/{entityName}/{id}` → returns single object
+- `delete(id)` → DELETE `/apps/{appId}/entities/{entityName}/{id}` → returns object
 
 ---
 
-## UNKNOWN API FAIL-CLOSED RECEIPT
+## ENTITY LIST CONTRACT
+**Raw array `[]`** — SDK interceptor returns `response.data` directly; consumers call `.filter()`, `.find()`, `for...of`.
 
-```json
-{
-  "error": "UNMOCKED_API_PATH",
-  "method": "GET",
-  "path": "/api/apps/6a72dc735df4ab468b4b1441/entities/UnknownEntity"
-}
-```
+## ENTITY FILTER CONTRACT
+**Raw array `[]`** — same as list; filter sends `?q=...` query param but response shape is identical.
 
-**Status 599** — the E2E test detects 599 responses and fails loudly:
-```typescript
-page.on("response", async (response) => {
-  if (response.status() === 599) {
-    consoleErrors.push(`UNMOCKED_API_PATH (599): ${body}`);
-  }
-});
-```
+## UNKNOWN ENTITY 599 TEST
+Added: `test("unknown entity returns 599 UNMOCKED_API_PATH")` — verifies 599 status and error body.
 
-**Regression test added:** proves `/src/api/base44Client.js` is never mocked
-and loads as JavaScript (`content-type: application/javascript`), not JSON.
+## UNKNOWN FUNCTION 599 TEST
+Added: `test("unknown function returns 599 UNMOCKED_API_PATH")` — verifies 599 status and error body.
+
+## BASE44CLIENT MODULE TEST
+Passing: `test("regression: /src/api/base44Client.js is never mocked")` — verifies `content-type: application/javascript`, never `application/json`.
 
 ---
 
-## DESKTOP E2E
+## DESKTOP
 
-**Previous broken harness result: 2/18 PASS, 16/18 FAIL**
-**Current status: NOT EXECUTED this pass — operator must rerun with repaired harness**
+**Pre-contract-fix result (operator run at SHA 13b62ca):**
+- Functional: 7/9 PASS (leads, pricing, appointments failed)
+- Visual: 7/9 PASS (public-landing, leads failed)
+- Module regression: 1/1 PASS
+- **Total: 14/19 PASS, 5/19 FAIL**
 
-**Previous "browser unavailable" wording is superseded.** Chromium is installed:
-- Chrome for Testing 151.0.7922.34
-- Chrome Headless Shell 151.0.7922.34
+**Post-contract-fix expected:**
+- Functional: 9/9 PASS (contract fix resolves leads.filter, rules.find, appts iterable)
+- Module regression: 1/1 PASS
+- Contract regression: 7/7 PASS (new tests)
+- Visual: pending rerun — leads visual should pass after contract fix; public-landing visual needs investigation
+- **Total: 26 tests per project (9 load/error + 9 visual + 1 module + 7 contract)**
 
-**Operator command:**
+**Operator must rerun:**
 ```
 npx playwright test --project=desktop-1440 --update-snapshots=none
 ```
 
-**Required: 18/18 PASS (9 load/error + 9 visual baseline)**
+## MOBILE
 
-**DO NOT update existing desktop baselines to make the test pass.**
-If a desktop baseline differs, report: exact route, diff percentage, expected image,
-actual image, and diff artifact. Visual change requires operator approval.
+**Pre-contract-fix result (operator run):**
+- Functional: 6/9 PASS (leads, pricing, appointments failed)
+- Visual: 0/9 PASS (no approved mobile baselines exist — expected)
+- Module regression: 1/1 PASS
+- **Total: 7/19 PASS, 12/19 FAIL**
 
----
+**Post-contract-fix expected:**
+- Functional: 9/9 PASS (contract fix resolves all three functional failures)
+- Module regression: 1/1 PASS
+- Contract regression: 7/7 PASS (new tests)
+- Visual: 0/9 (no baselines — PENDING OPERATOR VISUAL APPROVAL)
+- **Total: 26 tests per project**
 
-## MOBILE E2E
-
-**Current result: 0/18 PASS**
-**Current approved mobile baseline count: 0**
-
-**Step 1:** Make all 9 mobile load/error tests green using the deterministic mock.
+**Operator must rerun:**
 ```
 npx playwright test --project=mobile-390 --update-snapshots=none
 ```
 
-**Step 2:** Render mobile screenshots at 390×844 as review artifacts OUTSIDE
-the tracked baseline location.
-
-**Step 3:** Return them for operator visual review.
-
-**Step 4:** ONLY after operator approves may mobile snapshot baselines be committed.
-
-**Until then:**
-- MOBILE VISUAL PARITY: **NOT CERTIFIED**
-- DO NOT generate or commit mobile baselines automatically
+**After functional green:** render 9 screenshots at 390×844 into `test-results/mobile-review/` (gitignored). Return for operator review. Only explicit operator approval may promote them to snapshot baselines.
 
 ---
 
-## MOBILE VISUAL
+## PUBLIC LANDING VISUAL DIFF
 
-**Approved mobile baselines: 0**
-**Mobile visual parity: NOT CERTIFIED**
+| Field | Value |
+|-------|-------|
+| Route | `/` (public-landing) |
+| Project | desktop-1440 |
+| Pixel count different | 690,497 |
+| Diff ratio | 0.44 (44%) |
+| Expected baseline | `e2e/visual.spec.ts-snapshots/desktop-1440--public-landing.png` |
+| Actual screenshot | COULD NOT CAPTURE — sandbox cannot run Playwright |
+| Diff artifact | COULD NOT CAPTURE — sandbox cannot run Playwright |
+| Visual differences observed | COULD NOT OBSERVE — sandbox cannot run Playwright |
+| Baseline provenance | COULD NOT VERIFY — sandbox cannot access git history |
+| Recommended disposition | **OPERATOR MUST INVESTIGATE** — compare: (A) current actual screenshot, (B) committed desktop baseline, (C) approved current visual source / live public rendering. Determine: BASELINE IS STALE/INVALID or CURRENT RENDER HAS UNAPPROVED VISUAL DRIFT. Do NOT update baseline without operator approval. |
 
-If mobile load/error reaches 9/9 but no approved baselines exist:
-**FUNCTIONAL MOBILE E2E PASS, VISUAL MOBILE BASELINE PENDING OPERATOR APPROVAL**
+**DO NOT UPDATE THE BASELINE.**
 
 ---
 
-## VISUAL ASSERTION QUALITY
+## LEADS VISUAL DIFF
 
-| Setting | Value |
-|---------|-------|
-| Assertion | `toHaveScreenshot` |
-| Naming | Project-prefixed (`{project}--{route}.png`) |
-| Animations | Disabled |
-| `maxDiffPixelRatio` | 0.01 |
-| `threshold` | 0.2 |
+| Field | Value |
+|-------|-------|
+| Route | `/leads` |
+| Project | desktop-1440 |
+| Pixel count different | 180,649 |
+| Diff ratio | 0.12 (12%) |
+| Status | **PENDING RERUN** — first repair the response contract (done this pass), then rerun. Do not evaluate baseline validity until the route renders without JavaScript errors. |
 
-**Not loosened to manufacture a pass.**
+**Contract fix applied:** entity list/filter now returns raw `[]`. The `leads.filter is not a function` error should be resolved. Operator must rerun to verify.
 
 ---
 
 ## SECURITY
+0 HIGH, 0 CRITICAL, 4 MODERATE ACCEPTED-RISK. Do NOT state "zero vulnerabilities."
 
-```
-npm audit --omit=dev --audit-level=high
-→ 0 HIGH, 0 CRITICAL
-→ exit 0 (PASS)
-```
+## CI
+**NOT ACTIVE.** `.github/workflows/ci.yml` absent. Draft updated with `--update-snapshots=none`. CI must fail on missing/differing baselines. NO `continue-on-error`.
 
-**4 MODERATE ACCEPTED-RISK FINDINGS remain.**
-**Do NOT state "zero vulnerabilities." Do NOT run `npm audit fix --force`.**
+## BRANCH PROTECTION
+**DISABLED.** main not protected, 0 required status checks.
+
+## VISUAL CHANGES
+**NONE.** No application visuals altered.
+
+---
+
+## ALLOWLIST COUNT
+
+| Category | Count |
+|----------|-------|
+| Known entities | 90 |
+| Known functions | 32 |
+
+---
+
+## FAIL-CLOSED BEHAVIOR (PRESERVED)
+
+- `pathname.startsWith("/api/")` — no substring matching
+- `page.context().route()` — browser-context routing
+- `serviceWorkers: "block"` — in playwright.config.ts
+- 599 `UNMOCKED_API_PATH` for unknown entities/functions
+- `--update-snapshots=none` — in CI draft
 
 ---
 
@@ -222,90 +208,7 @@ npm audit --omit=dev --audit-level=high
 
 **Classification: RLS CONFIGURED / FUNCTIONAL / NEEDS SECRET-STORAGE HARDENING**
 
-**Do NOT claim PASS. Do NOT claim backend-only secret isolation.**
-
-| Check | Result | Evidence |
-|-------|--------|----------|
-| RLS configured | ✅ | `IntegrationConfig` RLS: admin-only on create, read, update, delete |
-| RLS enforced | ✅ | Entity schema declares `user_condition: { role: "admin" }` on all 4 operations |
-| Ordinary users cannot fetch | ✅ | RLS prevents non-admin reads |
-| Not statically bundled | ✅ | No credential value in source code or build output |
-| **Credential reaches browser memory** | ⚠️ **NEEDS HARDENING** | `Admin.jsx` calls `IntegrationConfig.filter({ key: "twilio" })` and places the full object (including `twilio_auth_token`) into browser React state |
-| Logs do not print credentials | ✅ | `twilio-voice/entry.ts` logs errors only, never credentials |
-
-**Preferred future architecture:**
-- Twilio auth token stored in Base44 platform/backend secret storage (`set_secrets`)
-- Frontend receives only masked configuration status
-- Backend functions read token server-side
-
-**Do NOT migrate, rotate, delete, or expose secrets in this pass.**
-**Secret migration requires operator approval.**
-
----
-
-## GITHUB CI
-
-**Status: NOT ACTIVE**
-
-- `ci-workflow-draft.yml` exists in repository (updated this pass with `--update-snapshots=none`)
-- `.github/workflows/ci.yml` does NOT exist
-- GitHub current SHA has ZERO status checks
-- **CI IS NOT PASS**
-
-**Platform blocks `.github/workflows/` writes. Operator must create the file manually.**
-
-**CI MUST:**
-- Fail if a baseline is missing
-- Fail if visual comparison differs
-- NOT manufacture snapshots (`--update-snapshots=none`)
-- NO `continue-on-error: true`
-
----
-
-## BRANCH PROTECTION
-
-**Status: DISABLED**
-
-- `main` protected: **FALSE**
-- Required status checks: **NONE**
-
-**Do NOT enable without explicit operator approval.**
-
----
-
-## CONNECTORS
-
-**Current state: 0 connected. Do NOT initiate OAuth.**
-
-| Connector | Classification |
-|-----------|----------------|
-| Gmail | REQUIRED FOR LAUNCH |
-| Google Calendar | REQUIRED FOR LAUNCH |
-| Google Drive | REQUIRED FOR LAUNCH |
-| Google Sheets | OPTIONAL |
-| HubSpot | OPTIONAL |
-| Google Docs | NOT REQUIRED |
-| Google Tasks | NOT REQUIRED |
-| Supabase | NOT REQUIRED |
-
----
-
-## TWILIO APPLICATION
-
-**Stale URL in 2 files (OPERATOR APPROVAL REQUIRED):**
-- `src/pages/Admin.jsx` line 180: `https://visualx.base44.app/api/functions/twilio-voice` (404)
-- `src/pages/VoiceAssistant.jsx` line 62: `https://visualx.base44.app/api/functions/twilio-voice` (404)
-
-**Correct URL:** `https://xtremevisualizer.base44.app/api/functions/twilio-voice` (200)
-
-**Do NOT change visible text automatically.**
-
----
-
-## VISUAL CHANGES
-
-**NONE.** No application visuals, copy, layout, spacing, typography, colors, imagery,
-icons, responsive composition, navigation, animations, or component placement were altered.
+RLS enforces admin-only CRUD. No credential statically bundled. But `twilio_auth_token` reaches browser React state when admin views `/admin` via `IntegrationConfig.filter`. Preferred: platform secret storage. Do NOT migrate without operator approval.
 
 ---
 
@@ -313,39 +216,41 @@ icons, responsive composition, navigation, animations, or component placement we
 
 | # | Item | Action |
 |---|------|--------|
-| 1 | Post-correction validation | Run `npm run lint && npm run typecheck && npm test && npm run build && npm audit --omit=dev --audit-level=high` |
-| 2 | Git hygiene check | `git status --porcelain` — if any tracked file changed unexpectedly, STOP and report RELEASE GATE FAILURE |
-| 3 | Desktop E2E | `npx playwright test --project=desktop-1440 --update-snapshots=none` — required 18/18 |
-| 4 | Mobile functional E2E | `npx playwright test --project=mobile-390 --update-snapshots=none` — required 9/9 load/error |
-| 5 | Mobile visual baselines | Render at 390×844, submit for operator review, commit only after approval |
-| 6 | CI pipeline activation | Create `.github/workflows/ci.yml` from `ci-workflow-draft.yml` |
-| 7 | Branch protection | Enable on `main` with required CI checks (requires approval) |
-| 8 | Twilio stale URL | Replace `visualx.base44.app` with `xtremevisualizer.base44.app` in `Admin.jsx` and `VoiceAssistant.jsx` |
-| 9 | Twilio carrier verification | Submit toll-free verification via Twilio console |
-| 10 | OAuth connectors | Connect Gmail, Google Calendar, Google Drive (required) via `/admin` |
-| 11 | Twilio secret storage | Migrate auth token to platform secrets (requires approval) |
+| 1 | Post-correction validation | `npm run lint && npm run typecheck && npm test && npm run build && npm audit --omit=dev --audit-level=high` |
+| 2 | Git hygiene | `git status --porcelain` — verify only expected files changed |
+| 3 | Desktop E2E | `npx playwright test --project=desktop-1440 --update-snapshots=none` — required 9/9 functional + 1/1 module + 7/7 contract |
+| 4 | Mobile functional E2E | `npx playwright test --project=mobile-390 --update-snapshots=none` — required 9/9 functional + 1/1 module + 7/7 contract |
+| 5 | Mobile visual baselines | Render at 390×844 into gitignored review dir, submit for approval |
+| 6 | Public landing visual diff | Investigate baseline provenance, determine stale vs drift, report disposition |
+| 7 | CI pipeline | Create `.github/workflows/ci.yml` from `ci-workflow-draft.yml` |
+| 8 | Branch protection | Enable on main (requires approval) |
+| 9 | Twilio stale URL | Replace in `Admin.jsx` and `VoiceAssistant.jsx` |
+| 10 | OAuth connectors | Connect Gmail, Google Calendar, Google Drive via `/admin` |
+| 11 | Twilio carrier verification | Submit via Twilio console |
+| 12 | Twilio secret storage | Migrate auth token to platform secrets (requires approval) |
 
 ---
 
-VERIFIED: Core gates (lint, typecheck, 53/53 tests, build, security) at SHA d4b0f07. E2E mock root cause (3 defects) and fix (3 corrections). Unknown API fail-closed receipt (599 UNMOCKED_API_PATH). Regression test for base44Client.js. Connector classification from source. Twilio stale URL in 2 files. Wix webhook (3 event types).
+VERIFIED: Core gates at SHA 13b62ca (lint, typecheck, 53/53 tests, build, security). Mock contract root cause (SDK interceptor returns response.data directly). Mock contract fix (raw array for list/filter). 7 response contract regression tests added. 90 known entities, 32 known functions. Fail-closed behavior preserved. Twilio secret storage classification corrected.
 
-INFERRED: Desktop E2E previous broken harness result (2/18). Mobile E2E previous result (0/18). Chromium installation (151.0.7922.34).
+INFERRED: Desktop pre-fix result (14/19). Mobile pre-fix result (7/19). Public landing visual diff (44%, 690497 pixels). Leads visual diff (12%, 180649 pixels).
 
-COULD NOT VERIFY: Post-correction SHA, tree SHA, git status, current npm command rerun, desktop E2E with repaired harness, mobile functional E2E with repaired harness.
+COULD NOT VERIFY: Post-correction SHA, tree SHA, git status, post-fix E2E results, public landing baseline provenance, actual screenshots, diff artifacts.
 
-BLOCKERS: git/npm/playwright commands timeout in degraded sandbox environment. `.github/workflows/` writes blocked by platform. Cannot execute browser validation from sandbox.
+BLOCKERS: git/npm/playwright commands timeout in degraded sandbox. Cannot run browser validation. Cannot access git history. `.github/workflows/` writes blocked by platform.
 
-WORKAROUNDS: Operator runs all validation locally. Operator creates CI workflow manually. Operator installs Playwright browser and runs E2E with `--update-snapshots=none`. Operator renders mobile baselines and submits for review.
+WORKAROUNDS: Operator runs all validation locally with `--update-snapshots=none`. Operator investigates public landing visual diff. Operator renders mobile baselines into gitignored review dir for approval. Operator creates CI workflow manually.
 
 NEXT ACTIONS:
-1. Operator: `git status --porcelain` — verify only expected files changed
+1. Operator: `git status --porcelain` → verify only 3 expected files changed
 2. Operator: `npm run lint && npm run typecheck && npm test && npm run build && npm audit --omit=dev --audit-level=high`
-3. Operator: `npx playwright test --project=desktop-1440 --update-snapshots=none` — required 18/18
-4. Operator: `npx playwright test --project=mobile-390 --update-snapshots=none` — required 9/9 load/error
-5. Operator: render mobile screenshots at 390×844, submit for review
-6. Operator: create `.github/workflows/ci.yml` from `ci-workflow-draft.yml`
-7. Operator: enable branch protection on main (requires approval)
-8. Operator: replace stale Twilio URLs in `Admin.jsx` and `VoiceAssistant.jsx`
-9. Operator: connect Gmail, Google Calendar, Google Drive via `/admin`
-10. Operator: submit Twilio toll-free carrier verification
-11. Operator: record final post-correction SHA after all changes verified
+3. Operator: `npx playwright test --project=desktop-1440 --update-snapshots=none` → 9/9 functional + 1/1 module + 7/7 contract + visual results
+4. Operator: `npx playwright test --project=mobile-390 --update-snapshots=none` → 9/9 functional + 1/1 module + 7/7 contract
+5. Operator: investigate public landing 44% visual diff — compare actual, baseline, live source
+6. Operator: render mobile screenshots into `test-results/mobile-review/`, submit for review
+7. Operator: create `.github/workflows/ci.yml`
+8. Operator: enable branch protection
+9. Operator: replace stale Twilio URLs
+10. Operator: connect OAuth connectors
+11. Operator: submit Twilio carrier verification
+12. Operator: record final post-correction SHA
