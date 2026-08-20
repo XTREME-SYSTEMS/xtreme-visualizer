@@ -8,9 +8,9 @@ import { setupBase44Mocks } from "./fixtures/mock-api";
  * 1. Verifies HTTP/page load, body render, no uncaught JS errors, no unexpected console errors
  * 2. Captures a visual baseline via toHaveScreenshot() with project-prefixed names
  *
- * API calls are explicitly mocked (see mock-api.ts): every /api/ request receives
- * a deterministic 200 response. This eliminates ALL SDK 404s, so the test enforces
- * strict error checking — any console error or page error is a genuine regression.
+ * API calls are explicitly mocked with an allowlist (see mock-api.ts):
+ *   - Known entities/functions → deterministic 200 responses
+ *   - Unknown API paths → 599 UNMOCKED_API_PATH (fails the test loudly)
  *
  * Only browser-level requests for missing static assets (favicon, manifest) are
  * filtered, as these are automatically requested by the browser and their absence
@@ -19,6 +19,9 @@ import { setupBase44Mocks } from "./fixtures/mock-api";
  * Visual baselines are stored in e2e/visual.spec.ts-snapshots/ and MUST be committed.
  * To create initial baselines: npx playwright test --update-snapshots
  * Never update baselines to make tests pass — unapproved visual differences MUST FAIL.
+ *
+ * CRITICAL: All validation runs inside Base44 MUST use --update-snapshots=none
+ * to prevent missing snapshots from being auto-committed as source truth.
  */
 
 const ROUTES = [
@@ -35,8 +38,11 @@ const ROUTES = [
 
 // Console error patterns that are expected in the test environment.
 // Only browser-level requests for missing static assets are filtered.
-// All Base44 API calls are explicitly mocked, so real API 404s/5xx and
-// SDK errors will fail the test — they indicate a genuine regression.
+// All Base44 API calls are explicitly mocked with an allowlist, so:
+//   - Real API 404s/5xx → fail the test
+//   - SDK errors → fail the test
+//   - UNMOCKED_API_PATH (599) → fail the test
+// These indicate a genuine regression, not a test-environment artifact.
 const EXPECTED_ERROR_PATTERNS = [
   /favicon/i,
   /manifest/i,
@@ -63,6 +69,18 @@ for (const route of ROUTES) {
         }
       });
       page.on("pageerror", (err) => pageErrors.push(err.message));
+
+      // Detect UNMOCKED_API_PATH (599) responses — these must fail the test
+      page.on("response", async (response) => {
+        if (response.status() === 599) {
+          try {
+            const body = await response.text();
+            consoleErrors.push(`UNMOCKED_API_PATH (599): ${body}`);
+          } catch {
+            consoleErrors.push(`UNMOCKED_API_PATH (599): ${response.url()}`);
+          }
+        }
+      });
 
       const response = await page.goto(route.path, {
         waitUntil: "networkidle",
@@ -101,3 +119,25 @@ for (const route of ROUTES) {
     });
   });
 }
+
+// Regression test: proves /src/api/base44Client.js is never mocked.
+// The previous mock used url.includes("/api/") which matched this Vite module
+// path, causing Playwright to serve JSON in place of JavaScript → blank pages.
+test("regression: /src/api/base44Client.js is never mocked (loads as JavaScript)", async ({ page }) => {
+  await setupBase44Mocks(page);
+
+  let moduleContentType = "";
+  page.on("response", async (response) => {
+    if (response.url().includes("base44Client.js")) {
+      moduleContentType = response.headers()["content-type"] || "";
+    }
+  });
+
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  // The module must have been loaded
+  expect(moduleContentType).toBeTruthy();
+  // And it must have been served as JavaScript, not JSON
+  expect(moduleContentType).toContain("javascript");
+  expect(moduleContentType).not.toContain("application/json");
+});

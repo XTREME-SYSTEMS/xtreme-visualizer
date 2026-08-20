@@ -3,23 +3,24 @@ import type { Page, Route } from "@playwright/test";
 /**
  * Deterministic Base44 API mock for E2E testing.
  *
- * Strategy: intercept ALL requests to /api/ paths (both GET and POST),
- * returning controlled mock data. Non-API requests (Vite modules, static
- * assets, page HTML) pass through to the Vite dev server.
+ * CRITICAL FIX: Uses `new URL(request.url()).pathname.startsWith("/api/")`
+ * instead of `url.includes("/api/")`. The substring match incorrectly matched
+ * `/src/api/base44Client.js` (a Vite JavaScript module), causing Playwright to
+ * serve JSON in place of the JS module → blank pages → visual diff failures.
  *
- * This eliminates ALL real API 404s — every Base44 SDK call (auth, entity
- * filter/list/create, function invoke, integration) receives a deterministic
- * 200 response with mock data. The test can then enforce strict error
- * checking: any unexpected console error or page error is a real regression.
+ * CRITICAL FIX: Uses `page.context().route()` (browser-context routing) instead
+ * of `page.route()` (page-level routing). Context-level routing intercepts
+ * requests from service workers and web workers that bypass page-level routing.
+ * Combined with `serviceWorkers: "block"` in playwright.config.ts, this ensures
+ * every Base44 API request is deterministically intercepted.
  *
- * Mocked endpoints:
- *   /api/auth/*        → mock authenticated admin user (200)
- *   /api/functions/*   → empty success response (200)
- *   /api/entities/*    → empty data array (200)
- *   /api/integrations/* → empty data (200)
- *   other /api/*       → empty data (200)
+ * CRITICAL FIX: Explicit allowlist — only known entity and function paths receive
+ * mock responses. Unknown API paths return HTTP 599 with `UNMOCKED_API_PATH`,
+ * causing the E2E test to fail loudly. This prevents broken endpoint names and
+ * real integration regressions from being silently swallowed.
  *
- * Non-/api/ requests pass through untouched to Vite.
+ * Non-/api/ requests (Vite modules, static assets, page HTML) pass through
+ * untouched to the Vite dev server.
  */
 
 const MOCK_USER = {
@@ -31,24 +32,88 @@ const MOCK_USER = {
   updated_date: "2024-01-01T00:00:00.000Z",
 };
 
+// All known entity names used by the application.
+// An unknown entity name → 599 UNMOCKED_API_PATH (fail-closed).
+const KNOWN_ENTITIES = new Set([
+  "User", "FloorSystem", "Product", "ColorChart", "Project", "Lead", "Quote",
+  "Proposal", "FeatureFlag", "IntegrationConfig", "Appointment", "WorkOrder",
+  "Invoice", "MaintenanceSubscription", "Base44Purchase", "VoiceScript",
+  "Subcontractor", "GalleryImage", "MarketingAsset", "TrackingEvent", "Scope",
+  "Signature", "ActivityReceipt", "Message", "MessageTemplate", "EmailTemplate",
+  "PricingProfile", "PricingRule", "MarketPrice", "CostOfBusiness", "JobCost",
+  "ChangeOrder", "ProjectStep", "PunchItem", "FieldPhoto", "ClockEvent",
+  "AuditLog", "Enhancement", "ScrapeJob", "FollowupPlan", "Visualization",
+  "VisualizationConcept", "BrandAsset", "SkinPreset", "SkinVersion",
+  "SkinAssignment", "LayoutPreset", "ComponentPreset", "BackgroundPreset",
+  "MotionPreset", "PalettePreset", "FontPairing", "EnvironmentProfile",
+  "FinishProfile", "IndustryTemplate",
+  // AutoLead entities
+  "AutoLeadOpportunity", "AutoLeadBenchmark", "AutoLeadVerificationReceipt",
+  "AutoLeadConversionReceipt", "AutoLeadProject", "AutoLeadProposalPackage",
+  "AutoLeadAgentTask", "AutoLeadNotification", "AutoLeadSignedContract",
+  "AutoLeadUser", "AutoLeadRecommendation", "AutoLeadInvoice",
+  "AutoLeadProjectImage", "AutoLeadContractorApp", "AutoLeadSystemGap",
+  "AutoLeadBrandAsset", "AutoLeadEsignDocument", "AutoLeadBidInvitation",
+  "AutoLeadContact", "AutoLeadMaterial", "AutoLeadEstimate",
+  "AutoLeadMessage", "AutoLeadPaymentPreference", "AutoLeadScopeSystem",
+  "AutoLeadActionItem", "AutoLeadProposal", "AutoLeadCompanyProfile",
+  "AutoLeadSystemScore", "AutoLeadPricingProfile", "AutoLeadScrapeSource",
+  "AutoLeadTakeoff", "AutoLeadPayment", "AutoLeadContractTemplate",
+  "AutoLeadAutomationConfig", "AutoLeadEmailTemplate",
+]);
+
+// All known backend function names.
+// An unknown function name → 599 UNMOCKED_API_PATH (fail-closed).
+const KNOWN_FUNCTIONS = new Set([
+  "autoDepositOnSignature", "browserbaseScrape", "checkConnectorStatus",
+  "convertAutoLeadOpportunity", "create-checkout", "createCalendarAppointment",
+  "createDriveFolder", "fetchLocalPricing", "generateInvoice", "generateWarranty",
+  "getCustomerPortal", "gmail", "hubspot", "payments-webhook", "pushLeadToHubSpot",
+  "rejectAutoLeadOpportunity", "runAppointmentReminders", "runFollowupPlans",
+  "runLostLeadRecovery", "runReviewRequests", "scrapeXpsCatalog",
+  "seedColorCharts", "sendGmailMessage", "sendLeadFollowup",
+  "sendLostLeadRecovery", "sendMaterialOrder", "sendReviewRequest",
+  "sendScrapeEmails", "stageAutoLeadOpportunity", "syncLeadsToGoogleSheet",
+  "twilio-voice", "verifyAutoLeadOpportunity",
+]);
+
+function unmockedResponse(method: string, pathname: string) {
+  return {
+    status: 599,
+    contentType: "application/json",
+    body: JSON.stringify({ error: "UNMOCKED_API_PATH", method, path: pathname }),
+  };
+}
+
 export async function setupBase44Mocks(page: Page): Promise<void> {
   // Set mock auth token so the SDK considers the user authenticated
   await page.addInitScript(() => {
     localStorage.setItem("base44_access_token", "mock-e2e-token");
   });
 
-  await page.route("**/*", async (route: Route) => {
-    const request = route.request();
-    const url = request.url();
+  // CRITICAL: Use browser-context routing, not page-level routing.
+  // Context-level routing intercepts requests from service workers and
+  // web workers that bypass page.route(). Combined with serviceWorkers:"block"
+  // in playwright.config.ts, this ensures full interception coverage.
+  const context = page.context();
 
-    // Only intercept Base44 API calls (URLs containing /api/).
+  await context.route("**/*", async (route: Route) => {
+    const request = route.request();
+    // CRITICAL: Parse URL and check pathname.startsWith("/api/").
+    // NEVER use url.includes("/api/") — it matches /src/api/base44Client.js
+    // (a Vite JS module) and serves JSON in its place → blank pages.
+    const parsedUrl = new URL(request.url());
+    const pathname = parsedUrl.pathname;
+    const method = request.method();
+
+    // Only intercept Base44 API calls (pathname starts with /api/).
     // All non-API requests (Vite HMR, modules, static assets, page HTML) pass through.
-    if (!url.includes("/api/")) {
+    if (!pathname.startsWith("/api/")) {
       return route.continue();
     }
 
-    // Auth endpoints → mock authenticated admin user
-    if (url.includes("/api/auth")) {
+    // 1. User/me endpoint → mock authenticated admin user
+    if (pathname.includes("/entities/User/me")) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -56,8 +121,90 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
       });
     }
 
-    // Function invocations → empty success response
-    if (url.includes("/api/functions")) {
+    // 2. Public settings → empty settings object
+    if (pathname.includes("/public-settings/")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({}),
+      });
+    }
+
+    // 3. Analytics track batch → safe success
+    if (pathname.includes("/analytics/track")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true }),
+      });
+    }
+
+    // 4. Entity endpoints → shape depends on operation
+    //    Pattern: /api/apps/{APP_ID}/entities/{EntityName}[/{subPath}]
+    const entityMatch = pathname.match(/^\/api\/apps\/[^/]+\/entities\/([^/]+)(?:\/(.+))?/);
+    if (entityMatch) {
+      const entityName = entityMatch[1];
+      const subPath = entityMatch[2];
+
+      // Unknown entity → fail-closed
+      if (!KNOWN_ENTITIES.has(entityName) && entityName !== "User") {
+        return route.fulfill(unmockedResponse(method, pathname));
+      }
+
+      // DELETE → success
+      if (method === "DELETE") {
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ ok: true }),
+        });
+      }
+
+      // Get/create/update by ID (subPath is an ID, not filter/list/bulk/me)
+      if (subPath && subPath !== "filter" && subPath !== "list" && subPath !== "bulk" && subPath !== "me") {
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ id: subPath }),
+        });
+      }
+
+      // List/filter (no subPath, or subPath is filter/list/bulk) → empty data
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: [], items: [], total: 0 }),
+      });
+    }
+
+    // 5. Function endpoints → function-specific success
+    //    Pattern: /api/apps/{APP_ID}/functions/{FunctionName}
+    const functionMatch = pathname.match(/^\/api\/apps\/[^/]+\/functions\/([^/]+)/);
+    if (functionMatch) {
+      const functionName = functionMatch[1];
+
+      // Unknown function → fail-closed
+      if (!KNOWN_FUNCTIONS.has(functionName)) {
+        return route.fulfill(unmockedResponse(method, pathname));
+      }
+
+      // Check for ping calls (Admin connector status checks)
+      let isPing = false;
+      try {
+        const postData = request.postDataJSON();
+        if (postData && postData.ping === true) isPing = true;
+      } catch {
+        // Body not JSON or empty — not a ping call
+      }
+
+      if (isPing) {
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ ok: true, service: functionName }),
+        });
+      }
+
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -65,11 +212,26 @@ export async function setupBase44Mocks(page: Page): Promise<void> {
       });
     }
 
-    // Entity, integration, and all other API endpoints → empty data
-    return route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ data: [], items: [], total: 0 }),
-    });
+    // 6. Integration endpoints (InvokeLLM, UploadFile, GenerateImage, etc.)
+    //    Pattern: /api/apps/{APP_ID}/integrations/{Package}/{Endpoint}
+    if (pathname.includes("/integrations/")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ data: {}, ok: true }),
+      });
+    }
+
+    // 7. Auth endpoints (login, register, etc.) → mock user
+    if (pathname.includes("/auth")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(MOCK_USER),
+      });
+    }
+
+    // 8. UNKNOWN API PATH → fail loudly
+    return route.fulfill(unmockedResponse(method, pathname));
   });
 }

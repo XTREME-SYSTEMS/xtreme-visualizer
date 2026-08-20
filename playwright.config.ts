@@ -21,6 +21,10 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     timeout: 30000,
+    // CRITICAL: Block service workers so they don't bypass context-level route mocking.
+    // Combined with page.context().route() in mock-api.ts, this ensures every
+    // Base44 API request is deterministically intercepted.
+    serviceWorkers: "block",
   },
   webServer: {
     command: "npx vite",

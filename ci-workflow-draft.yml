@@ -8,6 +8,12 @@
 # A failing E2E job makes CI red — NO continue-on-error.
 # Browser installation failure makes CI red — NO continue-on-error.
 #
+# CRITICAL: E2E uses --update-snapshots=none to prevent missing snapshots
+# from being auto-created and auto-committed as source truth.
+# CI MUST fail if a baseline is missing.
+# CI MUST fail if visual comparison differs.
+# CI MUST NOT manufacture snapshots.
+#
 # OPERATOR ACTION REQUIRED:
 #   1. Create .github/workflows/ci.yml in the GitHub repo
 #   2. Enable branch protection on main (require CI checks)
@@ -55,7 +61,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Record Chromium version
         run: npx playwright install --dry-run chromium 2>&1 | head -5 || true
-      - run: npm run e2e
+      - name: Run E2E (no snapshot auto-creation)
+        run: npx playwright test --update-snapshots=none
         env:
           CI: "true"
       - uses: actions/upload-artifact@v4
