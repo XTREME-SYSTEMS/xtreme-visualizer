@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "system": "Xtreme Visualizer",
+  "purpose": "Machine-verifiable autonomous completion score for overnight validation and safe repair.",
+  "score_target": 100,
+  "completion_rule": "AUTONOMOUS_COMPLETE only when every scored gate is executed and passed on the exact final SHA/tree, the worktree is clean, receipt integrity passes, and no autonomous-safe blocker remains.",
+  "scored_gates": [
+    { "id": "git_integrity", "weight": 5, "required": true },
+    { "id": "npm_ci", "weight": 5, "required": true },
+    { "id": "lint", "weight": 8, "required": true },
+    { "id": "typecheck", "weight": 8, "required": true },
+    { "id": "unit_tests", "weight": 10, "required": true },
+    { "id": "payment_regression", "weight": 6, "required": true },
+    { "id": "build", "weight": 8, "required": true },
+    { "id": "audit_high", "weight": 6, "required": true },
+    { "id": "desktop_functional", "weight": 10, "required": true, "target": "9/9" },
+    { "id": "mobile_functional", "weight": 10, "required": true, "target": "9/9" },
+    { "id": "module_regression", "weight": 5, "required": true, "target": "1/1 in both projects" },
+    { "id": "contract_regression", "weight": 7, "required": true, "target": "7/7 in both projects" },
+    { "id": "review_capture_integrity", "weight": 7, "required": true, "target": "12/12 valid review captures" },
+    { "id": "receipt_integrity", "weight": 5, "required": true }
+  ],
+  "unscored_protected_release_gates": [
+    "visual_baseline_promotion",
+    "github_ci_activation",
+    "branch_protection_change",
+    "oauth_consent",
+    "visible_twilio_url_change",
+    "twilio_carrier_verification",
+    "twilio_secret_migration",
+    "production_deployment"
+  ],
+  "protected_gate_policy": "These gates are never fabricated as passes. They remain WAITING_APPROVAL or EXTERNAL until explicitly completed. They do not reduce the autonomous engineering score, but production RELEASE APPROVED is forbidden until required protected gates are actually satisfied.",
+  "browser_policy": "Use local Playwright first. Browserbase may be used only if already authorized and no incremental spend is required; otherwise stop for approval before paid usage.",
+  "snapshot_policy": "Every validation run uses --update-snapshots=none. Never manufacture or promote visual baselines without explicit operator approval.",
+  "visual_lock": "No intentional visual or visible-content changes without explicit operator approval."
+}
