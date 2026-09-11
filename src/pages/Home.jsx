@@ -124,13 +124,17 @@ export default function Home() {
 
   return (
     <div
+      className="hx-noscroll"
       style={{
         height: "100%",
         overflowY: "auto",
+        overflowX: "hidden",
         background: "#FFFFFF",
         WebkitOverflowScrolling: "touch",
         touchAction: "pan-y",
         position: "relative",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
       }}
     >
       {/* Hero */}
