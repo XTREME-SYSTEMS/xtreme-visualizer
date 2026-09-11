@@ -1,87 +1,118 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Plus,
   ChevronRight,
   Users,
-  Ruler,
-  DollarSign,
-  MessageSquare,
   FileText,
+  Calculator,
+  Mail,
   Package,
-  Briefcase,
-  Sparkles,
+  Megaphone,
+  Calendar,
+  Home as HomeIcon,
+  BarChart3,
 } from "lucide-react";
 import { PRICE_DISCLOSURE } from "@/lib/brand";
 import { getHeroImage, getHeroFilters, heroFilterString } from "@/components/settings/HeroImagePicker";
 
 const YELLOW = "#FFD700";
+const YELLOW_DARK = "#B8860B";
 const BLACK = "#000000";
-const GREY = "#A9A9A9";
+const DARK = "#1A1A1A";
+const GREY = "#333333";
 const BORDER = "#E5E5E5";
 
-const WORKFLOW_CARDS = [
-  { icon: Users, label: "Find & Qualify Leads", badge: "4 new", route: "/leads" },
-  { icon: Ruler, label: "Takeoffs & Measurements", badge: "3 ready", route: "/visualizer" },
-  { icon: DollarSign, label: "Estimates & Pricing", badge: null, route: "/pricing" },
-  { icon: MessageSquare, label: "Customer Chat", badge: null, route: "/inbox" },
-  { icon: FileText, label: "Proposals & Contracts", badge: null, route: "/close" },
-  { icon: Package, label: "Materials & Orders", badge: null, route: "/operations" },
+const BADGE_CARDS = [
+  { icon: Users, label: "Leads", badge: "4", route: "/leads" },
+  { icon: FileText, label: "Takeoffs", badge: "3", route: "/visualizer" },
+  { icon: Calculator, label: "Bids", badge: "2", route: "/pricing" },
+  { icon: Mail, label: "Inbox", badge: "3", route: "/inbox" },
 ];
 
-function WorkflowCard({ card, navigate }) {
+const TOOL_CARDS = [
+  { icon: FileText, label: "Contracts", route: "/close" },
+  { icon: Package, label: "Materials", route: "/operations" },
+  { icon: Megaphone, label: "Marketing", route: "/crm" },
+  { icon: Calendar, label: "Schedule", route: "/appointments" },
+  { icon: HomeIcon, label: "Projects", route: "/projects" },
+  { icon: BarChart3, label: "Business Tools", route: "/more" },
+];
+
+function BadgeCard({ card, navigate }) {
+  const Icon = card.icon;
+  return (
+    <button
+      onClick={() => navigate(card.route)}
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 10,
+        padding: "20px 12px",
+        background: "#FFFFFF",
+        border: `1px solid ${BORDER}`,
+        borderRadius: 14,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        cursor: "pointer",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          width: 22,
+          height: 22,
+          borderRadius: "50%",
+          background: YELLOW,
+          color: BLACK,
+          fontSize: 11,
+          fontWeight: 700,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {card.badge}
+      </div>
+      <div
+        style={{
+          width: 44,
+          height: 44,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Icon size={24} color={BLACK} />
+      </div>
+      <span style={{ fontSize: 14, fontWeight: 600, color: BLACK }}>{card.label}</span>
+    </button>
+  );
+}
+
+function ToolCard({ card, navigate }) {
   const Icon = card.icon;
   return (
     <button
       onClick={() => navigate(card.route)}
       style={{
         display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        gap: 10,
-        padding: 16,
-        background: "#FFFFFF",
-        border: `1px solid ${BORDER}`,
+        alignItems: "center",
+        gap: 12,
+        padding: "14px 16px",
+        background: DARK,
+        border: "none",
         borderRadius: 14,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
         cursor: "pointer",
         textAlign: "left",
+        width: "100%",
       }}
     >
-      <div
-        style={{
-          width: 40,
-          height: 40,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#F5F5F5",
-          borderRadius: 10,
-        }}
-      >
-        <Icon size={20} color={BLACK} />
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%" }}>
-        <strong style={{ fontSize: 14, color: BLACK }}>{card.label}</strong>
-        {card.badge && (
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: "#B8860B",
-              background: "#FFF8DC",
-              padding: "2px 8px",
-              borderRadius: 8,
-            }}
-          >
-            {card.badge}
-          </span>
-        )}
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-        <span style={{ fontSize: 12, color: GREY }}>Guided workflow</span>
-        <ChevronRight size={16} color={GREY} />
-      </div>
+      <Icon size={22} color={YELLOW} />
+      <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: "#FFFFFF" }}>{card.label}</span>
+      <ChevronRight size={18} color="#FFFFFF" />
     </button>
   );
 }
@@ -103,7 +134,7 @@ export default function Home() {
       }}
     >
       {/* Hero */}
-      <div style={{ position: "relative", height: 280, overflow: "hidden" }}>
+      <div style={{ position: "relative", height: 300, overflow: "hidden" }}>
         <img
           src={HERO_IMG}
           alt=""
@@ -113,7 +144,7 @@ export default function Home() {
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.65))",
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7))",
           }}
         />
         <div
@@ -121,17 +152,27 @@ export default function Home() {
             position: "absolute",
             left: 20,
             right: 20,
-            bottom: 24,
+            bottom: 28,
             display: "flex",
             flexDirection: "column",
             gap: 10,
           }}
         >
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: "#FFFFFF", margin: 0, lineHeight: 1.1, letterSpacing: -0.5 }}>
-            Turn Floors Into Profits.
+          <h1
+            style={{
+              fontSize: 30,
+              fontWeight: 800,
+              color: "#FFFFFF",
+              margin: 0,
+              lineHeight: 1.1,
+              letterSpacing: -0.5,
+              textShadow: "0 2px 8px rgba(0,0,0,0.5)",
+            }}
+          >
+            Visualize Floors. Close Jobs <span style={{ color: YELLOW }}>Faster.</span>
           </h1>
-          <p style={{ fontSize: 14, color: "#FFFFFF", margin: 0, opacity: 0.9 }}>
-            Faster takeoffs. Accurate estimates. More jobs.
+          <p style={{ fontSize: 15, color: "#FFFFFF", margin: 0, opacity: 0.95 }}>
+            Takeoff, price, present, and win.
           </p>
           <button
             onClick={() => navigate("/visualizer")}
@@ -139,101 +180,43 @@ export default function Home() {
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
-              padding: "12px 20px",
-              background: YELLOW,
+              padding: "14px 24px",
+              background: `linear-gradient(135deg, ${YELLOW}, ${YELLOW_DARK})`,
               color: BLACK,
               border: "none",
-              borderRadius: 12,
-              fontSize: 15,
+              borderRadius: 14,
+              fontSize: 16,
               fontWeight: 700,
               cursor: "pointer",
               width: "fit-content",
+              boxShadow: "0 4px 14px rgba(255,215,0,0.3)",
             }}
           >
-            <Plus size={18} /> Start New Estimate <ChevronRight size={18} />
+            Start New Estimate <ChevronRight size={20} />
           </button>
         </div>
       </div>
 
-      {/* Job Workflow */}
-      <div style={{ padding: "24px 20px 8px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: BLACK, margin: 0 }}>Job Workflow</h2>
-          <span style={{ fontSize: 13, color: GREY }}>From lead to finished floor.</span>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          {WORKFLOW_CARDS.map((card) => (
-            <WorkflowCard key={card.label} card={card} navigate={navigate} />
+      {/* Badge Grid */}
+      <div style={{ padding: "20px 20px 8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10 }}>
+          {BADGE_CARDS.map((card) => (
+            <BadgeCard key={card.label} card={card} navigate={navigate} />
           ))}
         </div>
       </div>
 
-      {/* Business Tools */}
-      <div style={{ padding: "12px 20px" }}>
-        <button
-          onClick={() => navigate("/more")}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            padding: 16,
-            width: "100%",
-            background: "#FFFFFF",
-            border: `1px solid ${BORDER}`,
-            borderRadius: 14,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-            cursor: "pointer",
-            textAlign: "left",
-          }}
-        >
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#F5F5F5",
-              borderRadius: 10,
-            }}
-          >
-            <Briefcase size={20} color={BLACK} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <strong style={{ fontSize: 15, color: BLACK, display: "block" }}>Business Tools</strong>
-            <span style={{ fontSize: 12, color: GREY }}>Marketing, communications, projects and more.</span>
-          </div>
-          <ChevronRight size={20} color={GREY} />
-        </button>
+      {/* Tools */}
+      <div style={{ padding: "20px 20px 8px" }}>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: BLACK, margin: "0 0 14px" }}>Tools</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          {TOOL_CARDS.map((card) => (
+            <ToolCard key={card.label} card={card} navigate={navigate} />
+          ))}
+        </div>
       </div>
 
-      {/* Ask Xtreme AI */}
-      <div style={{ padding: "0 20px 24px" }}>
-        <button
-          onClick={() => navigate("/vizzy")}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            padding: 18,
-            width: "100%",
-            background: "#202020",
-            border: "none",
-            borderRadius: 14,
-            cursor: "pointer",
-            textAlign: "left",
-          }}
-        >
-          <Sparkles size={24} color="#FFFFFF" />
-          <div style={{ flex: 1 }}>
-            <strong style={{ fontSize: 15, color: "#FFFFFF", display: "block" }}>Ask Xtreme AI</strong>
-            <span style={{ fontSize: 12, color: GREY }}>Get answers, ideas and next steps.</span>
-          </div>
-          <ChevronRight size={20} color="#FFFFFF" />
-        </button>
-      </div>
-
-      <p style={{ padding: "0 20px 24px", fontSize: 11, color: GREY, textAlign: "center", margin: 0 }}>
+      <p style={{ padding: "16px 20px 24px", fontSize: 11, color: "#999", textAlign: "center", margin: 0 }}>
         {PRICE_DISCLOSURE}
       </p>
     </div>
