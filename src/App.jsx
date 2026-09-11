@@ -58,6 +58,7 @@ import Generators from '@/pages/Generators';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import TermsOfService from '@/pages/TermsOfService';
 import VizzyChat from '@/pages/VizzyChat';
+import AIGatewayStudio from '@/pages/AIGatewayStudio';
 import OAuthConsent from '@/pages/OAuthConsent';
 import RootRoute from '@/components/RootRoute';
 
@@ -140,6 +141,7 @@ const AuthenticatedApp = () => {
           <Route path="/business-generator" element={<BusinessGenerator />} />
           <Route path="/generators" element={<Generators />} />
           <Route path="/vizzy" element={<VizzyChat />} />
+          <Route path="/ai-gateway" element={<AIGatewayStudio />} />
         </Route>
         <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
