@@ -54,31 +54,31 @@
 
   [data-theme="light"] {
     color-scheme: light;
-    --vx-bg: #f3f5f0;
+    --vx-bg: #ffffff;
     --vx-bg-2: #ffffff;
     --vx-panel: #ffffff;
-    --vx-panel-2: #f1f3ed;
-    --vx-panel-3: #e5e9de;
-    --vx-text: #11140d;
-    --vx-muted: #50564c;
-    --vx-faint: #7b8276;
-    --vx-border: #aeb7a8;
-    --vx-border-soft: #d8ddd2;
+    --vx-panel-2: #f5f5f5;
+    --vx-panel-3: #ebebeb;
+    --vx-text: #000000;
+    --vx-muted: #555555;
+    --vx-faint: #888888;
+    --vx-border: #cccccc;
+    --vx-border-soft: #e0e0e0;
     --vx-shadow: 0 14px 34px rgba(32, 45, 18, 0.12);
     --vx-glow: 0 0 18px rgba(240, 244, 11, 0.18);
 
-    --background: 80 18% 95%;
-    --foreground: 80 22% 7%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
     --card: 0 0% 100%;
     --card-foreground: 80 22% 7%;
     --popover: 0 0% 100%;
     --popover-foreground: 80 22% 7%;
-    --secondary: 80 14% 92%;
-    --secondary-foreground: 80 22% 7%;
-    --muted: 80 14% 92%;
-    --muted-foreground: 100 6% 32%;
-    --border: 100 10% 82%;
-    --input: 100 10% 82%;
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 32%;
+    --border: 0 0% 82%;
+    --input: 0 0% 82%;
   }
 
   * {
