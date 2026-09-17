@@ -7,7 +7,7 @@ import { getHeroTextConfig } from "@/components/settings/HeroTextCustomizer";
 const LOGO_KEY = "vx-loading-logo";
 
 const DEFAULTS = {
-  logo: "/logo.png",
+  logo: "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/75f172e46_LOGO.png",
 };
 
 export function getLoadingLogo() {

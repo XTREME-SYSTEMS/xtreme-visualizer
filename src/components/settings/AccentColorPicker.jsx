@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Save, Check, RotateCcw } from "lucide-react";
 
 const STORAGE_KEY = "vx-accent-color";
-const DEFAULT_COLOR = "#f0f40b";
+const DEFAULT_COLOR = "#FDB813";
 
 const PRESETS = [
-  { name: "Gold", value: "#f0f40b" },
+  { name: "Gold", value: "#FDB813" },
   { name: "Cyan", value: "#22d3ee" },
   { name: "Blue", value: "#3b82f6" },
   { name: "Violet", value: "#a855f7" },
@@ -27,11 +27,11 @@ function rgbToHex(r, g, b) {
   return `#${c(r)}${c(g)}${c(b)}`;
 }
 
-function lighten(hex, amt) {
+function darken(hex, amt) {
   const m = hex.replace("#", "").match(/.{2}/g);
   if (!m) return hex;
   const r = parseInt(m[0], 16), g = parseInt(m[1], 16), b = parseInt(m[2], 16);
-  return rgbToHex(r + (255 - r) * amt, g + (255 - g) * amt, b + (255 - b) * amt);
+  return rgbToHex(r * (1 - amt), g * (1 - amt), b * (1 - amt));
 }
 
 function luminance(hex) {
@@ -67,7 +67,7 @@ function hexToHsl(hex) {
 export function applyAccent(hex) {
   const root = document.documentElement;
   const rgb = hexToRgb(hex);
-  const accent2 = lighten(hex, 0.28);
+  const accent2 = darken(hex, 0.28);
   const hsl = hexToHsl(hex);
   const hsl2 = hexToHsl(accent2);
   const fg = luminance(hex) > 0.5 ? "0 0% 4%" : "0 0% 98%";
@@ -171,7 +171,7 @@ export default function AccentColorPicker() {
               setDraft(saved);
             }
           }}
-          placeholder="#f0f40b"
+          placeholder="#FDB813"
           className="w-24 px-2 py-1.5 text-[12px] font-mono rounded border border-[var(--vx-border-soft)] bg-transparent text-[var(--vx-text)] outline-none focus:border-[var(--vx-accent)]"
         />
       </div>

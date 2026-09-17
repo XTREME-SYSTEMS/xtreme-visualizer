@@ -1,15 +1,36 @@
 {
   "name": "Xtreme Floor Visualizer",
   "short_name": "Xtreme",
-  "description": "Xtreme Floor Visualizer — design, quote, and win floor coatings.",
+  "description": "Visualize floors, close jobs faster. Takeoff, price, present, and win.",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#030303",
-  "theme_color": "#030303",
+  "theme_color": "#FDB813",
   "icons": [
-    { "src": "/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/75f172e46_LOGO.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/75f172e46_LOGO.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/75f172e46_LOGO.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a72dc735df4ab468b4b1441/75f172e46_LOGO.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
